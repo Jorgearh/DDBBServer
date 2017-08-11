@@ -3,7 +3,7 @@ options{
 }
 
 PARSER_BEGIN(ParserPlyCS)
-	
+
 	public class ParserPlyCS{
 		public static void main(String[] args) throws ParseException{
 				try{
@@ -15,9 +15,8 @@ PARSER_BEGIN(ParserPlyCS)
 				}
 			}
 		}
-	}
-	
-	
+
+
 PARSER_END(ParserPlyCS)
 
 
@@ -30,11 +29,6 @@ SKIP :
 	|"\r"
 }
 
-TOKEN :
-{
-	 <nl: "\n">
-	|<exit: "exit" | "quit">
-}
 
 
 TOKEN :
@@ -52,6 +46,10 @@ TOKEN :
 
 void INI() : {}
 {
-	S() <EOF>
+	L() <EOF>
 }
 
+void L(): {Token t;}
+{
+	( t = <id> {System.out.println(t.image);})+
+}

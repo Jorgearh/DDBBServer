@@ -4,18 +4,17 @@ options{
 
 PARSER_BEGIN(ParserPlyCS)
 	
-	public class Ejercicio{
+	public class ParserPlyCS{
 		public static void main(String[] args) throws ParseException{
 				try{
-					new Ejercicio(new java.io.StringReader(scanner.nextLine())).INI();
+					ParserPlyCS parser = new ParserPlyCS(System.in);
+					parser.INI();
 				}catch(ParseException pe){
 					System.err.println("Error en el analisis...");
 					System.err.println(pe.getMessage());
 				}
 			}
-			scanner.close();
 		}
-	}
 	
 	
 PARSER_END(ParserPlyCS)
@@ -25,13 +24,13 @@ PARSER_END(ParserPlyCS)
 SKIP :
 {
 	 " "
+	|"\n"
 	|"\t"
 	|"\r"
 }
 
 TOKEN :
 {
-	 <nl: "\n">
 	|<exit: "exit" | "quit">
 }
 
@@ -51,63 +50,11 @@ TOKEN :
 
 void INI() : {}
 {
-	S() <EOF>
+	L() <EOF>
 }
 
-void S() : {} 
+void L(): {}
 {
-	 DEC()	{}
-	|<nl>
-	|<exit>		{
-					System.out.println("...!");
-					System.exit(0);
-				}
-	|			{
-					return;
-				}
+	(<id>)+
 }
 
-
-
-void DEC() : 
-{
-	String tipo;
-}
-{
-	tipo = T() LID(tipo)
-}
-
-void LID(String tipo) : 
-{
-	Token var;
-}
-{
-	var = <id>	{
-					System.out.println(var.image + " es de tipo " + tipo);
-				} 
-				LIDP(tipo)
-}
-
-void LIDP(String tipo) : 
-{
-	Token var;
-}
-{
-	<coma> var = <id>	{
-							System.out.println(var.image + " es de tipo " + tipo);
-						} 
-						LIDP(tipo)
-	|{return;}
-}
-
-String T() :
-{
-	Token tipo;
-}
-{
-	(
-	 tipo = <caracter>
-	|tipo = <entero>
-	)
-	{return tipo.image;}
-}
