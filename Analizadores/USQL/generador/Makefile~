@@ -1,0 +1,7 @@
+all: compilar
+
+generar:	plycsParser.jj
+	javacc plycsParser.jj
+
+compilar: generar
+	javac *.java

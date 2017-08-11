@@ -1,0 +1,57 @@
+options{
+	STATIC = false;
+}
+
+PARSER_BEGIN(ParserPlyCS)
+	
+	public class ParserPlyCS{
+		public static void main(String[] args) throws ParseException{
+				try{
+					ParserPlyCS parser = new ParserPlyCS(System.in);
+					parser.INI();
+				}catch(ParseException pe){
+					System.err.println("Error en el analisis...");
+					System.err.println(pe.getMessage());
+				}
+			}
+		}
+	}
+	
+	
+PARSER_END(ParserPlyCS)
+
+
+
+SKIP :
+{
+	 " "
+	|"\n"
+	|"\t"
+	|"\r"
+}
+
+TOKEN :
+{
+	 <nl: "\n">
+	|<exit: "exit" | "quit">
+}
+
+
+TOKEN :
+{
+	 <coma: ",">
+	|<caracter: "char">
+	|<entero: "int">
+}
+
+TOKEN :
+{
+	<id: ["a"-"z", "A"-"Z", "_"](["a"-"z", "A"-"Z", "0"-"9", "_"])*>
+}
+
+
+void INI() : {}
+{
+	S() <EOF>
+}
+
