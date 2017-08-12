@@ -9,13 +9,11 @@ public interface ParserPlyCSConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int coma = 5;
+  int num = 5;
   /** RegularExpression Id. */
-  int caracter = 6;
+  int bool = 6;
   /** RegularExpression Id. */
-  int entero = 7;
-  /** RegularExpression Id. */
-  int id = 8;
+  int cad = 7;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -27,10 +25,14 @@ public interface ParserPlyCSConstants {
     "\"\\n\"",
     "\"\\t\"",
     "\"\\r\"",
+    "<num>",
+    "<bool>",
+    "<cad>",
+    "\"[\"",
+    "\"]\"",
     "\",\"",
-    "\"char\"",
-    "\"int\"",
-    "<id>",
+    "\":\"",
+    "\"=>\"",
   };
 
 }

@@ -1,9 +1,10 @@
 options{
+	LOOKAHEAD = 1;
 	STATIC = false;
+	IGNORE_CASE = true;
 }
 
 PARSER_BEGIN(ParserPlyCS)
-
 	public class ParserPlyCS{
 		public static void main(String[] args) throws ParseException{
 				try{
@@ -15,8 +16,6 @@ PARSER_BEGIN(ParserPlyCS)
 				}
 			}
 		}
-
-
 PARSER_END(ParserPlyCS)
 
 
@@ -29,27 +28,55 @@ SKIP :
 	|"\r"
 }
 
-
-
 TOKEN :
 {
-	 <coma: ",">
-	|<caracter: "char">
-	|<entero: "int">
-}
-
-TOKEN :
-{
-	<id: ["a"-"z", "A"-"Z", "_"](["a"-"z", "A"-"Z", "0"-"9", "_"])*>
+	 <num: (["0"-"9"])+ >
+	|<bool: "true" | "false" >
+	|<cad: ("\"") (~["\"", "\n", "\r"])* ("\"") >
 }
 
 
 void INI() : {}
 {
-	L() <EOF>
+	OBJECT() <EOF>
+}
+void OBJECT() : {}
+{
+	"[" [ MEMBERS() ] "]"
 }
 
-void L(): {Token t;}
+void MEMBERS() : {}
 {
-	( t = <id> {System.out.println(t.image);})+
+	PAIR() ( "," PAIR() )*
+}
+
+void PAIR() : {}
+{
+	 <cad> ":" VALUE()
+	|ARRAY()
+}
+
+void VALUE() : {}
+{
+	 <cad>
+	|<num>
+	|<bool>
+	|OBJECT()
+}
+
+
+
+void ARRAY() : {}
+{
+	"[" [ ELEMENTOS() ] "]"
+}
+
+void ELEMENTOS() : {}
+{
+	MAP() ( MAP() )*
+}
+
+void MAP() : {}
+{
+	<cad> "=>" VALUE()
 }

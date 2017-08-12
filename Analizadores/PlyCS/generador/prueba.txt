@@ -1,1 +1,15 @@
-uno dos tres cuatro cinco
+[
+    "paquete" : "usql",
+    "datos" : [
+        [
+            "usuario" => 1
+            "nombre" => "paco"
+            "telefono" => 12345678
+        ],
+        [
+            "usuario" => 2
+            "nombre" => "pedro"
+            "telefono" => 12345678
+        ]
+    ]
+]

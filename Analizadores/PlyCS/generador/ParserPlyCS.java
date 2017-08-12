@@ -11,25 +11,112 @@
                         }
 
   final public void INI() throws ParseException {
-    L();
+    OBJECT();
     jj_consume_token(0);
   }
 
-  final public void L() throws ParseException {
-           Token t;
+  final public void OBJECT() throws ParseException {
+    jj_consume_token(8);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case cad:
+    case 8:
+      MEMBERS();
+      break;
+    default:
+      jj_la1[0] = jj_gen;
+      ;
+    }
+    jj_consume_token(9);
+  }
+
+  final public void MEMBERS() throws ParseException {
+    PAIR();
     label_1:
     while (true) {
-      t = jj_consume_token(id);
-                    System.out.println(t.image);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case id:
+      case 10:
         ;
         break;
       default:
-        jj_la1[0] = jj_gen;
+        jj_la1[1] = jj_gen;
         break label_1;
       }
+      jj_consume_token(10);
+      PAIR();
     }
+  }
+
+  final public void PAIR() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case cad:
+      jj_consume_token(cad);
+      jj_consume_token(11);
+      VALUE();
+      break;
+    case 8:
+      ARRAY();
+      break;
+    default:
+      jj_la1[2] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void VALUE() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case cad:
+      jj_consume_token(cad);
+      break;
+    case num:
+      jj_consume_token(num);
+      break;
+    case bool:
+      jj_consume_token(bool);
+      break;
+    case 8:
+      OBJECT();
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void ARRAY() throws ParseException {
+    jj_consume_token(8);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case cad:
+      ELEMENTOS();
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      ;
+    }
+    jj_consume_token(9);
+  }
+
+  final public void ELEMENTOS() throws ParseException {
+    MAP();
+    label_2:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case cad:
+        ;
+        break;
+      default:
+        jj_la1[5] = jj_gen;
+        break label_2;
+      }
+      MAP();
+    }
+  }
+
+  final public void MAP() throws ParseException {
+    jj_consume_token(cad);
+    jj_consume_token(12);
+    VALUE();
   }
 
   /** Generated Token Manager. */
@@ -41,13 +128,13 @@
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[1];
+  final private int[] jj_la1 = new int[6];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x100,};
+      jj_la1_0 = new int[] {0x180,0x400,0x180,0x1e0,0x80,0x80,};
    }
 
   /** Constructor with InputStream. */
@@ -61,7 +148,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 1; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -75,7 +162,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 1; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -85,7 +172,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 1; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -95,7 +182,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 1; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -104,7 +191,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 1; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -113,7 +200,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 1; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -164,12 +251,12 @@
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[9];
+    boolean[] la1tokens = new boolean[13];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 6; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -178,7 +265,7 @@
         }
       }
     }
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 13; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
