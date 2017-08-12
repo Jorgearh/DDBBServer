@@ -2,6 +2,7 @@ options{
 	LOOKAHEAD = 1;
 	STATIC = false;
 	IGNORE_CASE = true;
+	OUTPUT_DIRECTORY = "analizador/";
 }
 
 PARSER_BEGIN(ParserPlyCS)
