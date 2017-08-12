@@ -1,0 +1,30 @@
+<Table>
+    <row>
+        <field>
+            <name>cadena_texto</name>
+            <value>"Esto es una cadena de texto"</value>
+        </field>
+        <field>
+            <name>cadena_texto</name>
+            <value>"Esto es una cadena de texto"</value>
+        </field>
+        <field>
+            <name>cadena_texto</name>
+            <value>"Esto es una cadena de texto"</value>
+        </field>
+    </row>
+    <row>
+        <field>
+            <name>cadena_texto</name>
+            <value>"Esto es una cadena de texto"</value>
+        </field>
+        <field>
+            <name>cadena_texto</name>
+            <value>"Esto es una cadena de texto"</value>
+        </field>
+        <field>
+            <name>cadena_texto</name>
+            <value>"Esto es una cadena de texto"</value>
+        </field>
+    </row>
+</Table>

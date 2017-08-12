@@ -1,0 +1,190 @@
+options{
+	LOOKAHEAD = 1;
+	STATIC = false;
+	IGNORE_CASE = true;
+	OUTPUT_DIRECTORY = "analizador/";
+}
+
+PARSER_BEGIN(ParserXML)
+	public class ParserXML{
+		public static void main(String[] args) throws ParseException{
+				try{
+					ParserXML parser = new ParserXML(System.in);
+					parser.INI();
+				}catch(ParseException pe){
+					System.err.println("Error en el analisis...");
+					System.err.println(pe.getMessage());
+				}
+			}
+		}
+PARSER_END(ParserXML)
+
+
+
+SKIP :
+{
+	 " "
+	|"\n"
+	|"\t"
+	|"\r"
+}
+
+TOKEN :
+{
+	 <#letra: ["a" - "z"] >
+	|<#digito: ["0" - "9"]>
+}
+
+TOKEN :
+{
+	 <_text: "Text">
+	|<_integer: "Integer">
+	|<_double: "Double">
+	|<_bool: "Bool">
+	|<_date: "Date">
+	|<_datetime: "DateTime">
+}
+
+TOKEN :
+{
+	 <entero: (("-")? <digito>)+ >
+	|<doble: (("-")? <digito>)+ "." (<digito>)+>
+	|<booleano: "true" | "false" >
+	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
+	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
+	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	|<id: <letra> (<letra> | <digito> | "_")* >
+	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
+}
+
+
+void INI() : {}
+{
+	FILE() <EOF>
+	//<path> <EOF>
+}
+
+void FILE() : {}
+{
+	 MASTER()
+	|DB()
+	|TABLE()
+	|METHOD()
+	|OBJECT()
+}
+
+/**************************************************************************************************************
+MASTER
+**************************************************************************************************************/
+void MASTER() : {}
+{
+	"<Master>"
+		( L_DB() )+
+	"</Master>"
+}
+
+void L_DB() : {}
+{
+	"<db>"
+		"<name>" <id> "</name>"
+		"<path>" <path> "</path>"
+	"</db>"
+}
+
+/**************************************************************************************************************
+DB
+**************************************************************************************************************/
+void DB() : {}
+{
+	"<DataBase>"
+		"<procedures>"
+			"<path>" <path> "</path>"
+		"</procedures>"
+		"<objects>"
+			"<path>" <path> "</path>"
+		"</objects>"
+		( DB_TABLE() )+
+	"</DataBase>"
+}
+
+void DB_TABLE() : {}
+{
+	"<table>"
+		"<name>" <id> "</name>"
+		"<path>" <path> "</path>"
+		"<rows>"
+			( ROWSDEF() )+
+		"</rows>"
+	"</table>"
+}
+
+void ROWSDEF() : {}
+{
+	"<row>"
+		"<type>" TIPO() "</type>"
+		"<name>" <id> "</name>"
+	"</row>"
+}
+
+
+/**************************************************************************************************************
+TABLE
+**************************************************************************************************************/
+void TABLE() : {}
+{
+	"<Table>"
+		( ROW() )+
+	"</Table>"
+}
+
+void ROW() : {}
+{
+	"<row>"
+		( FIELD() )+
+	"</row>"
+}
+
+void FIELD() : {}
+{
+	"<name>" <id> "</name>"
+	"<value>" VALUE() "</value>"
+}
+/**************************************************************************************************************
+METHOD
+**************************************************************************************************************/
+void METHOD() : {}
+{
+	"<Method>" "</Method>"
+}
+
+/**************************************************************************************************************
+OBJECT
+**************************************************************************************************************/
+void OBJECT() : {}
+{
+	"<Object>" "</Object>"
+}
+
+
+/**************************************************************************************************************
+COMUN
+**************************************************************************************************************/
+void TIPO() : {}
+{
+	 <_text>
+	|<_integer>
+	|<_double>
+	|<_bool>
+	|<_date>
+	|<_datetime>
+}
+
+void VALUE() : {}
+{
+	 <cadena>
+	|<entero>
+	|<doble>
+	|<booleano>
+	|<fecha>
+	|<fecha_hora>
+}
