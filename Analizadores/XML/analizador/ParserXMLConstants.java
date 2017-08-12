@@ -37,9 +37,11 @@ public interface ParserXMLConstants {
   /** RegularExpression Id. */
   int cadena = 18;
   /** RegularExpression Id. */
-  int id = 19;
+  int codigo = 19;
   /** RegularExpression Id. */
-  int path = 20;
+  int id = 20;
+  /** RegularExpression Id. */
+  int path = 21;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -65,22 +67,23 @@ public interface ParserXMLConstants {
     "<fecha>",
     "<fecha_hora>",
     "<cadena>",
+    "<codigo>",
     "<id>",
     "<path>",
-    "\"<Master>\"",
-    "\"</Master>\"",
+    "\"<MasterFile>\"",
+    "\"</MasterFile>\"",
     "\"<db>\"",
     "\"<name>\"",
     "\"</name>\"",
     "\"<path>\"",
     "\"</path>\"",
     "\"</db>\"",
-    "\"<DataBase>\"",
+    "\"<DataBaseFile>\"",
     "\"<procedures>\"",
     "\"</procedures>\"",
     "\"<objects>\"",
     "\"</objects>\"",
-    "\"</DataBase>\"",
+    "\"</DataBaseFile>\"",
     "\"<table>\"",
     "\"<rows>\"",
     "\"</rows>\"",
@@ -89,14 +92,30 @@ public interface ParserXMLConstants {
     "\"<type>\"",
     "\"</type>\"",
     "\"</row>\"",
-    "\"<Table>\"",
-    "\"</Table>\"",
+    "\"<TableFile>\"",
+    "\"</TableFile>\"",
+    "\"<field>\"",
     "\"<value>\"",
     "\"</value>\"",
-    "\"<Method>\"",
-    "\"</Method>\"",
-    "\"<Object>\"",
-    "\"</Object>\"",
+    "\"</field>\"",
+    "\"<MethodFile>\"",
+    "\"</MethodFile>\"",
+    "\"<method>\"",
+    "\"<arguments>\"",
+    "\"</arguments>\"",
+    "\"<src>\"",
+    "\"</src>\"",
+    "\"</method>\"",
+    "\"<argument>\"",
+    "\"</argument>\"",
+    "\"<ObjectFile>\"",
+    "\"</ObjectFile>\"",
+    "\"<object>\"",
+    "\"<attributes>\"",
+    "\"</attributes>\"",
+    "\"</object>\"",
+    "\"<attribute>\"",
+    "\"</attribute>\"",
   };
 
 }

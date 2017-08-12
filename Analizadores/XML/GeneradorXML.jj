@@ -53,6 +53,7 @@ TOKEN :
 	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
 	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
 	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	|<codigo: ("\'") (~["\'"])* ("\'") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
 }
@@ -78,9 +79,9 @@ MASTER
 **************************************************************************************************************/
 void MASTER() : {}
 {
-	"<Master>"
+	"<MasterFile>"
 		( L_DB() )+
-	"</Master>"
+	"</MasterFile>"
 }
 
 void L_DB() : {}
@@ -96,7 +97,7 @@ DB
 **************************************************************************************************************/
 void DB() : {}
 {
-	"<DataBase>"
+	"<DataBaseFile>"
 		"<procedures>"
 			"<path>" <path> "</path>"
 		"</procedures>"
@@ -104,7 +105,7 @@ void DB() : {}
 			"<path>" <path> "</path>"
 		"</objects>"
 		( DB_TABLE() )+
-	"</DataBase>"
+	"</DataBaseFile>"
 }
 
 void DB_TABLE() : {}
@@ -132,9 +133,9 @@ TABLE
 **************************************************************************************************************/
 void TABLE() : {}
 {
-	"<Table>"
+	"<TableFile>"
 		( ROW() )+
-	"</Table>"
+	"</TableFile>"
 }
 
 void ROW() : {}
@@ -146,15 +147,40 @@ void ROW() : {}
 
 void FIELD() : {}
 {
-	"<name>" <id> "</name>"
-	"<value>" VALUE() "</value>"
+	"<field>"
+		"<name>" <id> "</name>"
+		"<value>" VALUE() "</value>"
+	"</field>"
 }
 /**************************************************************************************************************
 METHOD
 **************************************************************************************************************/
 void METHOD() : {}
 {
-	"<Method>" "</Method>"
+	"<MethodFile>"
+		( METODO() )*
+	"</MethodFile>"
+}
+
+void METODO() : {}
+{
+	"<method>"
+		"<name>" <id> "</name>"
+		"<arguments>"
+			( ARGUMENTS() )*
+		"</arguments>"
+		"<src>"
+			<codigo>
+		"</src>"
+	"</method>"
+}
+
+void ARGUMENTS() : {}
+{
+	"<argument>"
+		"<type>" TIPO() "</type>"
+		"<name>" <id> "</name>"
+	"</argument>"
 }
 
 /**************************************************************************************************************
@@ -162,10 +188,28 @@ OBJECT
 **************************************************************************************************************/
 void OBJECT() : {}
 {
-	"<Object>" "</Object>"
+	"<ObjectFile>"
+		( OBJETO() )*
+	"</ObjectFile>"
 }
 
+void OBJETO() : {}
+{
+	"<object>"
+		"<name>" <id> "</name>"
+		"<attributes>"
+			( ATTRIBUTES() )*
+		"</attributes>"
+	"</object>"
+}
 
+void ATTRIBUTES() : {}
+{
+	"<attribute>"
+		"<type>" TIPO() "</type>"
+		"<name>" <id> "</name>"
+	"</attribute>"
+}
 /**************************************************************************************************************
 COMUN
 **************************************************************************************************************/
