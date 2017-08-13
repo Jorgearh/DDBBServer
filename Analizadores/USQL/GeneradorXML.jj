@@ -1,0 +1,63 @@
+options{
+	LOOKAHEAD = 1;
+	STATIC = false;
+	IGNORE_CASE = true;
+	OUTPUT_DIRECTORY = "analizador/";
+}
+
+PARSER_BEGIN(ParserUSQL)
+	public class ParserUSQL{
+		public static void main(String[] args) throws ParseException{
+				try{
+					ParserUSQL parser = new ParserUSQL(System.in);
+					parser.INI();
+				}catch(ParseException pe){
+					System.err.println("Error en el analisis...");
+					System.err.println(pe.getMessage());
+				}
+			}
+		}
+PARSER_END(ParserUSQL)
+
+SKIP :
+{
+	 " "
+	|"\n"
+	|"\t"
+	|"\r"
+}
+
+TOKEN :
+{
+	 <#letra: ["a" - "z"] >
+	|<#digito: ["0" - "9"]>
+}
+
+TOKEN :
+{
+	 <_text: "Text">
+	|<_integer: "Integer">
+	|<_double: "Double">
+	|<_bool: "Bool">
+	|<_date: "Date">
+	|<_datetime: "DateTime">
+}
+
+TOKEN :
+{
+	 <entero: (("-")? <digito>)+ >
+	|<doble: (("-")? <digito>)+ "." (<digito>)+>
+	|<booleano: "true" | "false" >
+	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
+	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
+	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	|<id: <letra> (<letra> | <digito> | "_")* >
+	|<var: "@"<id>>
+	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
+}
+
+
+void INI() : {}
+{
+	FILE() <EOF>
+}
