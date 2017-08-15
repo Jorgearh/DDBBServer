@@ -51,6 +51,75 @@ TOKEN :
 
 TOKEN :
 {
+	 <crear: "CREAR">
+	|<usar: "USAR">
+	|<alterar: "ALTERAR">
+	|<eliminar: "ELIMINAR">
+
+	|<base_datos: "BASE_DATOS">
+	|<tabla: "TABLA">
+	|<objeto: "OBJETO">
+	|<procedimiento: "PROCEDIMIENTO">
+	|<funcion: "FUNCION">
+	|<usuario: "USUARIO">
+
+	|<nulo: "Nulo">
+	|<no_nulo: "No Nulo">
+	|<llave_primaria: "Llave_primaria">
+	|<llave_foranea: "Llave_foranea">
+	|<unico: "Unico">
+	|<autoincrementable: "Autoincrementable">
+
+	|<colocar: "COLOCAR">
+	|<password: "password">
+	|<quitar: "QUITAR">
+	|<agregar: "AGREGAR">
+	|<cambiar: "CAMBIAR">
+
+	|<insertar: "INSERTAR">
+	|<seleccionar: "SELECCIONAR">
+	|<actualizar: "ACTUALIZAR">
+	|<borrar: "BORRAR">
+
+	|<en: "EN">
+	|<de: "DE">
+	|<donde: "DONDE">
+	|<valores: "VALORES">
+	|<ordenar: "ORDENAR">
+	|<por: "POR">
+	|<asc: "ASC">
+	|<desc: "DESC">
+
+	|<otorgar: "OTORGAR">
+	|<denegar: "DENEGAR">
+	|<permisos: "PERMISOS">
+
+	|<backup: "BACKUP">
+	|<restaurar: "RESTAURAR">
+	|<usqldump: "USQLDUMP">
+	|<completo: "COMPLETO">
+
+	|<declarar: "DECLARAR">
+	|<si: "SI">
+	|<sino: "SINO">
+	|<para: "PARA">
+	|<selecciona: "SELECCIONA">
+	|<caso: "CASO">
+	|<defecto: "DEFECTO">
+	|<mientras: "MIENTRAS">
+	|<detener: "DETENER">
+	|<retorno: "RETORNO">
+	|<contar: "CONTAR">
+	|<imprimir: "IMPRIMIR">
+	|<get_fecha: "FECHA">
+	|<get_fecha_hora: "FECHA_HORA">
+
+
+
+}
+
+TOKEN :
+{
 	 <entero: (("-")? <digito>)+ >
 	|<doble: (("-")? <digito>)+ "." (<digito>)+>
 	|<booleano: "true" | "false" >
@@ -79,7 +148,7 @@ void SENTENCIA_USQL() : {}
 	|DML()
 	|DCL()
 
-	|CALL()////
+	|CALL()
 	|SSL_IMPRIMIR()
 }
 
@@ -89,10 +158,10 @@ void SENTENCIA_USQL() : {}
 **************************************************************************************************************/
 void DDL() : {}
 {
-	 "CREAR" DDL_CREATE()
-	|"USAR" <id>
-	|"ALTERAR" DDL_ALTER()
-	|"ELIMINAR" USQL_OBJECT_NAME() <id>
+	 <crear> DDL_CREATE()
+	|<usar> <id>
+	|<alterar> DDL_ALTER()
+	|<eliminar> USQL_OBJECT_NAME() <id>
 }
 
 
@@ -114,7 +183,7 @@ void DDL_CREATE() : {}
 **************************************************************************************************************/
 void DDL_CREATE_DB() : {}
 {
-	"BASE_DATOS" <id>
+	<base_datos> <id>
 }
 
 /**************************************************************************************************************
@@ -122,7 +191,7 @@ void DDL_CREATE_DB() : {}
 **************************************************************************************************************/
 void DDL_CREATE_TABLE() : {}
 {
-	"TABLA" <id> "(" L_DEC_CAMPO() ")"
+	<tabla> <id> "(" L_DEC_CAMPO() ")"
 }
 
 void L_DEC_CAMPO() : {}
@@ -140,7 +209,7 @@ void DEC_CAMPO() : {}
 **************************************************************************************************************/
 void DDL_CREATE_OBJECT() : {}
 {
-	"OBJETO" <id> "(" L_DEC_ATR() ")"
+	<objeto> <id> "(" L_DEC_ATR() ")"
 }
 
 void L_DEC_ATR() : {}
@@ -158,7 +227,7 @@ void DEC_ATRIBUTO() : {}
 **************************************************************************************************************/
 void DDL_CREATE_PROC() : {}
 {
-	"PROCEDIMIENTO" <id> "(" [ L_ARG() ] ")" CUERPO()
+	<procedimiento> <id> "(" [ L_ARG() ] ")" CUERPO()
 }
 
 /**************************************************************************************************************
@@ -166,7 +235,7 @@ void DDL_CREATE_PROC() : {}
 **************************************************************************************************************/
 void DDL_CREATE_FUNC() : {}
 {
-	"FUNCION" <id> "(" [ L_ARG() ] ")" TIPO_DATO() CUERPO()
+	<funcion> <id> "(" [ L_ARG() ] ")" TIPO_DATO() CUERPO()
 }
 
 /**************************************************************************************************************
@@ -174,7 +243,7 @@ void DDL_CREATE_FUNC() : {}
 **************************************************************************************************************/
 void DDL_CREATE_USER() : {}
 {
-	"USUARIO" <id> "COLOCAR" "password" "=" <cadena>
+	<usuario> <id> <colocar> <password> "=" <cadena>
 }
 
 
@@ -193,24 +262,24 @@ void DDL_ALTER() : {}
 **************************************************************************************************************/
 void DDL_ALTER_TABLE() : {}
 {
-	"TABLA" <id> ( ADD() | QUIT() )
+	<tabla> <id> ( ADD() | QUIT() )
 }
 
 void ADD() : {}
 {
-	"AGREGAR" "(" L_DEC_CAMPO() ")"
+	<agregar> "(" L_DEC_CAMPO() ")"
 }
 
 void QUIT() : {}
 {
-	"QUITAR" L_ID()
+	<quitar> L_ID()
 }
 /**************************************************************************************************************
 					SENTENCIAS_USQL DDL ALTER OBJECT
 **************************************************************************************************************/
 void DDL_ALTER_OBJECT() : {}
 {
-	"OBJETO" <id> ( ADD() | QUIT() )
+	<objeto> <id> ( ADD() | QUIT() )
 }
 
 /**************************************************************************************************************
@@ -218,7 +287,7 @@ void DDL_ALTER_OBJECT() : {}
 **************************************************************************************************************/
 void DDL_ALTER_USER() : {}
 {
-	"USUARIO" <id> "CAMBIAR" "pasword" "=" <cadena>
+	<usuario> <id> <cambiar> <password> "=" <cadena>
 }
 
 
@@ -240,15 +309,16 @@ void DML() : {}
 **************************************************************************************************************/
 void DML_INSERT() : {}
 {
-	"INSERTAR" "EN" "TABLA" <id> ["(" L_ID() ")" "VALORES" ] "(" L_VAL() ")"
+	<insertar> <en> <tabla> <id>  ["(" L_ID() ")" <valores> ] "(" L_VAL() ")"
 }
+
 
 /**************************************************************************************************************
 			SENTENCIAS_USQL DML UPDATE
 **************************************************************************************************************/
 void DML_UPDATE() : {}
 {
-	"ACTUALIZAR" "TABLA" <id> "(" L_ID() ")" "VALORES" "(" L_VAL() ")" [ "DONDE" /*COND()*/ ]
+	<actualizar> <tabla> <id> "(" L_ID() ")" <valores> "(" L_VAL() ")" [ <donde> /*COND()*/ ]
 }
 
 /**************************************************************************************************************
@@ -256,7 +326,7 @@ void DML_UPDATE() : {}
 **************************************************************************************************************/
 void DML_DELETE() : {}
 {
-	"BORRAR" "EN" "TABLA" <id> 	[ "DONDE" /*COND()*/ ]
+	<borrar> <en> <tabla> <id> 	[ <donde> /*COND()*/ ]
 }
 
 /**************************************************************************************************************
@@ -264,7 +334,7 @@ void DML_DELETE() : {}
 **************************************************************************************************************/
 void DML_SELECT() : {}
 {
-	"SELECCIONAR" ( L_ID() | "*" ) "DE" L_ID() [ "DONDE" /*COND()*/ [ "ORDENAR" "POR" ("ASC" | "DESC") ] ]
+	<seleccionar> ( L_ID() | "*" ) <de> L_ID() [ <donde> /*COND()*/ [ <ordenar> <por> (<asc> | <desc>) ] ]
 }
 
 
@@ -284,7 +354,7 @@ void DCL() : {}
 **************************************************************************************************************/
 void DCL_OTORGAR() : {}
 {
-	"OTORGAR" "PERMISOS" <id> "," <id> "." ( <id> | "*" )
+	<otorgar> <permisos> <id> "," <id> "." ( <id> | "*" )
 }
 
 /**************************************************************************************************************
@@ -292,7 +362,7 @@ void DCL_OTORGAR() : {}
 **************************************************************************************************************/
 void DCL_DENEGAR() : {}
 {
-	"DENEGAR" "PERMISOS" <id> "," <id> "." ( <id> | "*" )
+	<denegar> <permisos> <id> "," <id> "." ( <id> | "*" )
 }
 
 
@@ -303,12 +373,7 @@ void DCL_DENEGAR() : {}
 	SENTENCIAS_USQL SSL
 **************************************************************************************************************/
 
-void SENTENCIAS_SSL() : {}
-{
-	( SENTENCIA_SSL())*
-}
-
-void SENTENCIA_SSL() : {}
+void SSL() : {}
 {
 	 SSL_DEC_VAR_OBJ() ";"
 	|SSL_ASG_VAR_ATR() ";"
@@ -331,7 +396,7 @@ void SENTENCIA_SSL() : {}
 **************************************************************************************************************/
 void SSL_DEC_VAR_OBJ() : {}
 {
-	"DECLARAR" L_VAR() ( TIPO_DATO() [ "=" EXPRESION() ] | <id>)
+	<declarar> L_VAR() ( TIPO_DATO() [ "=" EXPRESION() ] | <id>)
 }
 
 /**************************************************************************************************************
@@ -347,7 +412,7 @@ void SSL_ASG_VAR_ATR() : {}
 **************************************************************************************************************/
 void SSL_SI() : {}
 {
-	"SI" CONDICION() CUERPO() [ "SINO" CUERPO()]
+	<si> CONDICION() CUERPO() [ <sino> CUERPO()]
 }
 
 /**************************************************************************************************************
@@ -355,7 +420,7 @@ void SSL_SI() : {}
 **************************************************************************************************************/
 void SSL_SELECCIONA() : {}
 {
-	"SELECCIONA" "(" EXPRESION() ")" "{" L_CASO() [ "DEFECTO" ":" SENTENCIAS_METHOD_USQL() ] "}"
+	<selecciona> "(" EXPRESION() ")" "{" L_CASO() [ <defecto> ":" INSTRUCCIONES() ] "}"
 }
 
 void L_CASO() : {}
@@ -365,7 +430,7 @@ void L_CASO() : {}
 
 void CASO() : {}
 {
-	"CASO" VAL_CASO() ":" SENTENCIAS_METHOD_USQL()
+	<caso> VAL_CASO() ":" INSTRUCCIONES()
 }
 
 void VAL_CASO() : {}
@@ -380,7 +445,7 @@ void VAL_CASO() : {}
 **************************************************************************************************************/
 void SSL_PARA() : {}
 {
-	"PARA" "(" "DECLARAR" <var> <_integer> "=" EXPRESION() ";" COND() ";" ( "++" | "--" ) ")" CUERPO()
+	<para> "(" <declarar> <var> <_integer> "=" EXPRESION() ";" COND() ";" ( "++" | "--" ) ")" CUERPO()
 }
 
 /**************************************************************************************************************
@@ -388,7 +453,7 @@ void SSL_PARA() : {}
 **************************************************************************************************************/
 void SSL_MIENTRAS() : {}
 {
-	"MIENTRAS" CONDICION() CUERPO()
+	<mientras> CONDICION() CUERPO()
 }
 
 /**************************************************************************************************************
@@ -396,7 +461,7 @@ void SSL_MIENTRAS() : {}
 **************************************************************************************************************/
 void SSL_DETENER() : {}
 {
-	"DETENER"
+	<detener>
 }
 
 /**************************************************************************************************************
@@ -404,7 +469,7 @@ void SSL_DETENER() : {}
 **************************************************************************************************************/
 void SSL_RETORNO() : {}
 {
-	"RETORNO" EXPRESION()
+	<retorno> EXPRESION()
 }
 
 
@@ -413,7 +478,7 @@ void SSL_RETORNO() : {}
 **************************************************************************************************************/
 void SSL_IMPRIMIR() : {}
 {
-	"IMPRIMIR" "(" EXPRESION() ")"
+	<imprimir> "(" EXPRESION() ")"
 }
 
 /**************************************************************************************************************
@@ -421,7 +486,7 @@ void SSL_IMPRIMIR() : {}
 **************************************************************************************************************/
 void SSL_FECHA() : {}
 {
-	"FECHA" "(" ")"
+	<get_fecha> "(" ")"
 }
 
 /**************************************************************************************************************
@@ -429,7 +494,7 @@ void SSL_FECHA() : {}
 **************************************************************************************************************/
 void SSL_FECHA_HORA() : {}
 {
-	"FECHA_HORA" "(" ")"
+	<get_fecha_hora> "(" ")"
 }
 
 /**************************************************************************************************************
@@ -437,7 +502,7 @@ void SSL_FECHA_HORA() : {}
 **************************************************************************************************************/
 void SSL_CONTAR() : {}
 {
-	"CONTAR" "(" "<<" DML_SELECT() ">>" ")"
+	<contar> "(" "<<" DML_SELECT() ">>" ")"
 }
 
 
@@ -447,7 +512,7 @@ void SSL_CONTAR() : {}
 **************************************************************************************************************/
 void BACKUP() : {}
 {
-	"BACKUP" ( "USQLDUMP" | "COMPLETO" ) <id> <id> ";"
+	<backup> ( <usqldump> | <completo> ) <id> <id> ";"
 }
 
 /**************************************************************************************************************
@@ -455,7 +520,7 @@ void BACKUP() : {}
 **************************************************************************************************************/
 void RESTAURAR() : {}
 {
-	"RESTAURAR" ( "USQLDUMP" | "COMPLETO" ) <cadena>
+	<restaurar> ( <usqldump> | <completo> ) <cadena>
 }
 
 
@@ -538,14 +603,19 @@ void CONDICION() : {}
 
 void CUERPO() : {}
 {
-	"{" SENTENCIAS_METHOD_USQL() "}"
+	"{" INSTRUCCIONES() "}"
 }
 
 
-void SENTENCIAS_METHOD_USQL() : {}
+void INSTRUCCIONES() : {}
 {
-	  DML()
-	 |SSL()
+	  ( INSTRUCCION() )*
+}
+
+void INSTRUCCION() : {}
+{
+	DML()
+   |SSL()
 }
 
 void L_ARG() : {}
@@ -586,10 +656,10 @@ void L_VAR() : {}
 
 void USQL_OBJECT_NAME() : {}
 {
-	 "TABLA"
-	|"BASE_DATOS"
-	|"OBJETO"
-	|"USER"
+	 <tabla>
+	|<base_datos>
+	|<objeto>
+	|<usuario>
 }
 
 void TIPO_DATO() : {}
@@ -604,12 +674,12 @@ void TIPO_DATO() : {}
 
 void COMPLEMENTO_CAMPO() : {}
 {
-	 "Nulo"
-	|"No Nulo"
-	|"Autoincrementable"
-	|"Llave_Primaria"
-	|"Llave_Foranea"
-	|"Unico"
+	 <nulo>
+	|<no_nulo>
+	|<autoincrementable>
+	|<llave_primaria>
+	|<llave_foranea>
+	|<unico>
 }
 
 void OPREL() : {}
