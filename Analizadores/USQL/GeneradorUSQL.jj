@@ -1,5 +1,4 @@
 options{
-	LOOKAHEAD = 1;
 	STATIC = false;
 	IGNORE_CASE = true;
 	OUTPUT_DIRECTORY = "analizador/";
@@ -309,7 +308,7 @@ void DML() : {}
 **************************************************************************************************************/
 void DML_INSERT() : {}
 {
-	<insertar> <en> <tabla> <id>  ["(" L_ID() ")" <valores> ] "(" L_VAL() ")"
+	<insertar> <en> <tabla> <id>  [LOOKAHEAD(2) "(" L_ID() ")" <valores> ] "(" L_VAL() ")"
 }
 
 
@@ -579,7 +578,7 @@ void AR_B() : {}
 {
 	 "(" EXPRESION() ")"
 	|VAL()
-	|<id>
+	|LOOKAHEAD(2)<id>
 	|<var> [ "." <id> ]
 	|CALL()
 	|SSL_FECHA()
@@ -625,7 +624,7 @@ void L_ARG() : {}
 
 void ARG() : {}
 {
-	TIPO_DATO() <var>
+	( TIPO_DATO() | <id> ) <var>
 }
 
 
@@ -678,7 +677,7 @@ void COMPLEMENTO_CAMPO() : {}
 	|<no_nulo>
 	|<autoincrementable>
 	|<llave_primaria>
-	|<llave_foranea>
+	|<llave_foranea> <id> <id>
 	|<unico>
 }
 
