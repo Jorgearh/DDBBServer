@@ -24,20 +24,46 @@ SKIP :
 	|"\n"
 	|"\t"
 	|"\r"
+	|"\f"
 }
 
+/* COMMENTS */
+
+MORE :
+{
+	 "#" : IN_SINGLE_LINE_COMMENT
+	|"#*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
 SPECIAL_TOKEN :
 {
-	 <SINGLE_LINE_COMMENT: "#" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-	|<MULTI_LINE_COMMENT: "#*" (~[]) "*#">
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
 }
 
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*#" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+
+
+
+/*Expresiones Regulares Privadas*/
 TOKEN :
 {
 	 <#letra: ["a" - "z"] >
 	|<#digito: ["0" - "9"]>
 }
 
+/*Nombres de Tipos de Datos*/
 TOKEN :
 {
 	 <_text: "Text">
@@ -48,6 +74,7 @@ TOKEN :
 	|<_datetime: "DateTime">
 }
 
+/*Palabras Reservadas*/
 TOKEN :
 {
 	 <crear: "CREAR">
@@ -117,6 +144,7 @@ TOKEN :
 
 }
 
+/*Expresiones Regulares para Tokens*/
 TOKEN :
 {
 	 <entero: (("-")? <digito>)+ >
@@ -149,6 +177,9 @@ void SENTENCIA_USQL() : {}
 
 	|CALL()
 	|SSL_IMPRIMIR()
+
+	|BACKUP()
+	|RESTAURAR()
 }
 
 
@@ -200,7 +231,7 @@ void L_DEC_CAMPO() : {}
 
 void DEC_CAMPO() : {}
 {
-	TIPO_DATO() <id> ( COMPLEMENTO_CAMPO() )*
+	TIPO_DATO_EXT() <id> ( COMPLEMENTO_CAMPO() )*
 }
 
 /**************************************************************************************************************
@@ -234,7 +265,7 @@ void DDL_CREATE_PROC() : {}
 **************************************************************************************************************/
 void DDL_CREATE_FUNC() : {}
 {
-	<funcion> <id> "(" [ L_ARG() ] ")" TIPO_DATO() CUERPO()
+	<funcion> <id> "(" [ L_ARG() ] ")" TIPO_DATO_EXT() CUERPO()
 }
 
 /**************************************************************************************************************
@@ -308,7 +339,7 @@ void DML() : {}
 **************************************************************************************************************/
 void DML_INSERT() : {}
 {
-	<insertar> <en> <tabla> <id>  [LOOKAHEAD(2) "(" L_ID() ")" <valores> ] "(" L_VAL() ")"
+	<insertar> <en> <tabla> <id>  [LOOKAHEAD(2) "(" L_ID() ")" <valores> ] "(" L_EXP() ")"
 }
 
 
@@ -317,7 +348,7 @@ void DML_INSERT() : {}
 **************************************************************************************************************/
 void DML_UPDATE() : {}
 {
-	<actualizar> <tabla> <id> "(" L_ID() ")" <valores> "(" L_VAL() ")" [ <donde> /*COND()*/ ]
+	<actualizar> <tabla> <id> "(" L_ID() ")" <valores> "(" L_EXP() ")" [ <donde> COND() ]
 }
 
 /**************************************************************************************************************
@@ -325,7 +356,7 @@ void DML_UPDATE() : {}
 **************************************************************************************************************/
 void DML_DELETE() : {}
 {
-	<borrar> <en> <tabla> <id> 	[ <donde> /*COND()*/ ]
+	<borrar> <en> <tabla> <id> 	[ <donde> COND() ]
 }
 
 /**************************************************************************************************************
@@ -333,7 +364,7 @@ void DML_DELETE() : {}
 **************************************************************************************************************/
 void DML_SELECT() : {}
 {
-	<seleccionar> ( L_ID() | "*" ) <de> L_ID() [ <donde> /*COND()*/ [ <ordenar> <por> (<asc> | <desc>) ] ]
+	<seleccionar> ( L_ID() | "*" ) <de> L_ID() [ <donde> COND() [ <ordenar> <por> (<asc> | <desc>) ] ]
 }
 
 
@@ -511,7 +542,7 @@ void SSL_CONTAR() : {}
 **************************************************************************************************************/
 void BACKUP() : {}
 {
-	<backup> ( <usqldump> | <completo> ) <id> <id> ";"
+	<backup> ( <usqldump> | <completo> ) <id> <id>
 }
 
 /**************************************************************************************************************
@@ -577,18 +608,19 @@ void AR_POW() : {}
 void AR_B() : {}
 {
 	 "(" EXPRESION() ")"
-	|VAL()
-	|LOOKAHEAD(2)<id>
+	|LOOKAHEAD(2) VAL()
 	|<var> [ "." <id> ]
-	|CALL()
+	|LOOKAHEAD(3)CALL()
+	|<id>
 	|SSL_FECHA()
 	|SSL_FECHA_HORA()
 	|SSL_SELECCIONA()
+	|SSL_CONTAR()
 }
 
 void CALL() : {}
 {
-	<id> "(" [ L_VAL() ] ")"
+	<id> "(" [ L_EXP() ] ")"
 }
 
 /**************************************************************************************************************
@@ -613,7 +645,7 @@ void INSTRUCCIONES() : {}
 
 void INSTRUCCION() : {}
 {
-	DML()
+	DML() ";"
    |SSL()
 }
 
@@ -646,11 +678,17 @@ void VAL() : {}
 	|<cadena>
 	|<fecha>
 	|<fecha_hora>
+	|<var>
 }
 
 void L_VAR() : {}
 {
 	<var> ( "," <var> )*
+}
+
+void L_EXP() : {}
+{
+	EXPRESION() ( "," EXPRESION() )*
 }
 
 void USQL_OBJECT_NAME() : {}
@@ -669,6 +707,12 @@ void TIPO_DATO() : {}
 	|<_bool>
 	|<_date>
 	|<_datetime>
+}
+
+void TIPO_DATO_EXT() : {}
+{
+	TIPO_DATO()
+	|<id>
 }
 
 void COMPLEMENTO_CAMPO() : {}

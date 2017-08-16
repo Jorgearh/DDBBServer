@@ -9,154 +9,158 @@ public interface ParserUSQLConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int SINGLE_LINE_COMMENT = 5;
+  int SINGLE_LINE_COMMENT = 8;
   /** RegularExpression Id. */
-  int MULTI_LINE_COMMENT = 6;
+  int MULTI_LINE_COMMENT = 9;
   /** RegularExpression Id. */
-  int letra = 7;
+  int letra = 11;
   /** RegularExpression Id. */
-  int digito = 8;
+  int digito = 12;
   /** RegularExpression Id. */
-  int _text = 9;
+  int _text = 13;
   /** RegularExpression Id. */
-  int _integer = 10;
+  int _integer = 14;
   /** RegularExpression Id. */
-  int _double = 11;
+  int _double = 15;
   /** RegularExpression Id. */
-  int _bool = 12;
+  int _bool = 16;
   /** RegularExpression Id. */
-  int _date = 13;
+  int _date = 17;
   /** RegularExpression Id. */
-  int _datetime = 14;
+  int _datetime = 18;
   /** RegularExpression Id. */
-  int crear = 15;
+  int crear = 19;
   /** RegularExpression Id. */
-  int usar = 16;
+  int usar = 20;
   /** RegularExpression Id. */
-  int alterar = 17;
+  int alterar = 21;
   /** RegularExpression Id. */
-  int eliminar = 18;
+  int eliminar = 22;
   /** RegularExpression Id. */
-  int base_datos = 19;
+  int base_datos = 23;
   /** RegularExpression Id. */
-  int tabla = 20;
+  int tabla = 24;
   /** RegularExpression Id. */
-  int objeto = 21;
+  int objeto = 25;
   /** RegularExpression Id. */
-  int procedimiento = 22;
+  int procedimiento = 26;
   /** RegularExpression Id. */
-  int funcion = 23;
+  int funcion = 27;
   /** RegularExpression Id. */
-  int usuario = 24;
+  int usuario = 28;
   /** RegularExpression Id. */
-  int nulo = 25;
+  int nulo = 29;
   /** RegularExpression Id. */
-  int no_nulo = 26;
+  int no_nulo = 30;
   /** RegularExpression Id. */
-  int llave_primaria = 27;
+  int llave_primaria = 31;
   /** RegularExpression Id. */
-  int llave_foranea = 28;
+  int llave_foranea = 32;
   /** RegularExpression Id. */
-  int unico = 29;
+  int unico = 33;
   /** RegularExpression Id. */
-  int autoincrementable = 30;
+  int autoincrementable = 34;
   /** RegularExpression Id. */
-  int colocar = 31;
+  int colocar = 35;
   /** RegularExpression Id. */
-  int password = 32;
+  int password = 36;
   /** RegularExpression Id. */
-  int quitar = 33;
+  int quitar = 37;
   /** RegularExpression Id. */
-  int agregar = 34;
+  int agregar = 38;
   /** RegularExpression Id. */
-  int cambiar = 35;
+  int cambiar = 39;
   /** RegularExpression Id. */
-  int insertar = 36;
+  int insertar = 40;
   /** RegularExpression Id. */
-  int seleccionar = 37;
+  int seleccionar = 41;
   /** RegularExpression Id. */
-  int actualizar = 38;
+  int actualizar = 42;
   /** RegularExpression Id. */
-  int borrar = 39;
+  int borrar = 43;
   /** RegularExpression Id. */
-  int en = 40;
+  int en = 44;
   /** RegularExpression Id. */
-  int de = 41;
+  int de = 45;
   /** RegularExpression Id. */
-  int donde = 42;
+  int donde = 46;
   /** RegularExpression Id. */
-  int valores = 43;
+  int valores = 47;
   /** RegularExpression Id. */
-  int ordenar = 44;
+  int ordenar = 48;
   /** RegularExpression Id. */
-  int por = 45;
+  int por = 49;
   /** RegularExpression Id. */
-  int asc = 46;
+  int asc = 50;
   /** RegularExpression Id. */
-  int desc = 47;
+  int desc = 51;
   /** RegularExpression Id. */
-  int otorgar = 48;
+  int otorgar = 52;
   /** RegularExpression Id. */
-  int denegar = 49;
+  int denegar = 53;
   /** RegularExpression Id. */
-  int permisos = 50;
+  int permisos = 54;
   /** RegularExpression Id. */
-  int backup = 51;
+  int backup = 55;
   /** RegularExpression Id. */
-  int restaurar = 52;
+  int restaurar = 56;
   /** RegularExpression Id. */
-  int usqldump = 53;
+  int usqldump = 57;
   /** RegularExpression Id. */
-  int completo = 54;
+  int completo = 58;
   /** RegularExpression Id. */
-  int declarar = 55;
+  int declarar = 59;
   /** RegularExpression Id. */
-  int si = 56;
+  int si = 60;
   /** RegularExpression Id. */
-  int sino = 57;
+  int sino = 61;
   /** RegularExpression Id. */
-  int para = 58;
+  int para = 62;
   /** RegularExpression Id. */
-  int selecciona = 59;
+  int selecciona = 63;
   /** RegularExpression Id. */
-  int caso = 60;
+  int caso = 64;
   /** RegularExpression Id. */
-  int defecto = 61;
+  int defecto = 65;
   /** RegularExpression Id. */
-  int mientras = 62;
+  int mientras = 66;
   /** RegularExpression Id. */
-  int detener = 63;
+  int detener = 67;
   /** RegularExpression Id. */
-  int retorno = 64;
+  int retorno = 68;
   /** RegularExpression Id. */
-  int contar = 65;
+  int contar = 69;
   /** RegularExpression Id. */
-  int imprimir = 66;
+  int imprimir = 70;
   /** RegularExpression Id. */
-  int get_fecha = 67;
+  int get_fecha = 71;
   /** RegularExpression Id. */
-  int get_fecha_hora = 68;
+  int get_fecha_hora = 72;
   /** RegularExpression Id. */
-  int entero = 69;
+  int entero = 73;
   /** RegularExpression Id. */
-  int doble = 70;
+  int doble = 74;
   /** RegularExpression Id. */
-  int booleano = 71;
+  int booleano = 75;
   /** RegularExpression Id. */
-  int fecha = 72;
+  int fecha = 76;
   /** RegularExpression Id. */
-  int fecha_hora = 73;
+  int fecha_hora = 77;
   /** RegularExpression Id. */
-  int cadena = 74;
+  int cadena = 78;
   /** RegularExpression Id. */
-  int id = 75;
+  int id = 79;
   /** RegularExpression Id. */
-  int var = 76;
+  int var = 80;
   /** RegularExpression Id. */
-  int path = 77;
+  int path = 81;
 
   /** Lexical state. */
   int DEFAULT = 0;
+  /** Lexical state. */
+  int IN_SINGLE_LINE_COMMENT = 1;
+  /** Lexical state. */
+  int IN_MULTI_LINE_COMMENT = 2;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -165,8 +169,12 @@ public interface ParserUSQLConstants {
     "\"\\n\"",
     "\"\\t\"",
     "\"\\r\"",
+    "\"\\f\"",
+    "\"#\"",
+    "\"#*\"",
     "<SINGLE_LINE_COMMENT>",
-    "<MULTI_LINE_COMMENT>",
+    "\"*#\"",
+    "<token of kind 10>",
     "<letra>",
     "<digito>",
     "\"Text\"",
