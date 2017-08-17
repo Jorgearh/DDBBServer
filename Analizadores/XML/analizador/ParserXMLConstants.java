@@ -78,6 +78,12 @@ public interface ParserXMLConstants {
     "\"<path>\"",
     "\"</path>\"",
     "\"</db>\"",
+    "\"<UsersFile>\"",
+    "\"</UsersFile>\"",
+    "\"<user>\"",
+    "\"<password>\"",
+    "\"</password>\"",
+    "\"</user>\"",
     "\"<DataBaseFile>\"",
     "\"<procedures>\"",
     "\"</procedures>\"",
@@ -116,6 +122,8 @@ public interface ParserXMLConstants {
     "\"</object>\"",
     "\"<attribute>\"",
     "\"</attribute>\"",
+    "\"<permissions>\"",
+    "\"</permissions>\"",
   };
 
 }

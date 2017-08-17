@@ -21,15 +21,18 @@
       MASTER();
       break;
     case 30:
+      USERS();
+      break;
+    case 36:
       DB();
       break;
-    case 44:
+    case 50:
       TABLE();
       break;
-    case 50:
+    case 56:
       METHOD();
       break;
-    case 60:
+    case 66:
       OBJECT();
       break;
     default:
@@ -71,25 +74,15 @@ MASTER
   }
 
 /**************************************************************************************************************
-DB
+USERS
 **************************************************************************************************************/
-  final public void DB() throws ParseException {
+  final public void USERS() throws ParseException {
     jj_consume_token(30);
-    jj_consume_token(31);
-    jj_consume_token(27);
-    jj_consume_token(path);
-    jj_consume_token(28);
-    jj_consume_token(32);
-    jj_consume_token(33);
-    jj_consume_token(27);
-    jj_consume_token(path);
-    jj_consume_token(28);
-    jj_consume_token(34);
     label_2:
     while (true) {
-      DB_TABLE();
+      USER();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 36:
+      case 32:
         ;
         break;
       default:
@@ -97,23 +90,45 @@ DB
         break label_2;
       }
     }
+    jj_consume_token(31);
+  }
+
+  final public void USER() throws ParseException {
+    jj_consume_token(32);
+    USERNAME();
+    jj_consume_token(33);
+    jj_consume_token(id);
+    jj_consume_token(34);
     jj_consume_token(35);
   }
 
-  final public void DB_TABLE() throws ParseException {
-    jj_consume_token(36);
+  final public void USERNAME() throws ParseException {
     jj_consume_token(25);
     jj_consume_token(id);
     jj_consume_token(26);
+  }
+
+/**************************************************************************************************************
+DB
+**************************************************************************************************************/
+  final public void DB() throws ParseException {
+    jj_consume_token(36);
+    PERMISSIONS();
+    jj_consume_token(37);
     jj_consume_token(27);
     jj_consume_token(path);
     jj_consume_token(28);
-    jj_consume_token(37);
+    jj_consume_token(38);
+    jj_consume_token(39);
+    jj_consume_token(27);
+    jj_consume_token(path);
+    jj_consume_token(28);
+    jj_consume_token(40);
     label_3:
     while (true) {
-      ROWSDEF();
+      DB_TABLE();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 40:
+      case 42:
         ;
         break;
       default:
@@ -121,31 +136,24 @@ DB
         break label_3;
       }
     }
-    jj_consume_token(38);
-    jj_consume_token(39);
+    jj_consume_token(41);
   }
 
-  final public void ROWSDEF() throws ParseException {
-    jj_consume_token(40);
-    jj_consume_token(41);
-    TIPO();
+  final public void DB_TABLE() throws ParseException {
     jj_consume_token(42);
+    PERMISSIONS();
     jj_consume_token(25);
     jj_consume_token(id);
     jj_consume_token(26);
+    jj_consume_token(27);
+    jj_consume_token(path);
+    jj_consume_token(28);
     jj_consume_token(43);
-  }
-
-/**************************************************************************************************************
-TABLE
-**************************************************************************************************************/
-  final public void TABLE() throws ParseException {
-    jj_consume_token(44);
     label_4:
     while (true) {
-      ROW();
+      ROWSDEF();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 40:
+      case 46:
         ;
         break;
       default:
@@ -153,14 +161,29 @@ TABLE
         break label_4;
       }
     }
+    jj_consume_token(44);
     jj_consume_token(45);
   }
 
-  final public void ROW() throws ParseException {
-    jj_consume_token(40);
+  final public void ROWSDEF() throws ParseException {
+    jj_consume_token(46);
+    jj_consume_token(47);
+    TIPO();
+    jj_consume_token(48);
+    jj_consume_token(25);
+    jj_consume_token(id);
+    jj_consume_token(26);
+    jj_consume_token(49);
+  }
+
+/**************************************************************************************************************
+TABLE
+**************************************************************************************************************/
+  final public void TABLE() throws ParseException {
+    jj_consume_token(50);
     label_5:
     while (true) {
-      FIELD();
+      ROW();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 46:
         ;
@@ -170,27 +193,14 @@ TABLE
         break label_5;
       }
     }
-    jj_consume_token(43);
+    jj_consume_token(51);
   }
 
-  final public void FIELD() throws ParseException {
+  final public void ROW() throws ParseException {
     jj_consume_token(46);
-    jj_consume_token(25);
-    jj_consume_token(id);
-    jj_consume_token(26);
-    jj_consume_token(47);
-    VALUE();
-    jj_consume_token(48);
-    jj_consume_token(49);
-  }
-
-/**************************************************************************************************************
-METHOD
-**************************************************************************************************************/
-  final public void METHOD() throws ParseException {
-    jj_consume_token(50);
     label_6:
     while (true) {
+      FIELD();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 52:
         ;
@@ -199,17 +209,26 @@ METHOD
         jj_la1[6] = jj_gen;
         break label_6;
       }
-      METODO();
     }
-    jj_consume_token(51);
+    jj_consume_token(49);
   }
 
-  final public void METODO() throws ParseException {
+  final public void FIELD() throws ParseException {
     jj_consume_token(52);
     jj_consume_token(25);
     jj_consume_token(id);
     jj_consume_token(26);
     jj_consume_token(53);
+    VALUE();
+    jj_consume_token(54);
+    jj_consume_token(55);
+  }
+
+/**************************************************************************************************************
+METHOD
+**************************************************************************************************************/
+  final public void METHOD() throws ParseException {
+    jj_consume_token(56);
     label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -220,82 +239,122 @@ METHOD
         jj_la1[7] = jj_gen;
         break label_7;
       }
-      ARGUMENTS();
+      METODO();
     }
-    jj_consume_token(54);
-    jj_consume_token(55);
-    jj_consume_token(codigo);
-    jj_consume_token(56);
     jj_consume_token(57);
   }
 
-  final public void ARGUMENTS() throws ParseException {
+  final public void METODO() throws ParseException {
     jj_consume_token(58);
-    jj_consume_token(41);
-    TIPO();
-    jj_consume_token(42);
+    PERMISSIONS();
     jj_consume_token(25);
     jj_consume_token(id);
     jj_consume_token(26);
     jj_consume_token(59);
-  }
-
-/**************************************************************************************************************
-OBJECT
-**************************************************************************************************************/
-  final public void OBJECT() throws ParseException {
-    jj_consume_token(60);
     label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 62:
+      case 64:
         ;
         break;
       default:
         jj_la1[8] = jj_gen;
         break label_8;
       }
-      OBJETO();
+      ARGUMENTS();
     }
+    jj_consume_token(60);
     jj_consume_token(61);
+    jj_consume_token(codigo);
+    jj_consume_token(62);
+    jj_consume_token(63);
   }
 
-  final public void OBJETO() throws ParseException {
-    jj_consume_token(62);
+  final public void ARGUMENTS() throws ParseException {
+    jj_consume_token(64);
+    jj_consume_token(47);
+    TIPO();
+    jj_consume_token(48);
     jj_consume_token(25);
     jj_consume_token(id);
     jj_consume_token(26);
-    jj_consume_token(63);
+    jj_consume_token(65);
+  }
+
+/**************************************************************************************************************
+OBJECT
+**************************************************************************************************************/
+  final public void OBJECT() throws ParseException {
+    jj_consume_token(66);
     label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 66:
+      case 68:
         ;
         break;
       default:
         jj_la1[9] = jj_gen;
         break label_9;
       }
-      ATTRIBUTES();
+      OBJETO();
     }
-    jj_consume_token(64);
-    jj_consume_token(65);
+    jj_consume_token(67);
   }
 
-  final public void ATTRIBUTES() throws ParseException {
-    jj_consume_token(66);
-    jj_consume_token(41);
-    TIPO();
-    jj_consume_token(42);
+  final public void OBJETO() throws ParseException {
+    jj_consume_token(68);
+    PERMISSIONS();
     jj_consume_token(25);
     jj_consume_token(id);
     jj_consume_token(26);
-    jj_consume_token(67);
+    jj_consume_token(69);
+    label_10:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 72:
+        ;
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        break label_10;
+      }
+      ATTRIBUTES();
+    }
+    jj_consume_token(70);
+    jj_consume_token(71);
+  }
+
+  final public void ATTRIBUTES() throws ParseException {
+    jj_consume_token(72);
+    jj_consume_token(47);
+    TIPO();
+    jj_consume_token(48);
+    jj_consume_token(25);
+    jj_consume_token(id);
+    jj_consume_token(26);
+    jj_consume_token(73);
   }
 
 /**************************************************************************************************************
 COMUN
 **************************************************************************************************************/
+  final public void PERMISSIONS() throws ParseException {
+    jj_consume_token(74);
+    label_11:
+    while (true) {
+      USERNAME();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 25:
+        ;
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        break label_11;
+      }
+    }
+    jj_consume_token(75);
+  }
+
   final public void TIPO() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case _text:
@@ -317,7 +376,7 @@ COMUN
       jj_consume_token(_datetime);
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -344,7 +403,7 @@ COMUN
       jj_consume_token(fecha_hora);
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[13] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -359,7 +418,7 @@ COMUN
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[12];
+  final private int[] jj_la1 = new int[14];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -369,13 +428,13 @@ COMUN
       jj_la1_init_2();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x40400000,0x1000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f80,0x7e000,};
+      jj_la1_0 = new int[] {0x40400000,0x1000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2000000,0x1f80,0x7e000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x10041000,0x0,0x10,0x100,0x100,0x4000,0x100000,0x4000000,0x40000000,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x1040010,0x0,0x1,0x400,0x4000,0x4000,0x100000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,};
+      jj_la1_2 = new int[] {0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x10,0x100,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -389,7 +448,7 @@ COMUN
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 14; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -403,7 +462,7 @@ COMUN
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 14; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -413,7 +472,7 @@ COMUN
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 14; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -423,7 +482,7 @@ COMUN
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 14; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -432,7 +491,7 @@ COMUN
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 14; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -441,7 +500,7 @@ COMUN
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 14; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -492,12 +551,12 @@ COMUN
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[68];
+    boolean[] la1tokens = new boolean[76];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 14; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -512,7 +571,7 @@ COMUN
         }
       }
     }
-    for (int i = 0; i < 68; i++) {
+    for (int i = 0; i < 76; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
