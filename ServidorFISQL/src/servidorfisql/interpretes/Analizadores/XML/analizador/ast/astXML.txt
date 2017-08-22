@@ -1,0 +1,40 @@
+graph G {
+node [shape= square];
+node0[label = "UsersFile ",];
+node1[label = "user ",];
+node2[label = "name ",];
+node3[label = "ID 
+admin",];
+node4[label = "password ",];
+node5[label = "ID 
+admin",];
+node6[label = "user ",];
+node7[label = "name ",];
+node8[label = "ID 
+jorge",];
+node9[label = "password ",];
+node10[label = "ID 
+jorge",];
+node11[label = "user ",];
+node12[label = "name ",];
+node13[label = "ID 
+dulce",];
+node14[label = "password ",];
+node15[label = "ID 
+dulce",];
+"node0"--"node1"
+"node1"--"node2"
+"node2"--"node3"
+"node1"--"node4"
+"node4"--"node5"
+"node0"--"node6"
+"node6"--"node7"
+"node7"--"node8"
+"node6"--"node9"
+"node9"--"node10"
+"node0"--"node11"
+"node11"--"node12"
+"node12"--"node13"
+"node11"--"node14"
+"node14"--"node15"
+}

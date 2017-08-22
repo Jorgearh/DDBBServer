@@ -9,39 +9,55 @@ public interface ParserXMLConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int letra = 5;
+  int letra = 6;
   /** RegularExpression Id. */
-  int digito = 6;
+  int digito = 7;
   /** RegularExpression Id. */
-  int _text = 7;
+  int _text = 8;
   /** RegularExpression Id. */
-  int _integer = 8;
+  int _integer = 9;
   /** RegularExpression Id. */
-  int _double = 9;
+  int _double = 10;
   /** RegularExpression Id. */
-  int _bool = 10;
+  int _bool = 11;
   /** RegularExpression Id. */
-  int _date = 11;
+  int _date = 12;
   /** RegularExpression Id. */
-  int _datetime = 12;
+  int _datetime = 13;
   /** RegularExpression Id. */
-  int entero = 13;
+  int pk = 14;
   /** RegularExpression Id. */
-  int doble = 14;
+  int fk = 15;
   /** RegularExpression Id. */
-  int booleano = 15;
+  int nulo = 16;
   /** RegularExpression Id. */
-  int fecha = 16;
+  int nonulo = 17;
   /** RegularExpression Id. */
-  int fecha_hora = 17;
+  int unico = 18;
   /** RegularExpression Id. */
-  int cadena = 18;
+  int autoinc = 19;
   /** RegularExpression Id. */
-  int codigo = 19;
+  int entero = 20;
   /** RegularExpression Id. */
-  int id = 20;
+  int doble = 21;
   /** RegularExpression Id. */
-  int path = 21;
+  int booleano = 22;
+  /** RegularExpression Id. */
+  int fecha = 23;
+  /** RegularExpression Id. */
+  int fecha_hora = 24;
+  /** RegularExpression Id. */
+  int cadena = 25;
+  /** RegularExpression Id. */
+  int codigo = 26;
+  /** RegularExpression Id. */
+  int id = 27;
+  /** RegularExpression Id. */
+  int path = 28;
+  /** RegularExpression Id. */
+  int open = 29;
+  /** RegularExpression Id. */
+  int close = 30;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -53,6 +69,7 @@ public interface ParserXMLConstants {
     "\"\\n\"",
     "\"\\t\"",
     "\"\\r\"",
+    "\"\\f\"",
     "<letra>",
     "<digito>",
     "\"Text\"",
@@ -61,6 +78,12 @@ public interface ParserXMLConstants {
     "\"Bool\"",
     "\"Date\"",
     "\"DateTime\"",
+    "\"PK\"",
+    "\"FK\"",
+    "\"NULL\"",
+    "\"NOT NULLL\"",
+    "\"UNIQUE\"",
+    "\"AUTOINC\"",
     "<entero>",
     "<doble>",
     "<booleano>",
@@ -70,6 +93,8 @@ public interface ParserXMLConstants {
     "<codigo>",
     "<id>",
     "<path>",
+    "<open>",
+    "<close>",
     "\"<MasterFile>\"",
     "\"</MasterFile>\"",
     "\"<db>\"",
@@ -98,6 +123,10 @@ public interface ParserXMLConstants {
     "\"<type>\"",
     "\"</type>\"",
     "\"</row>\"",
+    "\"<complementos>\"",
+    "\"</complementos>\"",
+    "\"<complemento>\"",
+    "\"</complemento>\"",
     "\"<TableFile>\"",
     "\"</TableFile>\"",
     "\"<field>\"",

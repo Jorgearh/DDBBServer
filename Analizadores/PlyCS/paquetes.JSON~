@@ -1,0 +1,53 @@
+/*
+	ENVIA: ERVIDOR WEB
+	RECIBE: SERVIODR BBDD
+*/
+
+//LOGIN
+
+[
+	"paquete": "login",
+	"validar": 1500,
+	"datos": [
+		"user": "admin",
+		"paassword": "admin"
+	]
+]
+
+//LOGOUT
+
+[
+	"paquete": "finalizar"
+]
+
+//ERROR
+//	
+
+[
+	"paquete": "error",
+	"validar": 1500,
+	"tipo": "lenguaje",
+	"datos": [
+		"lenguaje": "usql",
+		"instruccion": "SELECCIONAR * DE tabla;",
+		"tipo": "semantico",
+		"columna": 15,
+		"fila": 5
+	]
+	
+]
+
+//USQL
+
+[
+	"paquete": "usql",
+	"validar": 1500,
+	"instruccion": "SELECCIONAR * DE usuarios;"
+]
+
+//REPORTE
+
+[
+	"paquete": "reporte",
+	"instruccion": "SELECIONARR * DE usuarios;"
+]

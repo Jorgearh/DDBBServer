@@ -1,0 +1,55 @@
+package servidorfisql.server;
+
+import servidorfisql.server.manejador.Archivos;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import servidorfisql.comunicacion.Clientes;
+import servidorfisql.comunicacion.ServerStart;
+import servidorfisql.gui.Consola;
+
+/**
+ *
+ * @author jorge
+ */
+public class Server {
+    
+    public static String user = "ddbbserver";
+    public static ArrayList<String> users;
+    public static Clientes clientes;
+    
+    public static void iniciarServidor(){
+        
+        users = new ArrayList<>();
+        clientes = new Clientes();
+        
+        Archivos.inicializarSistemaDeArchivos();
+        Consola.write("Sistema de archivos inicializado exitosamente...");
+        
+        Thread starter = new Thread(new ServerStart());
+        starter.start();
+        
+        /*Cargar usuarios*/
+        Archivos.cargarUsuarios();
+        Consola.write("Usuarios cargados exitosamente...");
+        
+        Consola.write("Servidor iniciado...");
+    }
+    
+    public static void detenerServidor(){
+        users.clear();
+        
+        Consola.write("Servidor detenido...");
+    }
+    
+    public static void reiniciarServidor(){
+        Consola.write("Servidor reiniciando...");
+        detenerServidor();
+        iniciarServidor();
+    }
+    
+    
+    
+    
+    
+}

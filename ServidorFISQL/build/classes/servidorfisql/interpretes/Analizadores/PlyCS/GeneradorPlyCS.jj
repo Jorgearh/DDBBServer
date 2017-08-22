@@ -1,0 +1,95 @@
+options{
+	LOOKAHEAD = 1;
+	STATIC = false;
+	IGNORE_CASE = true;
+	OUTPUT_DIRECTORY = "analizador/";
+}
+
+PARSER_BEGIN(ParserPlyCS)
+	package servidorfisql.interpretes.Analizadores.PlyCS.analizador;
+
+	import servidorfisql.interpretes.Analizadores.Nodo;
+
+	public class ParserPlyCS{
+		public static void main(String[] args) throws ParseException{
+				try{
+					ParserPlyCS parser = new ParserPlyCS(System.in);
+					parser.INI();
+				}catch(ParseException pe){
+					System.err.println("Error en el analisis...");
+					System.err.println(pe.getMessage());
+				}
+			}
+		}
+PARSER_END(ParserPlyCS)
+
+
+
+SKIP :
+{
+	 " "
+	|"\n"
+	|"\t"
+	|"\r"
+}
+
+TOKEN :
+{
+	 <num: (["0"-"9"])+ >
+	|<bool: "true" | "false" >
+	|<cad: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+}
+
+
+Nodo INI() :
+{
+	Nodo nodo;
+}
+{
+	nodo = OBJECT() <EOF>	{return nodo;}
+}
+Nodo OBJECT() :
+{
+	Nodo nodo = new Nodo("REQUEST");
+}
+{
+	"[" [ nodo = MEMBERS() ] "]"	{return nodo;}
+}
+
+Nodo MEMBERS() :
+{
+	Nodo nodo = new Nodo("REQUEST");
+	Nodo hijo;
+}
+{
+	hijo = PAIR()	{nodo.agregarHijo(hijo);} ( "," hijo = PAIR() {nodo.agregarHijo(hijo);})*
+	{return nodo;}
+}
+
+Nodo PAIR() :
+{
+	Nodo nodo;
+	Nodo hijo;
+	Token t;
+}
+{
+	(
+	 t = <cad> ":" hijo = VALUE(t.image.substring(1, t.image.length() - 1))	{nodo = hijo;}
+	)
+	{return nodo;}
+}
+
+Nodo VALUE(String token) :
+{
+	Nodo nodo;
+	Token t;
+}
+{
+	(
+	 t = <cad>		{nodo = new Nodo(token, t.image.substring(1, t.image.length() - 1));}
+	|t = <num>		{nodo = new Nodo(token, t.image);}
+	|t = <bool>		{nodo = new Nodo(token, t.image);}
+	|nodo = OBJECT(){nodo.setToken(token);}
+	)
+	{return nodo;}
+}

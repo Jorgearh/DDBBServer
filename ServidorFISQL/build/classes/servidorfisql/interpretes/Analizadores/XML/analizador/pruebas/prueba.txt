@@ -1,0 +1,18 @@
+<MethodFile>
+    <method>
+        <name>nombre_proc1</name>
+        <arguments>
+            <argument>
+                <type>DateTime</type>
+                <name>asdf</name>
+            </argument>
+        </arguments>
+        <src>
+            'if (cad = "asdf"){
+                asdf;
+            }else{
+                asdfasdf
+            }'
+        </src>
+    </method>
+</MethodFile>

@@ -1,0 +1,114 @@
+CREAR BASE_DATOS Ejemplo1;
+
+USAR Ejemplo1;
+
+CREAR OBJETO Direccion(INTEGER avenida, INTEGER calle, TEXT nombre, TEXT descripcion);
+
+CREAR TABLA Estudiante (
+    INTEGER id Llave_Primaria Autoincrementable,
+    TEXT Nombre No Nulo,
+    DATE fh_nac No Nulo,
+    BOOL trabaja,
+    Direccion direccion
+);
+
+CREAR TABLA Curso(
+    INTEGER id Llave_Primaria Autoincrementable,
+    TEXT Nombre No Nulo,
+    INTEGER creditos No Nulo
+);
+
+CREAR TABLA Asignacion(
+    INTEGER id Llave_Primaria Autoincrementable,
+    DATETIME fh_Asignacion No Nulo,
+    INTEGER id_estudiante Llave_Foranea Estudiante id,
+    INTEGER id_curso Llave_Foranea Curso id
+);
+
+CREAR PROCEDIMIENTO Asignar (INTEGER @id_e, INTEGER @id_c){
+    DECLARAR @estudiante INTEGER = CONTAR(<<SELECCIONAR * DE estudiante DONDE id == @id_e>>);
+    DECLARAR @curso INTEGER = CONTAR(<<SELECCIONAR * DE curso DONDE id == @id_c>>);
+    SI (@curso > 0){
+        SI(@estudiante > 0){
+            INSERTAR EN TABLA asignacion(id_estudiante, id_curso) VALORES (@id_e, @id_c);
+        }SINO{
+            IMPRIMIR("El usuario ingresado no existe");
+        }
+    }SINO{
+        IMPRIMIR("El curso ingresado no existe");
+    }
+};
+
+CREAR FUNCION crearDireccion (INTEGER @calle, INTEGER @avenida, TEXT @nombre, TEXT @descripcion) Direccion {
+    DECLARAR @direc DIRECCION;
+    @direc.calle = @calle;
+    @direc.avenida = @avenida;
+    @direc.nombre = @nombre;
+    @direc.descripcion = @descripcion;
+    RETORNO @direc;
+};
+
+
+CREAR BASE_DATOS Ejemplo2;
+
+USAR Ejemplo2;
+
+CREAR TABLA Proveedor(
+    INTEGER id Llave_Primaria Autoincrementable,
+    TEXT nombre No Nulo,
+    TEXT direccion No Nulo
+);
+
+CREAR TABLA Producto(
+    INTEGER id Llave_Primaria Autoincrementable,
+    TEXT nombre No Nulo,
+    DOUBLE precio No Nulo,
+    INTEGER id_proveedor Llave_Foranea Proveedor id
+);
+
+CREAR PROCEDIMIENTO llenarTablas(){
+    DECLARAR @producto INTEGER = 0;
+    #inserta 10 registros en la tabla proveedor
+    PARA(DECLARAR @i INTEGER = 0; @i < 10; ++){
+        INSERTAR EN TABLA Proveedor(id, nombre, direccion) VALORES (@i, "Proveedor" + @i, "Dirección" + @i);
+        #inserta 20 productos por proveedor
+        PARA(DECLARAR @j INTEGER = 0; @j < 20; ++){
+            DECLARAR @precio DOUBLE = generarPrecio(@producto);
+            INSERTAR EN TABLA Producto (@producto, "Producto" + @producto, @precio, @i);
+            @producto = @producto + 1;
+        }
+    }
+};
+
+CREAR FUNCION generarPrecio(INTEGER @a) DOUBLE{
+    DECLARAR @retorno DOUBLE = 1.5;
+    RETORNO @retorno * @a;
+};
+
+#llenar las tablas
+llenarTablas();
+
+#imprimir cantidad de registros de la tabla Producto
+IMPRIMIR(CONTAR(<<SELECCIONAR * DE Producto>>));
+#el resultado de la instrucción debería ser:
+#200
+
+#borrar todos los productos del proveedor con id 1
+BORRAR EN TABLA Producto DONDE id_proveedor == 1;
+
+#imprimir cantidad de registros de la tabla Producto
+IMPRIMIR(CONTAR(<<SELECCIONAR * DE Producto>>));
+#el resultado de la instrucción debería ser:
+#180
+
+
+BACKUP USQLDUMP Proyecto1 Proyecto1_backup;
+BACKUP COMPLETO Proyecto1 Proyecto1_backup2;
+
+RESTAURAR USQLDUMP "/home/usuario/backups/backup_prueba.udmp";
+RESTAURAR COMPLETO "/home/usuario/backups/backup_prueba.zip";
+
+# Comentario de una línea
+#*
+    Comentario de varias líneas
+*#

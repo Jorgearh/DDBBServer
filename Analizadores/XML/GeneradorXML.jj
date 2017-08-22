@@ -27,6 +27,7 @@ SKIP :
 	|"\n"
 	|"\t"
 	|"\r"
+	|"\f"
 }
 
 TOKEN :
@@ -47,6 +48,16 @@ TOKEN :
 
 TOKEN :
 {
+	<pk: "PK">
+   |<fk: "FK">
+   |<nulo: "NULL">
+   |<nonulo: "NOT NULLL">
+   |<unico: "UNIQUE">
+   |<autoinc: "AUTOINC">
+}
+
+TOKEN :
+{
 	 <entero: (("-")? <digito>)+ >
 	|<doble: (("-")? <digito>)+ "." (<digito>)+>
 	|<booleano: "true" | "false" >
@@ -56,13 +67,32 @@ TOKEN :
 	|<codigo: ("\'") (~["\'"])* ("\'") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
+
+	|<open: "<" <id> ">">
+	|<close: "</" <id> ">">
 }
 
 
 void INI() : {}
 {
-	FILE() <EOF>
+	XML() <EOF>
+	//FILE() <EOF>
 	//<path> <EOF>
+}
+
+void XML() : {}
+{
+	<open> (CONTENT() | XML())+ <close>
+}
+
+void CONTENT() : {}
+{
+	VALUE()
+	|TIPO()
+	|COMPLEMENT()
+	|<id>
+	|<codigo>
+	|<path>
 }
 
 void FILE() : {}
@@ -154,6 +184,30 @@ void ROWSDEF() : {}
 	"</row>"
 }
 
+void COMPLEMENTOS() : {}
+{
+	"<complementos>"
+		( COMPLEMENTO() )+
+	"</complementos>"
+}
+
+void COMPLEMENTO() : {}
+{
+	"<complemento>"
+		COMPLEMENT()
+	"</complemento>"
+}
+
+
+void COMPLEMENT() : {}
+{
+	 <pk>
+	|<fk>
+	|<nulo>
+	|<nonulo>
+	|<unico>
+	|<autoinc>
+}
 
 /**************************************************************************************************************
 TABLE
@@ -176,7 +230,7 @@ void FIELD() : {}
 {
 	"<field>"
 		"<name>" <id> "</name>"
-		"<value>" VALUE() "</value>"
+		"<value>" [ VALUE() ] "</value>"
 	"</field>"
 }
 /**************************************************************************************************************
@@ -257,6 +311,7 @@ void TIPO() : {}
 	|<_bool>
 	|<_date>
 	|<_datetime>
+	//|<id>
 }
 
 void VALUE() : {}

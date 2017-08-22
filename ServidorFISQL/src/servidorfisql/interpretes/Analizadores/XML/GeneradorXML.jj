@@ -1,0 +1,167 @@
+options{
+	LOOKAHEAD = 1;
+	STATIC = false;
+	IGNORE_CASE = true;
+	OUTPUT_DIRECTORY = "analizador/";
+}
+
+PARSER_BEGIN(ParserXML)
+	package servidorfisql.interpretes.Analizadores.XML.analizador;
+
+	import servidorfisql.interpretes.Analizadores.Nodo;
+
+	public class ParserXML{
+		public static void main(String[] args) throws ParseException{
+				try{
+					ParserXML parser = new ParserXML(System.in);
+					parser.INI();
+				}catch(ParseException pe){
+					System.err.println("Error en el analisis...");
+					System.err.println(pe.getMessage());
+				}
+			}
+		}
+PARSER_END(ParserXML)
+
+
+
+SKIP :
+{
+	 " "
+	|"\n"
+	|"\t"
+	|"\r"
+}
+
+TOKEN :
+{
+	 <#letra: ["a" - "z"] >
+	|<#digito: ["0" - "9"]>
+}
+
+TOKEN :
+{
+	 <_text: "Text">
+	|<_integer: "Integer">
+	|<_double: "Double">
+	|<_bool: "Bool">
+	|<_date: "Date">
+	|<_datetime: "DateTime">
+}
+
+TOKEN :
+{
+	<pk: "PK">
+   |<fk: "FK">
+   |<nulo: "NULL">
+   |<nonulo: "NOT NULLL">
+   |<unico: "UNIQUE">
+   |<autoinc: "AUTOINC">
+}
+
+TOKEN :
+{
+	 <entero: (("-")? <digito>)+ >
+	|<doble: (("-")? <digito>)+ "." (<digito>)+>
+	|<booleano: "true" | "false" >
+	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
+	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
+	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	|<codigo: ("\'") (~["\'"])* ("\'") >
+	|<id: <letra> (<letra> | <digito> | "_")* >
+	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
+
+	|<open: "<"<id>">">
+	|<close: "</"<id>">">
+}
+
+
+Nodo INI() :
+{
+	Nodo nodo;
+}
+{
+	nodo = XML() <EOF>	{return nodo;}
+}
+
+Nodo XML() :
+{
+	Nodo nodo, content;
+	Token t;
+}
+{
+	t = <open> {nodo = new Nodo(t.image.substring(1, t.image.length() - 1));}
+		(
+			 content = CONTENT() {nodo.agregarHijo(content);}
+		)+
+	<close>
+	{return nodo;}
+}
+
+Nodo CONTENT() :
+{
+	Nodo nodo;
+	Token t;
+}
+{
+	(
+	 nodo = VALUE()
+	|nodo = TIPO()
+	|nodo = COMPLEMENT()
+	|nodo = XML()
+	|t = <id>		{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}
+	|t = <codigo>	{nodo = new Nodo("COD", t.image, t.beginLine, t.beginColumn);}
+	|t = <path>		{nodo = new Nodo("PATH", t.image, t.beginLine, t.beginColumn);}
+	)
+	{return nodo;}
+}
+
+Nodo COMPLEMENT() :
+{
+	Token t;
+}
+{
+	(
+	 t = <pk>
+	|t = <fk>
+	|t = <nulo>
+	|t = <nonulo>
+	|t = <unico>
+	|t = <autoinc>
+	)
+	{return new Nodo("COMPLEMENTO", t.image, t.beginLine, t.beginColumn);}
+}
+
+Nodo TIPO() :
+{
+	Token t;
+}
+{
+	(
+	 t = <_text>
+	|t = <_integer>
+	|t = <_double>
+	|t = <_bool>
+	|t = <_date>
+	|t = <_datetime>
+	)
+	{return new Nodo("TIPO", t.image, t.beginLine, t.beginColumn);}
+
+}
+
+Nodo VALUE() :
+{
+	Nodo nodo;
+	Token t;
+}
+{
+	(
+	 t = <cadena>		{nodo = new Nodo("CAD", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
+	|t = <entero>		{nodo = new Nodo("ENT", t.image, t.beginLine, t.beginColumn);}
+	|t = <doble>		{nodo = new Nodo("DOB", t.image, t.beginLine, t.beginColumn);}
+	|t = <booleano>		{nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);}
+	|t = <fecha>		{nodo = new Nodo("DATE", t.image, t.beginLine, t.beginColumn);}
+	|t = <fecha_hora>	{nodo = new Nodo("DATETIME", t.image, t.beginLine, t.beginColumn);}
+	)
+	{return nodo;}
+}
