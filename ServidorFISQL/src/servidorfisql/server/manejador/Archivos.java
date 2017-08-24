@@ -30,10 +30,7 @@ public class Archivos {
     
     
     private static File folder;
-    
     private static InterpreteXML interpreteXML;
-    
-    
     
     public static Usuarios usuarios;
     
@@ -68,13 +65,37 @@ public class Archivos {
         }
     }
     
+    
+    
     public static void cargarUsuarios(){
         String xml;
         
         xml = leerArchivo(usersFile);
         interpreteXML.analizar(xml);
-        Archivos.usuarios.imprimirUsuarios();
+        {Archivos.usuarios.imprimirUsuarios();}
     }
+    
+    public static void guardarUsuarios(){
+        String xml;
+        
+        xml = Archivos.usuarios.getXmlUsuarios();
+        escribirArchivo(usersFile, xml);
+    }
+    
+    
+    public static void cargarInformacion(String user){
+        
+    }
+    
+    public static void guardarInformacion(){
+        
+    }
+    
+    
+    
+    
+    
+    
     
     
     private static String leerArchivo(String path){

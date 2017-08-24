@@ -22,6 +22,25 @@ public class Usuarios {
             Consola.write("El usuario [" + user + "] ya existe.");
     }
     
+    /***
+     * Comprueba si existe el usuario con nombre username
+     * @param username
+     * @return boolean
+     */
+    public boolean existsUser(String username){
+        return this.usuarios.containsKey(username);
+    }
+    
+    /***
+     * Verifica que el password corresponda al username ingresado
+     * @param username
+     * @param password
+     * @return boolean
+     */
+    public boolean matchesPassword(String username, String password){
+        return this.usuarios.get(username).getPassword().equals(password);
+    }
+    
     
     public void imprimirUsuarios(){
         Consola.write("Usuarios en memoria:");
@@ -30,6 +49,23 @@ public class Usuarios {
             
             Consola.write("    usuario: " + usuario.getUsername() + " password: " + usuario.getPassword());
         }
+    }
+    
+    public String getXmlUsuarios(){
+        String xml = "";
+        
+        xml = "<UsersFile>\n";
+        
+        for(Usuario u : this.usuarios.values()){
+            xml += "    <user>\n"
+                 + "        <name>" + u.getUsername() + "</name>\n"
+                 + "        <password>" + u.getPassword() + "</password>\n"
+                 + "    </user>\n";
+        }
+        
+        xml += "</UsersFile>\n";
+        
+        return xml;
     }
 }
 

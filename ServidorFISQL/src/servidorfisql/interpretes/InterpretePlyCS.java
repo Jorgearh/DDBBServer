@@ -1,6 +1,7 @@
 package servidorfisql.interpretes;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Grafica;
@@ -8,6 +9,8 @@ import servidorfisql.interpretes.Analizadores.Nodo;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.ParseException;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.ParserPlyCS;
 import static servidorfisql.Constantes.FILE_AST_PLYCS;
+import servidorfisql.server.Server;
+import servidorfisql.server.manejador.Archivos;
 
 /**
  *
@@ -22,7 +25,7 @@ public class InterpretePlyCS {
         grafica = new Grafica();
     }
     
-    public String analizar(String request){
+    public String analizar(PrintWriter pw, String request){
         Nodo astPlyCS;
         String response;
         
@@ -32,7 +35,7 @@ public class InterpretePlyCS {
             astPlyCS = parserPlyCS.INI();
             grafica.graficar(astPlyCS, FILE_AST_PLYCS);
             
-            response = interpretar(astPlyCS);
+            response = interpretar(pw, astPlyCS);
             
         }catch(ParseException pe){
             Consola.write(pe.getMessage());
@@ -45,7 +48,7 @@ public class InterpretePlyCS {
         return response;
     }
     
-    private String interpretar(Nodo ast){
+    private String interpretar(PrintWriter pw, Nodo ast){
         String response, paquete, usql;
         int codigo;
         
@@ -59,11 +62,11 @@ public class InterpretePlyCS {
                 codigo = Integer.parseInt(ast.getHijo(1).valor);
                 user = ast.getHijo(2).getHijo(0).valor;
                 password = ast.getHijo(2).getHijo(1).valor;
-                response = login(user, password);
+                response = login(codigo, user, password, pw);
                 
                 break;
             case "logout":
-                logout();
+                logout(pw);
                 response = "LOGOUT";
                 
                 break;
@@ -89,20 +92,83 @@ public class InterpretePlyCS {
         return response;
     }
     
-    private String login(String user, String password){
-        return "[\"login\":\"true\"]";
+    /***
+     * Carga a memoria la informacion asociada al usuario si las credenciales son correctas
+     * @param codigo
+     * @param user
+     * @param password
+     * @param pw
+     * @return Respuesta del servidor de login exitoso o error detallado.
+     */
+    private String login(int codigo, String user, String password, PrintWriter pw){
+        String response;
+        
+        if(Archivos.usuarios.existsUser(user)){
+            
+            if(Archivos.usuarios.matchesPassword(user, password)){
+                
+                Server.clientes.setClient(pw, user);
+                /*Sube a memoria la informacion asociada al usuario logeado*/
+                Archivos.cargarInformacion(user);
+                
+                response = "[\n" +
+                            "	\"paquete\": \"login\",\n" +
+                            "	\"validar\": " + codigo + ",\n" +
+                            "	\"datos\": [\n" +
+                            "		\"user\": \"" + user + "\",\n" +
+                            "		\"login\": true\n" +
+                            "	]\n" +
+                            "]";
+                
+            }else{
+                response = "[\n" +
+                            "	\"paquete\": \"error\",\n" +
+                            "	\"validar\": " + codigo + ",\n" +
+                            "	\"tipo\": \"login\",\n" +
+                            "	\"descripcion\" : \"El usuario [" + user + "] invalido.\"\n" +
+                            "	\n" +
+                            "]";
+            }
+        }else{
+            response = "[\n" +
+                        "	\"paquete\": \"error\",\n" +
+                        "	\"validar\": " + codigo + ",\n" +
+                        "	\"tipo\": \"login\",\n" +
+                        "	\"descripcion\" : \"Password invalida para usuario [" + user + "]\"\n" +
+                        "	\n" +
+                        "]";
+        }
+        
+        
+        return response;
     }
     
-    private String logout(){
-        return null;
+    
+    
+    /***
+     * Guarda en memoria secundaria la informacion en memoria y elimina la conexion del cliente
+     * @param pw 
+     */
+    private void logout(PrintWriter pw){
+        
+        /*Grabar toda la informacion asociada al usuario que cierra sesion*/
+        Archivos.guardarInformacion();
+        
+        Consola.write("Cerrada sesion de usuario [" + Server.clientes.getUsername(pw) + "]. "
+                    + "Cliente [" + pw.toString() + "] desconectado...");
+        Server.clientes.removeClient(pw);
     }
     
-    private String reporte(String usql){
-        return null;
-    }
+    
+    
     
     private String usql(String usql){
         return null;
     }
     
+    
+    
+    private String reporte(String usql){
+        return null;
+    }
 }

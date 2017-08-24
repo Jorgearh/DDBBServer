@@ -15,12 +15,10 @@ import servidorfisql.gui.Consola;
 public class Server {
     
     public static String user = "ddbbserver";
-    public static ArrayList<String> users;
     public static Clientes clientes;
     
     public static void iniciarServidor(){
         
-        users = new ArrayList<>();
         clientes = new Clientes();
         
         Archivos.inicializarSistemaDeArchivos();
@@ -37,7 +35,14 @@ public class Server {
     }
     
     public static void detenerServidor(){
-        users.clear();
+        try 
+        {
+            Thread.sleep(5000);                 //5000 milliseconds is five second.
+        } 
+        catch(InterruptedException ex) 
+        {
+            Thread.currentThread().interrupt();
+        }
         
         Consola.write("Servidor detenido...");
     }

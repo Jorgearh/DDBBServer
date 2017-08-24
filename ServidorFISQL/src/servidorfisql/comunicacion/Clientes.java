@@ -14,10 +14,18 @@ public class Clientes {
         this.clientes = new HashMap<>();
     }
     
+    /***
+     * Carga un nuevo cliente a memoria, solo identificado por un objeto PrintWriter
+     * @param pw 
+     */
     public void agregarCliente(PrintWriter pw){
         this.clientes.put(pw, new Cliente(pw));
     }
     
+    /***
+     * 
+     * @param pw 
+     */
     public void removeClient(PrintWriter pw){
         if(this.clientes.containsKey(pw))
             this.clientes.remove(pw);
@@ -52,6 +60,6 @@ class Cliente{
     
     public void login(String username){
         this.username = username;
-        this.loggedin = false;
+        this.loggedin = true;
     }
 }

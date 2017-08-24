@@ -58,6 +58,10 @@ public class Nodo {
     public void setToken(String token){
         this.token = token;
     }
+    
+    public void setValor(String valor){
+        this.valor = valor;
+    }
  
     
     public Nodo getHijo(int index){

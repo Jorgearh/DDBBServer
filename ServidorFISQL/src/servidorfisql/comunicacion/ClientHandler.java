@@ -16,7 +16,7 @@ public class ClientHandler extends Thread{
     
     BufferedReader reader;
     Socket sock;
-    PrintWriter client;
+    PrintWriter pwClient;
     
     InterpretePlyCS interpretePlyCS;
     
@@ -24,7 +24,7 @@ public class ClientHandler extends Thread{
     public ClientHandler(Socket clientSocket, PrintWriter user) 
     {
         interpretePlyCS = new InterpretePlyCS();
-        client = user;
+        pwClient = user;
         try 
         {
             sock = clientSocket;
@@ -46,10 +46,13 @@ public class ClientHandler extends Thread{
         try{
             while ((request = reader.readLine()) != null) {
                 /*ANALIZAR SOLICITUD DE LENGUAJE DE COMUNICACION PLYCS*/
-            Consola.write("Recibido: " + request);
+                Consola.write("Recibido: " + request);
             
-            response = interpretePlyCS.analizar(request);
-            responderCliente(client, response);
+                response = interpretePlyCS.analizar(pwClient, request);
+                response = response.replace("\n", "").replace("\r", "").replace(" ", "");
+                
+                if(!response.equals("LOGOUT"))
+                    responderCliente(pwClient, response);
             
             } 
             
@@ -58,7 +61,7 @@ public class ClientHandler extends Thread{
           {
              Consola.write("Conexion perdida...");
              ex.printStackTrace();
-             Server.clientes.removeClient(client);
+             Server.clientes.removeClient(pwClient);
           } 
      }
     

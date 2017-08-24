@@ -7,9 +7,9 @@ node2[label = "validar
 1500",];
 node3[label = "datos ",];
 node4[label = "user 
-dulce",];
+admin",];
 node5[label = "paassword 
-dulce",];
+admin",];
 "node0"--"node1"
 "node0"--"node2"
 "node0"--"node3"

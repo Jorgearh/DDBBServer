@@ -1,5 +1,5 @@
 /*
-	ENVIA: ERVIDOR WEB
+	ENVIA: SERVIDOR WEB
 	RECIBE: SERVIODR BBDD
 */
 
@@ -49,5 +49,24 @@
 
 [
 	"paquete": "reporte",
+	"validar": 1500,
 	"instruccion": "SELECIONARR * DE usuarios;"
+]
+
+
+
+/*
+	ENVIA: SERVIDOR BBDD
+	RECIBE: SERVIODR WEB
+*/
+
+//LOGIN
+
+[
+	"paquete": "login",
+	"validar": 1500,
+	"datos": [
+		"user": "admin",
+		"login": true
+	]
 ]

@@ -1,5 +1,5 @@
 /*
-	ENVIA: ERVIDOR WEB
+	ENVIA: SERVIDOR WEB
 	RECIBE: SERVIODR BBDD
 */
 
@@ -51,4 +51,44 @@
 	"paquete": "reporte",
 	"validar": 1500,
 	"instruccion": "SELECIONARR * DE usuarios;"
+]
+
+
+
+/*
+	ENVIA: SERVIDOR BBDD
+	RECIBE: SERVIODR WEB
+*/
+
+//LOGIN
+
+[
+	"paquete": "login",
+	"validar": 1500,
+	"datos": [
+		"user": "admin",
+		"login": true
+	]
+]
+
+//ERROR
+//ERROR LOGIN USUARIO INVALIDO	
+
+[
+	"paquete": "error",
+	"validar": 1500,
+	"tipo": "login",
+	"descripcion" : "El usuario [admin] invalido."
+	
+]
+
+//ERROR
+//ERROR LOGIN USUARIO INVALIDO	
+
+[
+	"paquete": "error",
+	"validar": 1500,
+	"tipo": "login",
+	"descripcion" : "Password invalida para usuario [admin]"
+	
 ]
