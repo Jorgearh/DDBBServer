@@ -33,6 +33,15 @@ public class Nodo {
         this.hijos = new ArrayList<>();
     }
     
+    public Nodo(String token, int fila, int columna) {
+        this.token = token;
+        this.valor = "";
+        this.hijos = new ArrayList<>();
+        
+        this.row = fila;
+        this.col = columna;
+    }
+    
     public Nodo(String token, String valor, int fila, int columna) {
         this.token = token;
         this.valor = valor;
