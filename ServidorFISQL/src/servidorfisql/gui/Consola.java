@@ -35,6 +35,10 @@ public class Consola extends javax.swing.JFrame {
         return dateFormat.format(date);
     }
     
+    private static int asdf(){
+        Consola.write("HOLA MUNDO");
+        return 1;
+    }
     
     
     @SuppressWarnings("unchecked")
@@ -49,6 +53,8 @@ public class Consola extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("FISQL DDBB SERVER");
+        setBackground(java.awt.Color.black);
 
         consola.setEditable(false);
         consola.setBackground(java.awt.Color.darkGray);

@@ -19,10 +19,13 @@ import servidorfisql.server.manejador.Archivos;
 public class InterpretePlyCS {
     
     ParserPlyCS parserPlyCS;
+    InterpreteUSQL interpreteUSQL;
+    
     Grafica grafica;
     
     public InterpretePlyCS(){
-        grafica = new Grafica();
+        this.grafica = new Grafica();
+        this.interpreteUSQL = new InterpreteUSQL();
     }
     
     public String analizar(PrintWriter pw, String request){
@@ -63,25 +66,25 @@ public class InterpretePlyCS {
                 user = ast.getHijo(2).getHijo(0).valor;
                 password = ast.getHijo(2).getHijo(1).valor;
                 response = login(codigo, user, password, pw);
-                
                 break;
+                
             case "logout":
                 logout(pw);
                 response = "LOGOUT";
-                
                 break;
+                
+            case "usql":
+                codigo = Integer.parseInt(ast.getHijo(1).valor);
+                usql = ast.getHijo(2).valor;
+                response = usql(codigo, usql);
+                break;
+                
             case "reporte":
                 codigo = Integer.parseInt(ast.getHijo(1).valor);
                 usql = ast.getHijo(2).valor;
                 response = reporte(usql);
-                
                 break;
-            case "usql":
-                codigo = Integer.parseInt(ast.getHijo(1).valor);
-                usql = ast.getHijo(2).valor;
-                response = usql(usql);
                 
-                break;
             default:
                 Consola.write("Request invalida. Paquete recibido [" + paquete + "]");
                 response = "[\"paquete\": \"error\", \"descripcion\": \"request invalida\"]";
@@ -162,8 +165,9 @@ public class InterpretePlyCS {
     
     
     
-    private String usql(String usql){
-        return null;
+    private String usql(int codigo, String usql){
+        
+        return interpreteUSQL.analizar(usql);
     }
     
     

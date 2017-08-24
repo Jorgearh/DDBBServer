@@ -13,4 +13,5 @@ public interface Constantes {
     
     public static final String FILE_AST_PLYCS = DIR_AST_PLYCS + "astPlyCS";
     public static final String FILE_AST_XML = DIR_AST_XML + "astXML";
+    public static final String FILE_AST_USQL = DIR_AST_USQL + "astUSQL";
 }

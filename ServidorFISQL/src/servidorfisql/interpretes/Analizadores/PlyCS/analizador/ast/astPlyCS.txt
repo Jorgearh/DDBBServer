@@ -2,17 +2,12 @@ graph G {
 node [shape= square];
 node0[label = "REQUEST ",];
 node1[label = "paquete 
-login",];
+usql",];
 node2[label = "validar 
 1500",];
-node3[label = "datos ",];
-node4[label = "user 
-admin",];
-node5[label = "paassword 
-admin",];
+node3[label = "instruccion 
+SELECCIONAR * DE usuarios;",];
 "node0"--"node1"
 "node0"--"node2"
 "node0"--"node3"
-"node3"--"node4"
-"node3"--"node5"
 }

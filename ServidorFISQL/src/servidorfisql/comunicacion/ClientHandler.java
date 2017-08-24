@@ -49,6 +49,7 @@ public class ClientHandler extends Thread{
                 Consola.write("Recibido: " + request);
             
                 response = interpretePlyCS.analizar(pwClient, request);
+                System.out.println(response);
                 response = response.replace("\n", "").replace("\r", "").replace(" ", "");
                 
                 if(!response.equals("LOGOUT"))
@@ -59,7 +60,7 @@ public class ClientHandler extends Thread{
           } 
           catch (Exception ex) 
           {
-             Consola.write("Conexion perdida...");
+             Consola.write("Conexion perdida..." + ex.getLocalizedMessage());
              ex.printStackTrace();
              Server.clientes.removeClient(pwClient);
           } 

@@ -140,9 +140,26 @@ TOKEN :
 	|<imprimir: "IMPRIMIR">
 	|<get_fecha: "FECHA">
 	|<get_fecha_hora: "FECHA_HORA">
+}
 
+TOKEN :
+{
+	 <mas: "+">
+	|<menos: "-">
+	|<prod: "*">
+	|<dividido: "/">
+	|<pow: "^">
 
+	|<igual: "==">
+	|<diferente: "!=">
+	|<menor: "<">
+	|<menorigual: "<=">
+	|<mayor: ">">
+	|<mayorigual: ">=">
 
+	|<or: "||">
+	|<and: "&&">
+	|<not: "!">
 }
 
 /*Expresiones Regulares para Tokens*/
@@ -151,8 +168,8 @@ TOKEN :
 	 <entero: (("-")? <digito>)+ >
 	|<doble: (("-")? <digito>)+ "." (<digito>)+>
 	|<booleano: "true" | "false" >
-	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
-	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
+	|<fecha: "\'"<digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>"\'">
+	|<fecha_hora: "\'"<fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>"\'">
 	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<var: "@"<id>>
@@ -210,13 +227,13 @@ Nodo DDL() :
 	 <crear> nodo = DDL_CREATE()
 	|<usar> t = <id>	{
 							nodo = new Nodo("USE");
-							nodo.agregarHijo(new Nodo("ID", t.image));
+							nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 						}
 	|<alterar> nodo = DDL_ALTER()
 	|<eliminar> aux = USQL_OBJECT_NAME() t = <id>	{
 														nodo = new Nodo("DELETE");
 														nodo.agregarHijo(aux);
-														nodo.agregarHijo(new Nodo("ID", t.image));
+														nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 													}
 	)
 	{return nodo;}
@@ -269,12 +286,12 @@ Nodo DDL_CREATE_TABLE() :
 {
 	<tabla> t = <id> "(" lcampo = L_DEC_CAMPO() ")"
 	{
-		nodo.agregarHijos(new Nodo("ID", t.image), lcampo);
+		nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), lcampo);
 		return nodo;
 	}
 }
 
-void L_DEC_CAMPO() :
+Nodo L_DEC_CAMPO() :
 {
 	Nodo nodo = new Nodo("LCAMPO");
 	Nodo campo;
@@ -289,16 +306,16 @@ Nodo DEC_CAMPO() :
 {
 	Nodo nodo = new Nodo("CAMPO");
 	Nodo lcomp = new Nodo("LCOMP");
-	Nodo tipo, id, comp;
+	Nodo tipo, ident, comp;
 	Token t;
 }
 {
 	tipo = TIPO_DATO_EXT()
-	t = <id>				{id = new Nodo("ID", t.image);}
+	t = <id>				{ident = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}
 	( comp = COMPLEMENTO_CAMPO() {lcomp.agregarHijo(comp);})*
 	{
 		nodo.agregarHijo(tipo);
-		nodo.agregarHijo(id);
+		nodo.agregarHijo(ident);
 		nodo.agregarHijo(lcomp);
 		return nodo;
 	}
@@ -316,7 +333,7 @@ Nodo DDL_CREATE_OBJECT() :
 {
 	<objeto> t = <id> "(" latr = L_DEC_ATR() ")"
 	{
-		nodo.agregarHijos(new Nodo("ID", t.image), latr);
+		nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), latr);
 		return nodo;
 	}
 }
@@ -335,13 +352,13 @@ Nodo L_DEC_ATR() :
 Nodo DEC_ATRIBUTO() :
 {
 	Nodo nodo = new Nodo("ATR");
-	Nodo tipo, id;
+	Nodo tipo;
 	Token t;
 }
 {
 	tipo = TIPO_DATO() t = <id>
 	{
-		nodo.agregarHijos(new Nodo("ID", t.image), tipo);
+		nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), tipo);
 		return nodo;
 	}
 }
@@ -359,7 +376,7 @@ Nodo DDL_CREATE_PROC() :
 {
 	<procedimiento> t = <id> "(" [ larg = L_ARG() ] ")" linstr = CUERPO()
 	{
-		nodo.agregarHijo(new Nodo("ID", t.image));
+		nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		nodo.agregarHijos(larg, linstr);
 		return nodo;
 	}
@@ -378,7 +395,7 @@ Nodo DDL_CREATE_FUNC() :
 {
 	<funcion> t = <id> "(" [ larg = L_ARG() ] ")" tipo = TIPO_DATO_EXT() linstr = CUERPO()
 	{
-		nodo.agregarHijo(new Nodo("ID", t.image));
+		nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		nodo.agregarHijos(larg, linstr);
 		nodo.agregarHijo(tipo);
 		return nodo;
@@ -396,8 +413,8 @@ Nodo DDL_CREATE_USER() :
 {
 	<usuario> u = <id> <colocar> <password> "=" p = <cadena>
 	{
-		nodo.agregarHijo(new Nodo("ID", t.image));
-		nodo.agregarHijo(new Nodo("CAD", t.image.substring(1, t.image.length() - 1));
+		nodo.agregarHijo(new Nodo("ID", u.image, u.beginLine, u.beginColumn));
+		nodo.agregarHijo(new Nodo("CAD", p.image.substring(1, p.image.length() - 1), p.beginLine, p.beginColumn));
 		return nodo;
 	}
 }
@@ -430,7 +447,7 @@ Nodo DDL_ALTER_TABLE() :
 							|comp = QUIT() 	{nodo = new Nodo("ALTER_TABLE_QUIT");}
 						)
 						{
-							nodo.agregarHijo(new Nodo("ID", t.image));
+							nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 							nodo.agregarHijo(comp);
 							return nodo;
 						}
@@ -459,7 +476,7 @@ Nodo DDL_ALTER_OBJECT() :
 							|comp = QUIT() {nodo = new Nodo("ALTER_OBJECT_QUIT");}
 						)
 						{
-							nodo.agregarHijo(new Nodo("ID", t.image));
+							nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 							nodo.agregarHijo(comp);
 							return nodo;
 						}
@@ -476,8 +493,8 @@ Nodo DDL_ALTER_USER() :
 {
 	<usuario> u = <id> <cambiar> <password> "=" p = <cadena>
 	{
-		nodo.agregarHijo(new Nodo("ID", u.image));
-		nodo.agregarHijo(new Nodo("CAD", p.image.substring(1, t.image.length() - 1)));
+		nodo.agregarHijo(new Nodo("ID", u.image, u.beginLine, u.beginColumn));
+		nodo.agregarHijo(new Nodo("CAD", p.image.substring(1, p.image.length() - 1), p.beginLine, p.beginColumn));
 		return nodo;
 	}
 }
@@ -512,7 +529,7 @@ Nodo DML_INSERT() :
 {
 	<insertar> <en> <tabla> t = <id>  [LOOKAHEAD(2) "(" lid = L_ID() ")" <valores> ] "(" lexp = L_EXP() ")"
 	{
-		nodo.agregarHijo(new Nodo("ID", t.image));
+		nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		nodo.agregarHijos(lid, lexp);
 		return nodo;
 	}
@@ -525,13 +542,13 @@ Nodo DML_INSERT() :
 Nodo DML_UPDATE() :
 {
 	Nodo nodo = new Nodo("UPDATE");
-	Nodo lid, lexp, cond;
+	Nodo lid, lexp, cond = null;
 	Token t;
 }
 {
 	<actualizar> <tabla> t = <id> "(" lid = L_ID() ")" <valores> "(" lexp = L_EXP() ")" [ <donde> cond = COND() ]
 	{
-		nodo.agregarHijo(new nodo("ID", t.image));
+		nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		nodo.agregarHijos(lid, lexp);
 		if(cond != null) nodo.agregarHijo(cond);
 		return nodo;
@@ -544,13 +561,13 @@ Nodo DML_UPDATE() :
 Nodo DML_DELETE() :
 {
 	Nodo nodo = new Nodo("DELETE_FROM_TABLE");
-	Nodo cond;
+	Nodo cond = null;
 	Token t;
 }
 {
 	<borrar> <en> <tabla> t = <id> 	[ <donde> cond = COND() ]
 	{
-		nodo.agregarHijo(new Nodo("ID", t.image));
+		nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		if(cond != null) nodo.agregarHijo(cond);
 		return nodo;
 	}
@@ -563,7 +580,7 @@ Nodo DML_SELECT() :
 {
 	Nodo nodo = new Nodo("SELECT");
 	Nodo select, from;
-	Nodo where, cond, order;
+	Nodo where = null, cond, order = null;
 
 }
 {
@@ -618,12 +635,12 @@ Nodo DCL_OTORGAR() :
 }
 {
 	<otorgar> <permisos> u = <id> "," db = <id> "."	(
-														 o = <id> 	{objeto = new Nodo("ID", o.image);}
+														 o = <id> 	{objeto = new Nodo("ID", o.image, o.beginLine, o.beginColumn);}
 														|"*" 		{objeto = new Nodo("*");}
 													)
 	{
-		nodo.agregarHijo(new Nodo("ID", u.image));
-		nodo.agregarHijo(new Nodo("ID", db.image));
+		nodo.agregarHijo(new Nodo("ID", u.image, u.beginLine, u.beginColumn));
+		nodo.agregarHijo(new Nodo("ID", db.image, db.beginLine, db.beginColumn));
 		nodo.agregarHijo(objeto);
 		return  nodo;
 	}
@@ -640,12 +657,12 @@ Nodo DCL_DENEGAR() :
 }
 {
 	<denegar> <permisos> u = <id> "," db = <id> "."	(
-														 o = <id> 	{objeto = new Nodo("ID", o.image);}
+														 o = <id> 	{objeto = new Nodo("ID", o.image, o.beginLine, o.beginColumn);}
 														|"*" 		{objeto = new Nodo("*");}
 													)
 	{
-		nodo.agregarHijo(new Nodo("ID", u.image));
-		nodo.agregarHijo(new Nodo("ID", db.image));
+		nodo.agregarHijo(new Nodo("ID", u.image, u.beginLine, u.beginColumn));
+		nodo.agregarHijo(new Nodo("ID", db.image, db.beginLine, db.beginColumn));
 		nodo.agregarHijo(objeto);
 		return  nodo;
 	}
@@ -686,13 +703,13 @@ Nodo SSL() : {Nodo nodo;}
 Nodo SSL_DEC_VAR_OBJ() :
 {
 	Nodo nodo = new Nodo("DEC");
-	Nodo lvar, tipo, exp;
+	Nodo lvar, tipo, exp = null;
 	Token t;
 }
 {
 	<declarar> lvar = L_VAR()	(
 									 tipo = TIPO_DATO() [ "=" exp = EXPRESION() ]
-									|t = <id>	{tipo = new Nodo("TIPO", t.image);}
+									|t = <id>	{tipo = new Nodo("TIPO", t.image, t.beginLine, t.beginColumn);}
 								)
 								{
 									nodo.agregarHijos(lvar, tipo);
@@ -708,14 +725,14 @@ Nodo SSL_ASG_VAR_ATR() :
 {
 	Nodo nodo = new Nodo("=");
 	Nodo obj, exp;
-	Token var, id;
+	Token v, ident;
 }
 {
-	var = <var>	{obj = new Nodo("VAR", var.image);}	[
-														"." id = <id>	{
+	v = <var>	{obj = new Nodo("VAR", v.image.substring(1, v.image.length()), v.beginLine, v.beginColumn);}	[
+														"." ident = <id>	{
 																			obj = new Nodo(".");
-																			obj.agregarHijo(new Nodo("VAR", var.image));
-																			obj.agregarHijo(new Nodo("ID", id.image));
+																			obj.agregarHijo(new Nodo("VAR", v.image.substring(1, v.image.length()), v.beginLine, v.beginColumn));
+																			obj.agregarHijo(new Nodo("ID", ident.image, ident.beginLine, ident.beginColumn));
 																		}
 													]
 	"=" exp = EXPRESION() 	{
@@ -730,7 +747,7 @@ Nodo SSL_ASG_VAR_ATR() :
 Nodo SSL_SI() :
 {
 	Nodo nodo = new Nodo("IF");
-	Nodo cond, nt, nf;
+	Nodo cond, nt, nf = null;
 }
 {
 	<si> cond = CONDICION() nt = CUERPO() [ <sino> nf = CUERPO()]
@@ -747,7 +764,7 @@ Nodo SSL_SI() :
 Nodo SSL_SELECCIONA() :
 {
 	Nodo nodo = new Nodo("SWITCH");
-	Nodo exp, lcase, def;
+	Nodo exp, lcase, def = null;
 }
 {
 	<selecciona> "(" exp = EXPRESION() ")" "{" lcase = L_CASO() [ <defecto> ":" def = INSTRUCCIONES() ] "}"
@@ -761,11 +778,11 @@ Nodo SSL_SELECCIONA() :
 Nodo L_CASO() :
 {
 	Nodo nodo = new Nodo("LCASE");
-	Nodo caso;
+	Nodo c;
 }
 {
-	caso = CASO()	{nodo.agregarHijo(caso);}
-	( caso = CASO()	{nodo.agregarHijo(caso);})*
+	c = CASO()		{nodo.agregarHijo(c);}
+	( c = CASO()	{nodo.agregarHijo(c);})*
 	{return nodo;}
 }
 
@@ -784,9 +801,9 @@ Nodo CASO() :
 
 Nodo VAL_CASO() : {Token t;}
 {
-	 t = <cadena>	{return new Nodo("CAD", t.image.substring(1, t.image.length() - 1));}
-	|t = <entero>	{return new Nodo("ENT", t.image);}
-	|t = <doble>	{return new Nodo("DOB", t.image);}
+	 t = <cadena>	{return new Nodo("CAD", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
+	|t = <entero>	{return new Nodo("ENT", t.image, t.beginLine, t.beginColumn);}
+	|t = <doble>	{return new Nodo("DOB", t.image, t.beginLine, t.beginColumn);}
 }
 
 /**************************************************************************************************************
@@ -804,7 +821,7 @@ Nodo SSL_PARA() :
 					 "++"	{exp =new Nodo("++");}
 					|"--" 	{exp =new Nodo("--");}
 				)
-				{exp.agregarHijo(new Nodo("VAR", dec.getHijo(0).getHij(0).valor));}
+				{exp.agregarHijo(new Nodo("VAR", dec.getHijo(0).getHijo(0).valor));}
 			")" lsent = CUERPO()
 								{
 									nodo.agregarHijos(dec, cond);
@@ -918,8 +935,8 @@ Nodo BACKUP() :
 					|<completo> {nodo = new Nodo("BACKUP_COMPLETO");}
 				) ddbb = <id> file = <id>
 				{
-					nodo.agregarHijo(new Nodo("ID", ddbb.image));
-					nodo.agregarHijo(new Nodo("ID", file.image));
+					nodo.agregarHijo(new Nodo("ID", ddbb.image, ddbb.beginLine, ddbb.beginColumn));
+					nodo.agregarHijo(new Nodo("ID", file.image, file.beginLine, file.beginColumn));
 					return nodo;
 				}
 }
@@ -936,7 +953,7 @@ Nodo RESTAURAR() :
 	<restaurar>	(
 					 <usqldump> {nodo = new Nodo("RESTAURAR_USQLDUMP");}
 					|<completo> {nodo = new Nodo("RESTAURAR_COMPLETO");}
-				) [t = <cadena>	{nodo.agregarHijo("CAD", t.image.substring(1, t.image.length() - 1));}]
+				) [t = <cadena>	{nodo.agregarHijo(new Nodo("CAD", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn));}]
 				{return nodo;}
 }
 
@@ -957,26 +974,34 @@ Nodo COND() : {Nodo nodo;}
 	nodo = COND_OR()	{return nodo;}
 }
 
-Nodo COND_OR() : {Nodo nodo, hijo;}
+Nodo COND_OR() :
+{
+	Nodo nodo, hijo;
+	Token t;
+}
 {
 	nodo = COND_AND()	(
-							"||" hijo = COND_AND()	{
-														Nodo aux = new Nodo("||");
-														aux.agregarHijos(nodo, hijo);
-														nodo = aux;
-													}
+							t = <or> hijo = COND_AND()	{
+															Nodo aux = new Nodo(t.image, t.beginLine, t.beginColumn);
+															aux.agregarHijos(nodo, hijo);
+															nodo = aux;
+														}
 						)*
 						{return nodo;}
 }
 
-Nodo COND_AND() : {Nodo nodo, hijo;}
+Nodo COND_AND() :
+{
+	Nodo nodo, hijo;
+	Token t;
+}
 {
 	nodo = COND_NOT()	(
-							"&&" hijo = COND_NOT()	{
-														Nodo aux = new Nodo("&&");
-														aux.agregarHijos(nodo, hijo);
-														nodo = aux;
-													}
+							t = <and> hijo = COND_NOT()	{
+															Nodo aux = new Nodo(t.image, t.beginLine, t.beginColumn);
+															aux.agregarHijos(nodo, hijo);
+															nodo = aux;
+														}
 						)*
 						{return nodo;}
 }
@@ -984,12 +1009,12 @@ Nodo COND_AND() : {Nodo nodo, hijo;}
 Nodo COND_NOT() :
 {
 	Nodo nodo;
-	String token;
+	Token t = null;
 }
 {
-	[ "!" {token = "!";}] nodo = REL()	{
-											if(token != null){
-												Nodo result = new Nodo(token);
+	[ t = <not>] nodo = REL()	{
+											if(t != null){
+												Nodo result = new Nodo(t.image, t.beginLine, t.beginColumn);
 												result.agregarHijo(nodo);
 												nodo = result;
 											}
@@ -1011,16 +1036,16 @@ Nodo REL() : {Nodo nodo, hijo, op;}
 Nodo AR_ADD() :
 {
 	Nodo nodo, hijo;
-	String token;
+	Token t;
 }
 {
 	nodo = AR_MUL()	(
 						(
-							 "+"	{token = "+";}
-							|"-"	{token = "-";}
+							 t = <mas>
+							|t = <menos>
 						)
 						hijo = AR_MUL()	{
-											Nodo aux = new Nodo(token);
+											Nodo aux = new Nodo(t.image, t.beginLine, t.beginColumn);
 											aux.agregarHijos(nodo, hijo);
 											nodo = aux;
 										}
@@ -1031,16 +1056,16 @@ Nodo AR_ADD() :
 Nodo AR_MUL() :
 {
 	Nodo nodo, hijo;
-	String token;
+	Token t;
 }
 {
 	nodo = AR_POW()	(
 						(
-							 "*"	{token = "*";}
-							|"/" 	{token = "/"}
+							 t = <prod>
+							|t = <dividido>
 						)
 						hijo = AR_POW()	{
-											Nodo aux = new Nodo(token);
+											Nodo aux = new Nodo(t.image, t.beginLine, t.beginColumn);
 											aux.agregarHijos(nodo, hijo);
 											nodo = aux;
 										}
@@ -1048,11 +1073,15 @@ Nodo AR_MUL() :
 					{return nodo;}
 }
 
-Nodo AR_POW() : {Nodo nodo, hijo;}
+Nodo AR_POW() :
+{
+	Nodo nodo, hijo;
+	Token t;
+}
 {
 	nodo = AR_B()	(
-						"^" hijo = AR_B()	{
-												Nodo aux = new Nodo("^");
+						t = <pow> hijo = AR_B()	{
+												Nodo aux = new Nodo(t.image, t.beginLine, t.beginColumn);
 												aux.agregarHijos(nodo, hijo);
 												nodo = aux;
 											}
@@ -1062,39 +1091,46 @@ Nodo AR_POW() : {Nodo nodo, hijo;}
 
 Nodo AR_B() :
 {
-	Nodo nodo;
+	Nodo nodo, aux;
 	Token t;
 }
 {
-
-	 "(" nodo = EXPRESION() ")"
+	(
+	 t = <menos> nodo = AR_B()	{
+									 aux = new Nodo("_", t.beginLine, t.beginColumn);
+									 aux.agregarHijo(nodo);
+									 nodo = aux;
+								 }
+	| "(" nodo = EXPRESION() ")"
 	|LOOKAHEAD(2) nodo = VAL()
-	|t = <var> {nodo = new Nodo("VAR", t.image);} 	[
+	|t = <var> {nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);} 	[
 														"." t = <id>	{
-																			Nodo aux = new Nodo(".");
+																			aux = new Nodo(".");
 																			aux.agregarHijo(nodo);
-																			aux.agregarHijo(new Nodo("ID", t.image));
+																			aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 																			nodo = aux;
 																		}
 		 											]
 	|LOOKAHEAD(3) nodo = CALL()
-	|t = <id>	{nodo = new Nodo("ID", t.image);}
+	|t = <id>	{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}
 	|nodo = SSL_FECHA()
 	|nodo = SSL_FECHA_HORA()
 	|nodo = SSL_SELECCIONA()
 	|nodo = SSL_CONTAR()
+	)
+	{return nodo;}
 }
 
-void CALL() :
+Nodo CALL() :
 {
 	Nodo nodo = new Nodo("CALL");
-	Nodo lexp;
+	Nodo lexp = null;
 	Token t;
 }
 {
 	t = <id> "(" [ lexp = L_EXP() ] ")"
 	{
-		nodo.agregarHijo(new Nodo("ID", t.image));
+		nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		if(lexp != null) nodo.agregarHijo(lexp);
 		return nodo;
 	}
@@ -1155,7 +1191,7 @@ Nodo ARG() :
 	tipo = TIPO_DATO_EXT() t = <var>
 	{
 		nodo.agregarHijo(tipo);
-		nodo.agregarHijo(new Nodo("VAR", t.image));
+		nodo.agregarHijo(new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn));
 		return nodo;
 	}
 }
@@ -1167,19 +1203,10 @@ Nodo L_ID() :
 	Token t;
 }
 {
-	t = <id> 		{nodo.agregarHijo(new Nodo("ID", t.image));}
-	( "," t = <id>	{nodo.agregarHijo(new Nodo("ID", t.image));})*
+	t = <id> 		{nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));}
+	( "," t = <id>	{nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));})*
 	{return nodo;}
 }
-/*
-Nodo L_VAL() :
-{
-	Nodo nodo = new Nodo("LVAL");
-}
-{
-	VAL() ( "," VAL() )*
-}
-*/
 
 Nodo VAL() :
 {
@@ -1194,7 +1221,7 @@ Nodo VAL() :
 	|t = <cadena>		{nodo = new Nodo("CAD", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha>		{nodo = new Nodo("FECHA", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha_hora>	{nodo = new Nodo("FECHAHORA", t.image, t.beginLine, t.beginColumn);}
-	|t = <var>			{nodo = new Nodo("VAR", t.image, t.beginLine, t.beginColumn);}
+	|t = <var>			{nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);}
 	)
 	{return nodo;}
 }
@@ -1205,8 +1232,8 @@ Nodo L_VAR() :
 	Token t;
 }
 {
-	t = <var>		{nodo.agregarHijo(new Nodo("VAR", t.image));}
-	( "," t = <var> {nodo.agregarHijo(new Nodo("VAR", t.image));} )*
+	t = <var>		{nodo.agregarHijo(new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn));}
+	( "," t = <var> {nodo.agregarHijo(new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn));} )*
 	{return nodo;}
 }
 
@@ -1253,7 +1280,7 @@ Nodo TIPO_DATO_EXT() :
 {
 	(
 	nodo = TIPO_DATO()
-	|t = <id>	{nodo = new Nodo("ID", t.image);}
+	|t = <id>	{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}
 	)
 	{return nodo;}
 }
@@ -1271,20 +1298,27 @@ Nodo COMPLEMENTO_CAMPO() :
 	|<llave_primaria>					{nodo = new Nodo("PK");}
 	|<llave_foranea> c = <id> r = <id>	{
 											nodo = new Nodo("FK");
-											nodo.agregarHijo(new Nodo("ID", c.image));
-											nodo.agregarHijo(new Nodo("ID", r.image));
+											nodo.agregarHijo(new Nodo("ID", c.image, c.beginLine, c.beginColumn));
+											nodo.agregarHijo(new Nodo("ID", r.image, r.beginLine, r.beginColumn));
 										}
 	|<unico>							{nodo = new Nodo("UNIQUE");}
 	)
 	{return nodo;}
 }
 
-Nodo OPREL() : {Nodo nodo;}
+Nodo OPREL() :
 {
-	 "=="	{return new Nodo("==");}
-	|"!="	{return new Nodo("!=");}
-	|"<"	{return new Nodo("<");}
-	|"<="	{return new Nodo("<=");}
-	|">"	{return new Nodo(">");}
-	|">="	{return new Nodo(">=");}
+	Nodo nodo;
+	Token t;
+}
+{
+	 (
+	  t = <igual>
+	 |t = <diferente>
+	 |t = <menor>
+	 |t = <menorigual>
+	 |t = <mayor>
+	 |t = <mayorigual>
+	 )
+	 {return new Nodo(t.image, t.beginLine, t.beginColumn);}
 }
