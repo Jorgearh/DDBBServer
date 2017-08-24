@@ -6,7 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import static servidorfisql.Constantes.FILE_AST_XML;
 import servidorfisql.gui.Consola;
+import servidorfisql.interpretes.Analizadores.Grafica;
+import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Analizadores.XML.analizador.ParseException;
+import servidorfisql.interpretes.Analizadores.XML.analizador.ParserXML;
 import servidorfisql.interpretes.InterpreteXML;
 
 /**
@@ -33,6 +39,7 @@ public class Archivos {
     private static InterpreteXML interpreteXML;
     
     public static Usuarios usuarios;
+    public static BBDD bbdd;
     
     
     public static void inicializarSistemaDeArchivos(){
@@ -40,6 +47,7 @@ public class Archivos {
         interpreteXML = new InterpreteXML();
         
         usuarios = new Usuarios();
+        bbdd = new BBDD();
         
         if(!folder.exists()){
             //CREAR DIRECTORIO RAIZ FISQL
@@ -68,22 +76,45 @@ public class Archivos {
     
     
     public static void cargarUsuarios(){
-        String xml;
+        /*String xml;
         
         xml = leerArchivo(usersFile);
-        interpreteXML.analizar(xml);
+        interpreteXML.analizar(xml);*/
+        
+        Nodo astUsuarios = levantarXML(usersFile);
+        
+        for (Nodo user : astUsuarios.hijos) {
+            String username = user.getHijo(0).getHijo(0).valor;
+            String password = user.getHijo(1).getHijo(0).valor;
+            
+            usuarios.agregarUsuario(username, password);
+        }
+        
         {Archivos.usuarios.imprimirUsuarios();}
     }
     
     public static void guardarUsuarios(){
-        String xml;
-        
-        xml = Archivos.usuarios.getXmlUsuarios();
+        String xml = Archivos.usuarios.getXmlUsuarios();
         escribirArchivo(usersFile, xml);
     }
     
     
+    /***
+     * 
+     * @param user 
+     */
     public static void cargarInformacion(String user){
+        Nodo astMasterFile = levantarXML(masterFile);
+        
+        for(Nodo astBD : astMasterFile.hijos){
+            String id = astBD.getHijo(0).getHijo(0).valor;
+            String path = astBD.getHijo(1).getHijo(0).valor;
+
+            Archivos.bbdd.agregarBD(id, path);
+            Consola.write("");
+        }
+        
+        Archivos.bbdd.cargarBBDD();
         
     }
     
@@ -96,9 +127,30 @@ public class Archivos {
     
     
     
+    public static Nodo levantarXML(String path){
+        ParserXML parserXML;
+        Grafica grafica = new Grafica();
+        String xml;
+        Nodo astXML = null;
+        
+        xml = leerArchivo(path);
+        
+        try{
+            parserXML = new ParserXML(new StringReader(xml));
+            astXML = parserXML.INI();
+            grafica.graficar(astXML, FILE_AST_XML);
+            
+        } catch (ParseException ex) {
+            Consola.write(ex.getLocalizedMessage());
+            Consola.write("ERROR EN EL PARSEO DE ARCHIVO XML");
+        } catch (IOException ex) {
+            Consola.write(ex.getLocalizedMessage());
+        }
+        
+        return astXML;
+    }
     
-    
-    private static String leerArchivo(String path){
+    static String leerArchivo(String path){
         File f;
         FileReader fr;
         BufferedReader br;

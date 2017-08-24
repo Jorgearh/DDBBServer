@@ -3,8 +3,6 @@ package servidorfisql.interpretes;
 import servidorfisql.Constantes;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Grafica;
 import servidorfisql.interpretes.Analizadores.Nodo;
@@ -54,8 +52,7 @@ public class InterpreteXML implements Constantes{
                 cargarUsuarios(ast);
                 break;
             case "MasterFile":
-                break;
-            case "DataBaseFile":
+                cargaArchivoMaestro(ast);
                 break;
             default:
                 Consola.write("Archivo no reconocido: " + fileName);
@@ -72,6 +69,31 @@ public class InterpreteXML implements Constantes{
             
             Archivos.usuarios.agregarUsuario(username, password);
         }
+    }
+    
+    private void cargaArchivoMaestro(Nodo ast){
+        
+        /***
+         * Carga a memoria las bbdd
+         * Solo carga el nombre y la ruta del archivo de la bd
+         */
+        for(Nodo astBD : ast.hijos){
+            cargarBD(astBD);
+            Consola.write("");
+        }
+        
+        /***
+         * Construye las bbdd
+         * Levanta a memoria las bases de datos existentes
+         */
+        Archivos.bbdd.cargarBBDD();
+    }
+    
+    private void cargarBD(Nodo astBD){
+        String id = astBD.getHijo(0).getHijo(0).valor;
+        String path = astBD.getHijo(1).getHijo(0).valor;
+        
+        Archivos.bbdd.agregarBD(id, path);
     }
     
 }

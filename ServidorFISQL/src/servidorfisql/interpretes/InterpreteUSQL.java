@@ -33,6 +33,7 @@ public class InterpreteUSQL implements Constantes{
             astUSQL = parserUSQL.INI();
             grafica.graficar(astUSQL, FILE_AST_USQL);
             
+            
         } catch (ParseException ex) {
             Logger.getLogger(InterpreteUSQL.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -41,5 +42,25 @@ public class InterpreteUSQL implements Constantes{
         
         return response;
     }
+    
+    private String interpretar(Nodo lsent){
+        String response = null;
+        
+        for(Nodo sent : lsent.hijos){
+            String idSent = sent.token;
+            
+            switch(idSent){
+                
+            }
+        }
+        
+        
+        return response;
+    }
+    
+    private void interpretarDDL(Nodo sent){
+        
+    }
+    
     
 }

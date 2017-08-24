@@ -35,11 +35,6 @@ public class Consola extends javax.swing.JFrame {
         return dateFormat.format(date);
     }
     
-    private static int asdf(){
-        Consola.write("HOLA MUNDO");
-        return 1;
-    }
-    
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
