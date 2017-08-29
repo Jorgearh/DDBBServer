@@ -7,13 +7,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static servidorfisql.Constantes.FILE_AST_XML;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Grafica;
 import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Analizadores.USQL.analizador.ParserUSQL;
 import servidorfisql.interpretes.Analizadores.XML.analizador.ParseException;
 import servidorfisql.interpretes.Analizadores.XML.analizador.ParserXML;
-import servidorfisql.interpretes.InterpreteXML;
+import servidorfisql.interpretes.InterpreteUSQL;
 
 /**
  *
@@ -36,7 +39,6 @@ public class Archivos {
     
     
     private static File folder;
-    private static InterpreteXML interpreteXML;
     
     public static Usuarios usuarios;
     public static BBDD bbdd;
@@ -44,7 +46,6 @@ public class Archivos {
     
     public static void inicializarSistemaDeArchivos(){
         folder = new File(rootDir);
-        interpreteXML = new InterpreteXML();
         
         usuarios = new Usuarios();
         bbdd = new BBDD();
@@ -76,10 +77,6 @@ public class Archivos {
     
     
     public static void cargarUsuarios(){
-        /*String xml;
-        
-        xml = leerArchivo(usersFile);
-        interpreteXML.analizar(xml);*/
         
         Nodo astUsuarios = levantarXML(usersFile);
         
@@ -101,25 +98,16 @@ public class Archivos {
     
     /***
      * 
-     * @param user 
      */
-    public static void cargarInformacion(String user){
-        Nodo astMasterFile = levantarXML(masterFile);
+    public static void cargarInformacion(){       
         
-        for(Nodo astBD : astMasterFile.hijos){
-            String id = astBD.getHijo(0).getHijo(0).valor;
-            String path = astBD.getHijo(1).getHijo(0).valor;
-
-            Archivos.bbdd.agregarBD(id, path);
-            Consola.write("");
-        }
-        
-        Archivos.bbdd.cargarBBDD();
+        Archivos.bbdd.cargarMaserFile(masterFile);
         
     }
     
     public static void guardarInformacion(){
-        
+        Archivos.bbdd.guardarMasterFile(masterFile);
+        Archivos.bbdd.guardarBBDD();
     }
     
     
@@ -148,6 +136,20 @@ public class Archivos {
         }
         
         return astXML;
+    }
+    
+    public static Nodo parsearUSQL(String instruccion){
+        ParserUSQL parserUSQL;
+        Nodo astUSQL = null;
+        
+        try {
+            parserUSQL = new ParserUSQL(new StringReader(instruccion));
+            astUSQL = parserUSQL.INI();
+        } catch (servidorfisql.interpretes.Analizadores.USQL.analizador.ParseException ex) {
+            Consola.write(ex.getLocalizedMessage());
+        }
+        
+        return astUSQL;
     }
     
     static String leerArchivo(String path){
@@ -184,7 +186,7 @@ public class Archivos {
         return texto;
     }
     
-    private static void escribirArchivo(String path, String content){
+    static void escribirArchivo(String path, String content){
         FileWriter fw;
         BufferedWriter bw;
 

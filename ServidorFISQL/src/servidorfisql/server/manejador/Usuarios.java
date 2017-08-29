@@ -54,7 +54,7 @@ public class Usuarios {
     public String getXmlUsuarios(){
         String xml = "";
         
-        xml = "<UsersFile>\n";
+        xml += "<UsersFile>\n";
         
         for(Usuario u : this.usuarios.values()){
             xml += "    <user>\n"

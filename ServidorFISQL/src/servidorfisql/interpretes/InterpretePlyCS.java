@@ -112,8 +112,7 @@ public class InterpretePlyCS {
             if(Archivos.usuarios.matchesPassword(user, password)){
                 
                 Server.clientes.setClient(pw, user);
-                /*Sube a memoria la informacion asociada al usuario logeado*/
-                Archivos.cargarInformacion(user);
+                
                 
                 response = "[\n" +
                             "	\"paquete\": \"login\",\n" +
@@ -155,9 +154,6 @@ public class InterpretePlyCS {
      */
     private void logout(PrintWriter pw){
         
-        /*Grabar toda la informacion asociada al usuario que cierra sesion*/
-        Archivos.guardarInformacion();
-        
         Consola.write("Cerrada sesion de usuario [" + Server.clientes.getUsername(pw) + "]. "
                     + "Cliente [" + pw.toString() + "] desconectado...");
         Server.clientes.removeClient(pw);
@@ -167,8 +163,9 @@ public class InterpretePlyCS {
     
     
     private String usql(int codigo, String usql){
-        
-        return interpreteUSQL.analizar(usql);
+        //return interpreteUSQL.analizar(usql);
+        Nodo astUSQL = Archivos.parsearUSQL(usql);
+        return interpreteUSQL.interpretar(astUSQL);
     }
     
     

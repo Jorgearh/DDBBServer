@@ -1,22 +1,32 @@
 package servidorfisql.gui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JFrame;
 import servidorfisql.server.Server;
 
 /**
  *
  * @author jorge
  */
-public class Consola extends javax.swing.JFrame {
+public class Consola extends javax.swing.JFrame{
 
     
     private String prompt;
-    private boolean running;
+    private static boolean running;
     
     public Consola() {
         initComponents();
+        
+        this.setVisible(true);
+        
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        this.addWindowListener(new AreYouSure());
         
         this.running = false;
         this.jbRestart.setEnabled(false);
@@ -54,9 +64,10 @@ public class Consola extends javax.swing.JFrame {
         consola.setEditable(false);
         consola.setBackground(java.awt.Color.darkGray);
         consola.setColumns(20);
-        consola.setFont(new java.awt.Font("Dialog", 1, 15)); // NOI18N
+        consola.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         consola.setForeground(java.awt.Color.white);
         consola.setRows(5);
+        consola.setTabSize(4);
         jScrollPane1.setViewportView(consola);
 
         jToolBar1.setRollover(true);
@@ -100,7 +111,7 @@ public class Consola extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 788, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 894, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -109,7 +120,7 @@ public class Consola extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -143,6 +154,8 @@ public class Consola extends javax.swing.JFrame {
             Consola.write("Existe");
         else
             Consola.write("No existe");
+        
+        Consola.write(Consola.running + "");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -188,4 +201,25 @@ public class Consola extends javax.swing.JFrame {
     private javax.swing.JButton jbRestart;
     private javax.swing.JButton jbStart;
     // End of variables declaration//GEN-END:variables
+
+    private class AreYouSure extends WindowAdapter{
+        @Override
+        public void windowClosing(WindowEvent e){
+            System.out.println("hola mundo");
+        Consola.write("asdf");
+//            if(Consola.running){
+                int result = javax.swing.JOptionPane.showConfirmDialog(Consola.this, 
+                                                                    "Stop the server?", 
+                                                                    "Stopp Server", 
+                                                                    javax.swing.JOptionPane.YES_NO_OPTION,
+                                                                    javax.swing.JOptionPane.QUESTION_MESSAGE);
+                if(result == javax.swing.JOptionPane.YES_OPTION){
+                    Server.detenerServidor();
+                    System.exit(0);
+                }
+//            }else
+//                System.exit(0);
+        }
+    }
+    
 }

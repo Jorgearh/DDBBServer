@@ -1,9 +1,6 @@
 package servidorfisql.server;
 
 import servidorfisql.server.manejador.Archivos;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
 import servidorfisql.comunicacion.Clientes;
 import servidorfisql.comunicacion.ServerStart;
 import servidorfisql.gui.Consola;
@@ -31,12 +28,16 @@ public class Server {
         Archivos.cargarUsuarios();
         Consola.write("Usuarios cargados exitosamente...");
         
+        /*Cargar BBDD*/
+        Archivos.cargarInformacion();
+        
         Consola.write("Servidor iniciado...");
     }
     
     public static void detenerServidor(){
         try 
         {
+            Archivos.guardarInformacion();
             Thread.sleep(5000);                 //5000 milliseconds is five second.
         } 
         catch(InterruptedException ex) 
