@@ -1,7 +1,9 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
+import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.server.Server;
 
 /**
  *
@@ -14,8 +16,14 @@ public class Tablas {
         this.tablas = new HashMap<>();
     }
     
+    
     public void cargarTablas(Nodo tablas){
+        Consola.writeln("Cargando tablas...");
+        int cont = 1;
+       
         for(Nodo tabla : tablas.hijos){
+            Consola.writeln("    tabla" + cont++ + "/" + tablas.hijos.size());
+            
             Tabla t = new Tabla(tabla);
             this.tablas.put(t.name, t);
         }
@@ -39,6 +47,28 @@ public class Tablas {
             t.guardarRowsFile();
         }
     }
+    
+    
+    
+    
+    public boolean existe(String id){
+        return this.tablas.containsKey(id);
+    }
+    
+    public boolean existeColumna(String idTable, String idCol){
+        return this.tablas.get(idTable).columns.existe(idCol);
+    }
+    
+    public String getTipoColumna(String idTable, String idCol){
+        return this.tablas.get(idTable).columns.getTipoColumna(idCol);
+    }
+    
+    
+    
+    public void crearTabla(String idTable, Nodo lcampo, String rowsPath){
+        Tabla t = new Tabla(idTable, lcampo, rowsPath);
+        this.tablas.put(idTable, t);
+    }
 }
 
 
@@ -48,6 +78,25 @@ class Tabla{
     String rowsPath;
     Columnas columns;
     Nodo records;
+    
+    public Tabla(String idTable, Nodo lcampo, String rowsPath){
+        this.permissions = new Permisos(Server.user);
+        
+        this.name = idTable;
+        
+        this.rowsPath = rowsPath;
+        
+        this.columns = new Columnas();
+        for(Nodo col : lcampo.hijos){
+            String tipo = col.getHijo(0).valor;
+            String idCol = col.getHijo(1).valor;
+            Nodo lcomp = col.getHijo(2);
+            
+            this.columns.crearColumna(tipo, idCol, lcomp);
+        }
+        
+        this.records = new Nodo("RowsFile");
+    }
     
     public Tabla(Nodo tabla){
         Nodo permisos, columnas;
@@ -81,7 +130,7 @@ class Tabla{
         xml += "            <table>\n";
         xml += this.permissions.getXml();
         xml += "                <name>" + this.name + "</name>\n";
-        xml += "                <path>" + this.rowsPath + "</path\n";
+        xml += "                <path>" + this.rowsPath + "</path>\n";
         xml += this.columns.getXml();
         xml += "            </table>\n";
         
@@ -112,4 +161,6 @@ class Tabla{
         
         Archivos.escribirArchivo(this.rowsPath, xml);
     }
+    
+    
 }

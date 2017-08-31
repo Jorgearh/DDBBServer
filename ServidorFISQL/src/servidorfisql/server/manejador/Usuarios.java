@@ -9,7 +9,7 @@ import servidorfisql.gui.Consola;
  * @author jorge
  */
 public class Usuarios {
-    private HashMap<String, Usuario> usuarios;
+    private final HashMap<String, Usuario> usuarios;
     
     public Usuarios(){
         this.usuarios = new HashMap<>();
@@ -19,7 +19,7 @@ public class Usuarios {
         if(!this.usuarios.containsKey(user))
             this.usuarios.put(user, new Usuario(user, pass));
         else
-            Consola.write("El usuario [" + user + "] ya existe.");
+            Consola.writeln("El usuario [" + user + "] ya existe.");
     }
     
     /***
@@ -43,11 +43,11 @@ public class Usuarios {
     
     
     public void imprimirUsuarios(){
-        Consola.write("Usuarios en memoria:");
+        Consola.writeln("Usuarios en memoria:");
         for (Map.Entry<String, Usuario> user : usuarios.entrySet()) {
             Usuario usuario = user.getValue();
             
-            Consola.write("    usuario: " + usuario.getUsername() + " password: " + usuario.getPassword());
+            Consola.writeln("    usuario: " + usuario.getUsername() + " password: " + usuario.getPassword());
         }
     }
     

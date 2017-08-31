@@ -41,10 +41,10 @@ public class InterpretePlyCS {
             response = interpretar(pw, astPlyCS);
             
         }catch(ParseException pe){
-            Consola.write(pe.getMessage());
+            Consola.writeln(pe.getMessage());
             response = "ERROR EN EL PARSEO";
         } catch (IOException ex) {
-            Consola.write(ex.getMessage());
+            Consola.writeln(ex.getMessage());
             response = "ERROR DE IO";
         }
         
@@ -87,7 +87,7 @@ public class InterpretePlyCS {
                 break;
                 
             default:
-                Consola.write("Request invalida. Paquete recibido [" + paquete + "]");
+                Consola.writeln("Request invalida. Paquete recibido [" + paquete + "]");
                 response = "[\"paquete\": \"error\", \"descripcion\": \"request invalida\"]";
                 break;
         }
@@ -112,7 +112,7 @@ public class InterpretePlyCS {
             if(Archivos.usuarios.matchesPassword(user, password)){
                 
                 Server.clientes.setClient(pw, user);
-                
+                Server.user = user;
                 
                 response = "[\n" +
                             "	\"paquete\": \"login\",\n" +
@@ -124,22 +124,11 @@ public class InterpretePlyCS {
                             "]";
                 
             }else{
-                response = "[\n" +
-                            "	\"paquete\": \"error\",\n" +
-                            "	\"validar\": " + codigo + ",\n" +
-                            "	\"tipo\": \"login\",\n" +
-                            "	\"descripcion\" : \"El usuario [" + user + "] invalido.\"\n" +
-                            "	\n" +
-                            "]";
+                
+                response = Error.logico(codigo, "login", "El usuario [" + user + "] invalido.");
             }
         }else{
-            response = "[\n" +
-                        "	\"paquete\": \"error\",\n" +
-                        "	\"validar\": " + codigo + ",\n" +
-                        "	\"tipo\": \"login\",\n" +
-                        "	\"descripcion\" : \"Password invalida para usuario [" + user + "]\"\n" +
-                        "	\n" +
-                        "]";
+            response = Error.logico(codigo, "login", "Password invalida para usuario [" + user + "]");
         }
         
         
@@ -153,19 +142,19 @@ public class InterpretePlyCS {
      * @param pw 
      */
     private void logout(PrintWriter pw){
-        
-        Consola.write("Cerrada sesion de usuario [" + Server.clientes.getUsername(pw) + "]. "
+                Consola.writeln("Cerrada sesion de usuario [" + Server.clientes.getUsername(pw) + "]. "
                     + "Cliente [" + pw.toString() + "] desconectado...");
         Server.clientes.removeClient(pw);
+        Server.user = "ddbbuser";
     }
     
     
     
     
-    private String usql(int codigo, String usql){
+    private String usql(int codigo, String cadUsql){
         //return interpreteUSQL.analizar(usql);
-        Nodo astUSQL = Archivos.parsearUSQL(usql);
-        return interpreteUSQL.interpretar(astUSQL);
+        Nodo astUSQL = Archivos.parsearUSQL(cadUsql);
+        return interpreteUSQL.interpretar(codigo, astUSQL, cadUsql);
     }
     
     

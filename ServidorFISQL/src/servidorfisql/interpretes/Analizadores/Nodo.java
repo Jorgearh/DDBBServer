@@ -12,8 +12,8 @@ public class Nodo {
     public String valor;
     public ArrayList<Nodo> hijos;
     
-    int col;
-    int row;
+    public int col;
+    public int row;
 
     public Nodo() {
         this.token = "";
@@ -77,7 +77,8 @@ public class Nodo {
         if(index < this.hijos.size())
             return this.hijos.get(index);
         else{
-            System.err.println("Error accesando hijo ["+ index +"], solo existen ["+ this.hijos.size()+"] hijos");
+            System.err.println("Error accesando hijo ["+ index +"], el indice mayor es ["+ (this.hijos.size() - 1) +"] hijos");
+            System.err.println("Nodo padre => " + this.token);
             return null;
         }
     }

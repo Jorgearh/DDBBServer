@@ -10,6 +10,30 @@ import servidorfisql.interpretes.Analizadores.Nodo;
 public class Permisos {
     private final ArrayList<String> permisos;
     
+    
+    
+    public Permisos(String user){
+        this.permisos = new ArrayList<>();
+        
+        this.permisos.add("admin");
+        this.otorgar(user);
+    }
+    
+    public void otorgar(String user){
+        if(!this.permisos.contains(user))
+            this.permisos.add(user);
+    }
+    
+    public void denegar(String user){
+        if(this.permisos.contains(user))
+            this.permisos.remove(user);
+    }
+    
+    public boolean existe(String user){
+        return this.permisos.contains(user);
+    }
+    
+    
     public Permisos(){
         this.permisos = new ArrayList<>();
     }
@@ -23,13 +47,13 @@ public class Permisos {
     public String getXml(){
         String xml = "";
         
-        xml += "        <permissions>";
+        xml += "        <permissions>\n";
         
         for(String p : this.permisos){
-            xml += "            <name>" + p + "</name>";
+            xml += "            <name>" + p + "</name>\n";
         }
         
-        xml += "        </permissions>";
+        xml += "        </permissions>\n";
         
         return xml;
     }

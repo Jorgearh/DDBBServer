@@ -1,6 +1,7 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
+import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
 
 /**
@@ -18,8 +19,13 @@ public class Objetos {
     public void cargarObjetos(String path){
         Nodo objectFiles = Archivos.levantarXML(path);
         Objeto obj;
+        int cont = 1;
+        
+        Consola.writeln("Cargando objetos...");
         
         for(Nodo object : objectFiles.hijos){
+            Consola.writeln("    objeto" + cont++ + "/" + objectFiles.hijos.size());
+            
             obj = new Objeto(object);
             this.objetos.put(obj.id, obj);
         }

@@ -1,7 +1,9 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
+import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.server.Server;
 
 /**
  *
@@ -16,24 +18,27 @@ public class BBDD {
     
 
     public void cargarMaserFile(String pathMaster){
+        Consola.writeln("Cargando... ");
+        
+        int cont = 1;
         Nodo astMaster = Archivos.levantarXML(pathMaster);
         
         for(Nodo db : astMaster.hijos){
+            Consola.writeln("    base de datos" + cont++ + "/" + astMaster.hijos.size());
+            
             String id = db.getHijo(0).getHijo(0).valor;
             String path = db.getHijo(1).getHijo(0).valor;
             
             BD bd = new BD(id, path);
             this.bbdd.put(bd.idDB, bd);
         }
-        
     }
     
     
     /***
-     * Recorre los objetos bd
+     * Escribe el archivo maestro.
      * @param path
      */
-    
     public void guardarMasterFile(String path){
         String xml = "";
         
@@ -49,7 +54,7 @@ public class BBDD {
     
     
     /***
-     * Escribe los archivos xml asociados a cada BD
+     * Escribe los archivos xml asociados a cada BD.
      */
     public void guardarBBDD(){
         for(BD bd : this.bbdd.values()){
@@ -58,6 +63,42 @@ public class BBDD {
             bd.objetos.guardarObjectsFile(bd.objectsPath);
             bd.tablas.guardarTableFiles();
         }
+    }
+    
+    
+    
+    public boolean existeBD(String id){
+        return this.bbdd.containsKey(id);
+    }
+    
+    public boolean existeTabla(String idDB, String idTable){
+        return this.bbdd.get(idDB).tablas.existe(idTable);
+    }
+    
+    public boolean existeColumna(String idDB, String idTable, String idCol){
+        return this.bbdd.get(idDB).tablas.existeColumna(idTable, idCol);
+    }
+    
+    public String getTipoColumna(String idDB, String idTable, String idCol){
+        return this.bbdd.get(idDB).tablas.getTipoColumna(idTable, idCol);
+    }
+    
+    
+    public boolean tienePermisos(String idDB, String user){
+        return this.bbdd.get(idDB).permissonsDB.existe(user);
+    }
+    
+    
+    public void crearBD(String idDB, String dirBD, String pathTables){
+        this.bbdd.put(idDB, new BD(idDB, dirBD, pathTables));
+    }
+
+    public void crearTabla(String actualDB, Nodo create) {
+        String idTable = create.getHijo(0).valor;
+        Nodo lcampo = create.getHijo(1);
+        String rowsPath = Archivos.bbddDir + actualDB + "/tables/" + idTable + ".xml";
+        
+        this.bbdd.get(actualDB).tablas.crearTabla(idTable, lcampo, rowsPath);
     }
 }
 
@@ -77,6 +118,33 @@ class BD{
     Metodos metodos;
     Objetos objetos;
     
+    
+    public BD(String idDB, String dirBD, String pathTables){
+        this.permissonsDB = new Permisos(Server.user);
+        
+        this.idDB = idDB;
+        
+        this.pathXmlDB = dirBD + "/" + idDB + ".xml";
+        
+        this.proceduresPath = dirBD + "/methods.xml";
+        
+        this.objectsPath = dirBD + "/objects.xml";
+        
+        this.tablas = new Tablas();
+        this.metodos = new Metodos();
+        this.objetos = new Objetos();
+        
+        
+    }
+    
+    
+    
+    
+    /***
+     * Constructor para levantar una BD a partir de archivos xml
+     * @param id
+     * @param path 
+     */
     public BD(String id, String path){
         Nodo dbFile, permisos, tables;
         
@@ -106,10 +174,10 @@ class BD{
     public String getXmlMaster(){
         String xml = "";
         
-        xml += "        <db>\n";
-        xml += "            <name>" + this.idDB + "</name>";
-        xml += "            <path>" + this.pathXmlDB + "</path>";
-        xml += "        </db>\n";
+        xml += "    <db>\n";
+        xml += "        <name>" + this.idDB + "</name>\n";
+        xml += "        <path>" + this.pathXmlDB + "</path>\n";
+        xml += "    </db>\n";
         
         return xml;
     }

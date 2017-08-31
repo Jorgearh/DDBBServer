@@ -17,11 +17,11 @@
 //LOGOUT
 
 [
-	"paquete": "finalizar"
+	"paquete": "logout"
 ]
 
 //ERROR
-//	
+//
 
 [
 	"paquete": "error",
@@ -34,7 +34,7 @@
 		"columna": 15,
 		"fila": 5
 	]
-	
+
 ]
 
 //USQL
@@ -43,6 +43,12 @@
 	"paquete": "usql",
 	"validar": 1500,
 	"instruccion": "SELECCIONAR * DE usuarios;"
+]
+
+[
+	"paquete": "usql",
+	"validar": 1500,
+	"instruccion": "CREAR BASE_DATOS Proyecto1;"
 ]
 
 //REPORTE
@@ -72,23 +78,23 @@
 ]
 
 //ERROR
-//ERROR LOGIN USUARIO INVALIDO	
+//ERROR LOGIN USUARIO INVALIDO
 
 [
 	"paquete": "error",
 	"validar": 1500,
 	"tipo": "login",
 	"descripcion" : "El usuario [admin] invalido."
-	
+
 ]
 
 //ERROR
-//ERROR LOGIN USUARIO INVALIDO	
+//ERROR LOGIN USUARIO INVALIDO
 
 [
 	"paquete": "error",
 	"validar": 1500,
 	"tipo": "login",
 	"descripcion" : "Password invalida para usuario [admin]"
-	
+
 ]

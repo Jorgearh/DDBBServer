@@ -181,6 +181,7 @@ void ROWSDEF() : {}
 	"<row>"
 		"<type>" TIPO() "</type>"
 		"<name>" <id> "</name>"
+		COMPLEMENTOS()
 	"</row>"
 }
 
@@ -248,9 +249,6 @@ void METODO() : {}
 	"<method>"
 		PERMISSIONS()
 		"<name>" <id> "</name>"
-		"<arguments>"
-			( ARGUMENTS() )*
-		"</arguments>"
 		"<src>"
 			<codigo>
 		"</src>"

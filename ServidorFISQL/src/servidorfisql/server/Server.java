@@ -13,43 +13,47 @@ public class Server {
     
     public static String user = "ddbbserver";
     public static Clientes clientes;
+    public static String actualDB = "";
     
     public static void iniciarServidor(){
         
-        clientes = new Clientes();
+        Consola.writeln("Iniciando servidor...");
         
-        Archivos.inicializarSistemaDeArchivos();
-        Consola.write("Sistema de archivos inicializado exitosamente...");
+        clientes = new Clientes();
         
         Thread starter = new Thread(new ServerStart());
         starter.start();
         
+        /*Iniciar sistema de archivos*/
+        Archivos.inicializarSistemaDeArchivos();
+        
         /*Cargar usuarios*/
         Archivos.cargarUsuarios();
-        Consola.write("Usuarios cargados exitosamente...");
         
         /*Cargar BBDD*/
         Archivos.cargarInformacion();
         
-        Consola.write("Servidor iniciado...");
+        Consola.writeln("Servidor iniciado...\n");
     }
     
     public static void detenerServidor(){
         try 
         {
+            Consola.writeln("Deteniendo el servidor...");
+            
             Archivos.guardarInformacion();
-            Thread.sleep(5000);                 //5000 milliseconds is five second.
+            Thread.sleep(1500);
+            
+            Consola.writeln("Servidor detenido...\n");
         } 
         catch(InterruptedException ex) 
         {
             Thread.currentThread().interrupt();
+            Consola.writeln("Error deteniendo el servidor!!!");
         }
-        
-        Consola.write("Servidor detenido...");
     }
     
     public static void reiniciarServidor(){
-        Consola.write("Servidor reiniciando...");
         detenerServidor();
         iniciarServidor();
     }

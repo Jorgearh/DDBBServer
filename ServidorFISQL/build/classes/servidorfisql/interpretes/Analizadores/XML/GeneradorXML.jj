@@ -93,7 +93,7 @@ Nodo XML() :
 	t = <open> {nodo = new Nodo(t.image.substring(1, t.image.length() - 1));}
 		(
 			 content = CONTENT() {nodo.agregarHijo(content);}
-		)+
+		)*
 	<close>
 	{return nodo;}
 }

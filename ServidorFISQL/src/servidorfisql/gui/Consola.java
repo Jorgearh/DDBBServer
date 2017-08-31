@@ -2,7 +2,6 @@ package servidorfisql.gui;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,19 +22,26 @@ public class Consola extends javax.swing.JFrame{
         initComponents();
         
         this.setVisible(true);
-        
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        
         this.addWindowListener(new AreYouSure());
         
-        this.running = false;
+        Consola.running = false;
         this.jbRestart.setEnabled(false);
     }
 
     
-    public static void write(String mensaje){
+    public static void writeln(String mensaje){
         consola.append(getDateTime() + "@" + Server.user + ">> " + mensaje + "\n");
         consola.setCaretPosition(consola.getDocument().getLength());
+    }
+    
+    public static void write(String mensaje){
+        consola.append(getDateTime() + "@" + Server.user + ">> " + mensaje);
+        consola.setCaretPosition(consola.getDocument().getLength());
+    }
+    
+    public static void append(String mensaje){
+        consola.append(mensaje);
     }
     
     
@@ -149,13 +155,15 @@ public class Consola extends javax.swing.JFrame{
     }//GEN-LAST:event_jbRestartActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        java.io.File dir = new java.io.File("src/servidorfisql/interpretes/Analizadores/PlyCS/analizador/ast/");
-        if(dir.exists())
-            Consola.write("Existe");
-        else
-            Consola.write("No existe");
+        int a, b, c, d;
         
-        Consola.write(Consola.running + "");
+        a = b = c = d = 54;
+        
+        System.out.println("" + a);
+        System.out.println("" + b);
+        System.out.println("" + c);
+        System.out.println("" + d);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -205,20 +213,18 @@ public class Consola extends javax.swing.JFrame{
     private class AreYouSure extends WindowAdapter{
         @Override
         public void windowClosing(WindowEvent e){
-            System.out.println("hola mundo");
-        Consola.write("asdf");
-//            if(Consola.running){
+            if(Consola.running){
                 int result = javax.swing.JOptionPane.showConfirmDialog(Consola.this, 
                                                                     "Stop the server?", 
                                                                     "Stopp Server", 
                                                                     javax.swing.JOptionPane.YES_NO_OPTION,
-                                                                    javax.swing.JOptionPane.QUESTION_MESSAGE);
+                                                                    javax.swing.JOptionPane.WARNING_MESSAGE);
                 if(result == javax.swing.JOptionPane.YES_OPTION){
                     Server.detenerServidor();
                     System.exit(0);
                 }
-//            }else
-//                System.exit(0);
+            }else
+                System.exit(0);
         }
     }
     

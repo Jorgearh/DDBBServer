@@ -1,6 +1,7 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
+import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
 
 /**
@@ -17,8 +18,12 @@ public class Metodos {
     public void cargarMetodos(String path){
         Nodo methodFile = Archivos.levantarXML(path);
         Metodo m;
+        int cont = 1;
+        
+        Consola.writeln("Cargando metodos...");
         
         for(Nodo method : methodFile.hijos){
+            Consola.writeln("    metodo" + cont++ + "/" + methodFile.hijos.size());
             m = new Metodo(method);
             this.metodos.put(m.id, m);
         }

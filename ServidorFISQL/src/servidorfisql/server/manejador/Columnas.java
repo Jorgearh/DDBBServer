@@ -14,23 +14,13 @@ public class Columnas {
         this.columnas = new HashMap<>();
     }
     
+    
     public void cargarColumnas(Nodo columnas){
         for(Nodo c : columnas.hijos){
             Columna col = new Columna(c);
             this.columnas.put(col.id, col);
         }
     }
-    
-    public void agregarColumna(String tipo, String id, boolean pk, boolean fk, String tabla, String columna, boolean nulo, boolean unique, boolean autoinc){
-        if(!this.columnas.containsKey(id)){
-            this.columnas.put(id, new Columna(tipo, id, pk, fk, tabla, columna, nulo, unique, autoinc));
-        }else{
-            /*Responder */
-        }
-    }
-    
-    
-    
     
     public String getXml(){
         String xml = "";
@@ -43,6 +33,22 @@ public class Columnas {
         xml += "            </rows>\n";
         
         return xml;
+    }
+
+      
+    void crearColumna(String tipo, String idCol, Nodo lcomp) {
+        Columna col = new Columna(tipo, idCol, lcomp);
+        this.columnas.put(idCol, col);
+    }
+
+    
+    
+    public boolean existe(String idCol) {
+        return this.columnas.containsKey(idCol);
+    }
+    
+    public String getTipoColumna(String idCol){
+        return this.columnas.get(idCol).tipo;
     }
 }
 
@@ -60,16 +66,33 @@ class Columna{
     boolean nulo;
     boolean unique;
     boolean autoinc;
+    
+    public Columna(String tipo, String id, Nodo lcomp){
+        this.tipo = tipo;
+        this.id = id;
+        
+        this.pk = this.fk = this.nulo = this.unique = this.autoinc = false;
+        this.tabla = this.columna =  "";
+        
+        setComplements(lcomp);
+    }
 
     public Columna(Nodo column){
         Nodo lcomp;
         
-        this.tipo = column.getHijo(0).getHijo(1).valor;
+        this.tipo = column.getHijo(0).getHijo(0).valor;
         this.id = column.getHijo(1).getHijo(0).valor;
+        this.pk = this.fk = this.nulo = this.unique = this.autoinc = false;
+        this.tabla = this.columna =  "";
+        
         lcomp = column.getHijo(2);
         
         
+        setComplements(lcomp);
         
+    }
+    
+    private void setComplements(Nodo lcomp){
         for(Nodo complemento : lcomp.hijos){
             Nodo comp = complemento.getHijo(0);
             
@@ -97,19 +120,7 @@ class Columna{
             }
         }
     }
-     
-    public Columna(String tipo, String id, boolean pk, boolean fk, String tabla, String columna, boolean nulo, boolean unique, boolean autoinc) {
-        this.tipo = tipo;
-        this.id = id;
-        
-        this.pk = pk;
-        this.fk = fk;
-        this.tabla = tabla;
-        this.columna = columna;
-        this.nulo = nulo;
-        this.unique = unique;
-        this.autoinc = autoinc;
-    }
+    
     
     
     public String getXml(){
@@ -117,7 +128,7 @@ class Columna{
         
         xml += "                <row>\n"
              + "                    <type>" + this.tipo + "</type>\n"
-             + "                    <name>" + this.id + "</name\n";
+             + "                    <name>" + this.id + "</name>\n";
         
         xml += getXmlComplementos();
         
@@ -129,22 +140,22 @@ class Columna{
     private String getXmlComplementos(){
         String xml = "                    <complementos>\n";
         
-        if(this.pk) xml += "                        <complemento>PK</complemento>";
+        if(this.pk) xml += "                        <complemento>PK</complemento>\n";
         
         if(this.fk) {
             xml += "                        <complemento>\n"
                  + "                            <FK>\n"
-                 + "                                <tabla>" + this.tabla + "</tabla>"
-                 + "                                <columna>" + this.columna + "</columna>"   
+                 + "                                <tabla>" + this.tabla + "</tabla>\n"
+                 + "                                <columna>" + this.columna + "</columna>\n"   
                  + "                            </FK>\n"   
                  + "                        </complemento>\n";
         }
         
-        if(this.nulo) xml += "                        <complemento>NULL</complemento>";
-        else xml += "                        <complemento>NOT NULL</complemento>";
+        if(this.nulo) xml += "                        <complemento>NULL</complemento>\n";
+        else xml += "                        <complemento>NOT NULL</complemento>\n";
         
-        if(this.unique) xml += "                        <complemento>UNIQUE</complemento>";
-        if(this.autoinc) xml += "                        <complemento>AUTOINC</complemento>";
+        if(this.unique) xml += "                        <complemento>UNIQUE</complemento>\n";
+        if(this.autoinc) xml += "                        <complemento>AUTOINC</complemento>\n";
         
                 xml += "                    </complementos>\n";
         

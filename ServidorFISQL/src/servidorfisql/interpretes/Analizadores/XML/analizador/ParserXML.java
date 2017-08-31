@@ -29,8 +29,6 @@
                     nodo = new Nodo(t.image.substring(1, t.image.length() - 1));
     label_1:
     while (true) {
-      content = CONTENT();
-                                              nodo.agregarHijo(content);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case _text:
       case _integer:
@@ -60,6 +58,8 @@
         jj_la1[0] = jj_gen;
         break label_1;
       }
+      content = CONTENT();
+                                              nodo.agregarHijo(content);
     }
     jj_consume_token(close);
          {if (true) return nodo;}

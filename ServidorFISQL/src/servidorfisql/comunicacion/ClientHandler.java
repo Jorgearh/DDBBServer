@@ -33,7 +33,7 @@ public class ClientHandler extends Thread{
         }
         catch (Exception ex) 
         {
-            Consola.write("Error inesperado en la comunicacion...");
+            Consola.writeln("Error inesperado en la comunicacion...");
         }
 
     }
@@ -46,21 +46,27 @@ public class ClientHandler extends Thread{
         try{
             while ((request = reader.readLine()) != null) {
                 /*ANALIZAR SOLICITUD DE LENGUAJE DE COMUNICACION PLYCS*/
-                Consola.write("Recibido: " + request);
+                Consola.writeln("Recibido: " + request);
             
                 response = interpretePlyCS.analizar(pwClient, request);
-                System.out.println(response);
-                response = response.replace("\n", "").replace("\r", "").replace(" ", "");
                 
-                if(!response.equals("LOGOUT"))
-                    responderCliente(pwClient, response);
+                if(response != null){
+                    
+                    response = response.replace("\n", "").replace("\r", "").replace(" ", "");
+                    System.out.println(response);
+                    
+                    if(!response.equals("LOGOUT"))
+                        responderCliente(pwClient, response);
+                }else{
+                    Consola.writeln("interpretePlyCS retorno null a request " + request);
+                }
             
             } 
             
           } 
           catch (Exception ex) 
           {
-             Consola.write("Conexion perdida..." + ex.getLocalizedMessage());
+             Consola.writeln("Conexion perdida..." + ex.getLocalizedMessage());
              ex.printStackTrace();
              Server.clientes.removeClient(pwClient);
           } 
@@ -74,14 +80,14 @@ public class ClientHandler extends Thread{
             try{
                 
                 cliente.println(respuesta);
-                Consola.write("Respondiendo a [" + user + "]" + respuesta + "\n");
+                Consola.writeln("Respondiendo a [" + user + "]" + respuesta + "\n");
                 cliente.flush();
                 
             }catch(Exception ex){
-                Consola.write("Error respondiendo a [" + user + "]");
+                Consola.writeln("Error respondiendo a [" + user + "]");
             }
         }else{
-            Consola.write("Error, el cliente no se encuentra logeado en el sistema...");
+            Consola.writeln("Error, el cliente no se encuentra logeado en el sistema...");
         }
     }
 }

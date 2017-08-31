@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static servidorfisql.Constantes.FILE_AST_XML;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Grafica;
@@ -16,7 +14,6 @@ import servidorfisql.interpretes.Analizadores.Nodo;
 import servidorfisql.interpretes.Analizadores.USQL.analizador.ParserUSQL;
 import servidorfisql.interpretes.Analizadores.XML.analizador.ParseException;
 import servidorfisql.interpretes.Analizadores.XML.analizador.ParserXML;
-import servidorfisql.interpretes.InterpreteUSQL;
 
 /**
  *
@@ -31,7 +28,7 @@ public class Archivos {
         //BASE
     private static final String rootDir = "/home/jorge/" + dbms + "/";
         //SISTEMA DE ARCHIVOS
-    private static final String bbddDir = rootDir + "bbdd/";
+    public static final String bbddDir = rootDir + "bbdd/";
     
     /*ARCHIVOS*/
     private static final String masterFile = rootDir + "maestro.xml";
@@ -43,10 +40,13 @@ public class Archivos {
     public static Usuarios usuarios;
     public static BBDD bbdd;
     
-    
+    /***
+     * Inicializa el sistema de archivos, de no existeir.
+     */
     public static void inicializarSistemaDeArchivos(){
-        folder = new File(rootDir);
+        Consola.writeln("Inicializando sistema de archivos...");
         
+        folder = new File(rootDir);
         usuarios = new Usuarios();
         bbdd = new BBDD();
         
@@ -69,14 +69,17 @@ public class Archivos {
                     "</MasterFIle>");
             
             
-        }else{
-            Consola.write("El directorio raiz ya existe...");
         }
+        
+        Consola.writeln("Sistema de archivos inicializado exitosamente...");
     }
     
     
-    
+    /***
+     * Lectura de archivos xml y carga de estructura de usuarios.
+     */
     public static void cargarUsuarios(){
+        Consola.writeln("Cargando a memoria los usuarios del sistema...");
         
         Nodo astUsuarios = levantarXML(usersFile);
         
@@ -87,7 +90,8 @@ public class Archivos {
             usuarios.agregarUsuario(username, password);
         }
         
-        {Archivos.usuarios.imprimirUsuarios();}
+        //{Archivos.usuarios.imprimirUsuarios();}
+        Consola.writeln("Usuarios cargados exitosamente...");
     }
     
     public static void guardarUsuarios(){
@@ -97,17 +101,28 @@ public class Archivos {
     
     
     /***
-     * 
+     * Lectura de archivos xml que integran las bases de datos y
+     * carga a memoria de la informacion de los objetos de la base de datos.
      */
     public static void cargarInformacion(){       
+        Consola.writeln("Cargando bases de datos...");
+        try{
         
-        Archivos.bbdd.cargarMaserFile(masterFile);
+            Archivos.bbdd.cargarMaserFile(masterFile);
+            Consola.writeln("Bases de datos cargadas exitosamente...");
+        
+        }catch(Exception e){
+            Consola.writeln("ERROR CARGANDO MASTERFILE...");
+            Consola.writeln(e.getLocalizedMessage());
+        }
         
     }
     
     public static void guardarInformacion(){
+        Consola.writeln("Guardando bases de datos...");
         Archivos.bbdd.guardarMasterFile(masterFile);
         Archivos.bbdd.guardarBBDD();
+        Consola.writeln("Bases de datos guardadas exitosamente...");
     }
     
     
@@ -129,10 +144,10 @@ public class Archivos {
             grafica.graficar(astXML, FILE_AST_XML);
             
         } catch (ParseException ex) {
-            Consola.write(ex.getLocalizedMessage());
-            Consola.write("ERROR EN EL PARSEO DE ARCHIVO XML");
+            Consola.writeln("ERROR EN EL PARSEO DE ARCHIVO XML {" + new File(path).getName() + "}");
+            Consola.writeln(ex.getLocalizedMessage());
         } catch (IOException ex) {
-            Consola.write(ex.getLocalizedMessage());
+            Consola.writeln(ex.getLocalizedMessage());
         }
         
         return astXML;
@@ -146,7 +161,7 @@ public class Archivos {
             parserUSQL = new ParserUSQL(new StringReader(instruccion));
             astUSQL = parserUSQL.INI();
         } catch (servidorfisql.interpretes.Analizadores.USQL.analizador.ParseException ex) {
-            Consola.write(ex.getLocalizedMessage());
+            Consola.writeln(ex.getLocalizedMessage());
         }
         
         return astUSQL;
@@ -171,14 +186,14 @@ public class Archivos {
                 texto += linea + "\n";
             
         }catch(IOException ioe){
-            Consola.write("Error leyendo archivo " + path + " \n" + ioe.getMessage());
+            Consola.writeln("Error leyendo archivo " + path + " \n" + ioe.getMessage());
             return null;
         }finally{
             try{
                 if(null != fr)
                     fr.close();
             }catch(IOException ioe2){
-                Consola.write("Error cerrando fichero.\n" + ioe2.getMessage());
+                Consola.writeln("Error cerrando fichero.\n" + ioe2.getMessage());
                 return null;
             }
         }
@@ -200,8 +215,18 @@ public class Archivos {
             fw.close();
             
         } catch (IOException ex) {
-            Consola.write("Error escribiendo el archivo [" + path + "]");
+            Consola.writeln("Error escribiendo el archivo [" + path + "]");
         }
     }
             
+    public static void crearDirectorio(String path){
+        File file = new File(path);
+        
+        if(!file.exists())
+            file.mkdirs();
+        else
+            Consola.writeln("Error, ya existe el directorio [" + path + "]");
+    }
+
+
 }
