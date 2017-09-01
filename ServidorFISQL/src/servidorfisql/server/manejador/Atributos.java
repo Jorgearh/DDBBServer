@@ -40,6 +40,18 @@ public class Atributos {
         
         return xml;
     }
+
+    
+    
+    boolean exists(String idAtr) {
+        return this.atributos.containsKey(idAtr);
+    }
+
+    void crearAtributo(String idAtr, String tipoAtr) {
+        Atributo atr = new Atributo(tipoAtr, idAtr);
+        
+        this.atributos.put(idAtr, atr);
+    }
     
 }
 

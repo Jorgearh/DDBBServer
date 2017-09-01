@@ -3,6 +3,7 @@ package servidorfisql.server.manejador;
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.server.Server;
 
 /**
  *
@@ -31,7 +32,6 @@ public class Objetos {
         }
     }
     
-    
     public void guardarObjectsFile(String path){
         String xml = "";
         
@@ -44,6 +44,21 @@ public class Objetos {
         xml += "</ObjectsFile>";
         
         Archivos.escribirArchivo(path, xml);
+    }
+
+    
+    
+    boolean existeObjeto(String idObj) {
+        return this.objetos.containsKey(idObj);
+    }
+
+    boolean existeAtributo(String idObj, String idAtr) {
+        return this.objetos.get(idObj).atributes.exists(idAtr);
+    }
+
+    void crearObjeto(String idObject, Nodo latr) {
+        Objeto obj = new Objeto(idObject, latr);
+        this.objetos.put(idObject, obj);
     }
 }
 
@@ -64,16 +79,23 @@ class Objeto{
         this.id = objeto.getHijo(1).getHijo(0).valor;
         natr = objeto.getHijo(2);
         
-        this.permissions.crearPermisos(nper);;
+        this.permissions.crearPermisos(nper);
         
         this.atributes.construirAtributos(natr);
     }
     
     
-    public Objeto(String id){
+    public Objeto(String id, Nodo latr){
         this.id = id;
-        this.permissions = new Permisos();
+        this.permissions = new Permisos(Server.user);
         this.atributes = new Atributos();
+        
+        for(Nodo atr : latr.hijos){
+            String idAtr = atr.getHijo(0).valor;
+            String tipoAtr = atr.getHijo(1).valor;
+            
+            this.atributes.crearAtributo(idAtr, tipoAtr);
+        }
     }
     
     

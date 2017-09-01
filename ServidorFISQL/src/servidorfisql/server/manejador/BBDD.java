@@ -79,6 +79,24 @@ public class BBDD {
         return this.bbdd.get(idDB).tablas.existeColumna(idTable, idCol);
     }
     
+    public boolean existeObjeto(String idDB, String idObj){
+        return this.bbdd.get(idDB).objetos.existeObjeto(idObj);
+    }
+    
+    public boolean existeAtributo(String idDB, String idObj, String idAtr) {
+        return this.bbdd.get(idDB).objetos.existeAtributo(idObj, idAtr);
+    }
+    
+    public boolean existeMetodo(String idDB, String idMet) {
+        return this.bbdd.get(idDB).metodos.exists(idMet);
+    }
+
+    
+    
+    
+    
+    
+    
     public String getTipoColumna(String idDB, String idTable, String idCol){
         return this.bbdd.get(idDB).tablas.getTipoColumna(idTable, idCol);
     }
@@ -100,6 +118,23 @@ public class BBDD {
         
         this.bbdd.get(actualDB).tablas.crearTabla(idTable, lcampo, rowsPath);
     }
+    
+    public void crearObjeto(String idDB, Nodo create){
+        String idObject = create.getHijo(0).valor;
+        Nodo latr = create.getHijo(1);
+        
+        this.bbdd.get(idDB).objetos.crearObjeto(idObject, latr);
+    }
+
+    public void crearProc(String idDB, Nodo create) {
+        String idProc = create.getHijo(0).valor;
+        
+        this.bbdd.get(idDB).metodos.crearProc(idProc, create);
+    }
+
+    
+
+    
 }
 
 

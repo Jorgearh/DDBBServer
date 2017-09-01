@@ -1,7 +1,6 @@
 package servidorfisql.interpretes;
 
 import java.util.ArrayList;
-import java.util.List;
 import servidorfisql.Constantes;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
@@ -23,7 +22,7 @@ public class InterpreteUSQL implements Constantes{
 
     
     public String interpretar(int codigo, Nodo lsent, String cadUsql){
-        String response = null;
+        String response = "";
         this.codigo = codigo;
         this.cadUsql = cadUsql;
         
@@ -37,20 +36,25 @@ public class InterpreteUSQL implements Constantes{
                 case "CREATE_USER":
                 case "PROC":
                 case "FUNC":
-                    response = create(sent);
+                    response += create(sent);
                     break;
                     
                 case "USE":
-                    response = usar(sent);
+                    response += usar(sent);
                     break;
                     
-                case "ALTER":
+                case "ALTER_TABLE_ADD":
+                case "ALTER_TABLE_QUIT":
+                case "ALTER_OBJECT_ADD":
+                case "ALTER_OBJECT_QUIT":
+                    response += alter(sent);
                     break;
                     
                 case "DELETE":
+                    response += delete(sent);
                     break;
                 default:
-                    response = Error.logico(codigo, "logico", "Sentencia " + idSent + "invalida");
+                    response += Error.logico(codigo, "logico", "Sentencia " + idSent + "invalida");
             }
         }
         
@@ -58,7 +62,7 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
-    public String create(Nodo create){
+    private String create(Nodo create){
         String response = "EXITO";
         Nodo nodoID;
         
@@ -100,14 +104,6 @@ public class InterpreteUSQL implements Constantes{
                 //Hay una BD en uso
                 if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
                     
-                    if(!Archivos.bbdd.tienePermisos(Server.actualDB, Server.user)){
-                        response = Error.logico(codigo, 
-                                "PERMISOS", 
-                                "El usuario [" + Server.user + "] "
-                                        + "no tiene permisos"
-                                        + "en la base de datos [" + Server.actualDB + "]");
-                        return response;
-                    }
                     
                     nodoID = create.getHijo(0);
                     Nodo lcampo = create.getHijo(1);
@@ -326,12 +322,101 @@ public class InterpreteUSQL implements Constantes{
                 break;
                 
             case "CREATE_OBJECT":
+                
+                //Hay una base de datos en uso
+                if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
+                    
+                    Nodo idObj = create.getHijo(0);
+                    Nodo latr = create.getHijo(1);
+
+                    //No existe un objeto con el mismo nombre en la base de datos
+                    if(!Archivos.bbdd.existeObjeto(Server.actualDB, idObj.valor)){
+
+                        for(Nodo atr : latr.hijos){
+                            Nodo idAtr = atr.getHijo(1);
+
+                            //El objeto contiene un atributo con el mismo nombre
+                            if(Archivos.bbdd.existeAtributo(Server.actualDB, idObj.valor, idAtr.valor)){
+                                response = 
+                                        Error.lenguaje(
+                                                codigo,
+                                                "USQL",
+                                                this.cadUsql,
+                                                "Semantico",
+                                                idAtr.row,
+                                                idAtr.col, 
+                                                "Multiple declaracion del atributo [" + idAtr.valor + "] "
+                                                        + "en el objeto [" + idObj.valor + "] "
+                                                        + "en la base de datos [" + Server.actualDB + "]");
+                                return response;
+                            }
+                        }
+
+                        //Si no hay errores en la declaracion de atributos
+                        Archivos.bbdd.crearObjeto(Server.actualDB, create);
+
+
+                    }else{
+                        response = 
+                            Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    this.cadUsql, 
+                                    "Semantico", 
+                                    idObj.row, 
+                                    idObj.col, 
+                                    "Ya existe el objeto [" + idObj.valor + "]"
+                                    + "en la base de datos [" + Server.actualDB + "]");
+                    }
+                }else{
+                        response = Error.logico(
+                            codigo, 
+                            "CREATE TABLE", 
+                            "No se ha seleccionado una base de datos para usar.");
+                }
                 break;
                 
             case "PROC":
-                break;
-                
             case "FUNC":
+                if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
+                    
+                    Nodo idProc = create.getHijo(0);
+
+                    //No existe un metodo con el mismo nombre en la base de datos
+                    if(!Archivos.bbdd.existeMetodo(Server.actualDB, idProc.valor)){
+
+                        //Analisis semantico SSL(parametros, variables locales, comprobacion de tipos)
+                        String erroresSSL = analisisSemanticoSSL(create);
+                        
+                        if(erroresSSL == null){
+                            
+                        }else{
+                            return erroresSSL;
+                        }
+
+                        
+                        //Si no hay errores en la declaracion del metodo
+                        Archivos.bbdd.crearProc(Server.actualDB, create);
+
+                    }else{
+                        response = 
+                            Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    this.cadUsql, 
+                                    "Semantico", 
+                                    idProc.row, 
+                                    idProc.col, 
+                                    "Ya existe " + (create.token.equals("PROC") ? "el procedimiento" : "la funcion") 
+                                    + " [" + idProc.valor + "]"
+                                    + "en la base de datos [" + Server.actualDB + "]");
+                    }
+                }else{
+                        response = Error.logico(
+                            codigo, 
+                            "CREATE TABLE", 
+                            "No se ha seleccionado una base de datos para usar.");
+                }
                 break;
         }
         
@@ -367,9 +452,35 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
+    private String alter(Nodo alter){
+        String response = "EXITO";
+        
+        
+        
+        return response;
+    }
     
-    
-    
+    private String delete(Nodo delete){
+        String response = "EXITO";
+        String objeto = delete.getHijo(0).valor;
+        String id = delete.getHijo(1).valor;
+        
+        
+        if(objeto.equals("DDBB")){
+            //if()
+        }else{
+            //Hay una base de datos en uso
+            if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
+
+            }
+        }
+        
+        
+        
+        
+        
+        return response;
+    }
     
     
     
@@ -384,7 +495,7 @@ public class InterpreteUSQL implements Constantes{
     
     
     /***
-     * Evalua si un nieto pertenece a mas de un hijo de nodo, basado en el valor,
+     * Evalua si un nieto pertenece a mas de un hijo del nodo, basado en el valor,
      * la posicion del nieto la define index.
      * @param padre
      * @param index
@@ -418,5 +529,9 @@ public class InterpreteUSQL implements Constantes{
         }
         
         return null;
+    }
+    
+    private String analisisSemanticoSSL(Nodo metodo){
+        return "EXITO";
     }
 }

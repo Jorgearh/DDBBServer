@@ -3,6 +3,7 @@ package servidorfisql.server.manejador;
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.server.Server;
 
 /**
  *
@@ -29,7 +30,6 @@ public class Metodos {
         }
     }
     
-    
     public void guardarMethodsFile(String path){
         String xml = "";
         
@@ -43,6 +43,16 @@ public class Metodos {
         
         Archivos.escribirArchivo(path, xml);
     }
+
+    
+    boolean exists(String idMet) {
+        return this.metodos.containsKey(idMet);
+    }
+
+    void crearProc(String idProc, Nodo proc) {
+        Metodo met = new Metodo(idProc, proc);
+        this.metodos.put(idProc, met);
+    }
     
 }
 
@@ -51,7 +61,8 @@ class Metodo{
     Permisos permissions;
     String id;
     String code;
-    Nodo ast;
+    Nodo parametros;
+    Nodo lsent;
     
     /***
      * Constructor de un objeto Metodo
@@ -70,17 +81,16 @@ class Metodo{
         this.permissions.crearPermisos(permisos);
         
         /*LLAMARA PARSER USQL PARA GENERAR AST DEL CODIGO DEL METODO*/
-        this.ast = Archivos.parsearUSQL(this.code);
+        this.lsent = Archivos.parsearUSQL(this.code);
     }
     
     
-    public Metodo(boolean proc, String name, String code){
-        this.procedure = proc;
-        this.id = name;
-        this.code = code;
-        
-        this.permissions = new Permisos();
-        this.ast = new Nodo();
+    public Metodo(String idMet, Nodo met){
+        this.procedure = met.hijos.size() == 3;
+        this.permissions = new Permisos(Server.user);
+        this.id = idMet;
+        this.parametros = met.getHijo(1);
+        this.lsent = met.getHijo(2);
     }
     
     
