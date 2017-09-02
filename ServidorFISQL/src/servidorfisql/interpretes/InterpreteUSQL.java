@@ -433,7 +433,7 @@ public class InterpreteUSQL implements Constantes{
                 Consola.writeln("Usando Base de Datos [" + idDB + "]");
             }else{
                 response = Error.logico(codigo, 
-                                "PERMISOS", 
+                                "PERMISOS USE", 
                                 "El usuario [" + Server.user + "] "
                                         + "no tiene permisos"
                                         + "en la base de datos [" + Server.actualDB + "]");
@@ -462,16 +462,173 @@ public class InterpreteUSQL implements Constantes{
     
     private String delete(Nodo delete){
         String response = "EXITO";
-        String objeto = delete.getHijo(0).valor;
-        String id = delete.getHijo(1).valor;
+        Nodo usqlObject = delete.getHijo(0);
+        Nodo idObject = delete.getHijo(1);
         
         
-        if(objeto.equals("DDBB")){
-            //if()
+        if(usqlObject.valor.equals("DDBB")){
+            if(idObject.valor.equals(Server.actualDB)){
+                response = Error.logico(
+                        codigo, 
+                        "DELETE DB", 
+                        "No puede eleiminarse la base de datos [" + idObject.valor + "] "
+                                + "porque se encuentra en uso");
+            }else{
+                //No tiene permisos en la base de datos
+                if(!Archivos.bbdd.tienePermisos(idObject.valor, Server.user)){
+                    response = Error.logico(codigo, 
+                                "PERMISOS DELETE DB", 
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos"
+                                        + "en la base de datos [" + Server.actualDB + "]");
+                }else{
+                    Archivos.bbdd.eliminarBD(idObject.valor);
+                    Consola.writeln("Se ha eliminado la Base de Datos [" + idObject.valor + "]");
+                }
+            }
+        }else if(usqlObject.valor.equals("USER")){
+            
+            if(Server.user.equals("admin")){
+                if(!idObject.valor.equals("admin")){
+                    //Existe el usuario a eliminar
+                    if(Archivos.usuarios.existsUser(idObject.valor)){
+                        //Eliminar todos los permisos para el usuario
+                        Archivos.bbdd.denegarPermisosPara(idObject.valor);
+                        //Eliminar el usuario
+                        Archivos.usuarios.eliminarUsuario(idObject.valor);
+                        Consola.writeln("Se ha eliminado el usuario [" + idObject.valor + "]");
+                    }else{
+                        response = Error.lenguaje(
+                                codigo, 
+                                "USQL", 
+                                cadUsql, 
+                                "Semantico", 
+                                idObject.row, 
+                                idObject.col, 
+                                "No existe el usuario [" + idObject.valor + "]");
+                    }
+                }else{
+                    response = Error.logico(
+                            codigo, 
+                            "DELTE USER ADMIN", 
+                            "No se puede eliminar el usuario admin");
+                }
+            }else{
+                response = Error.logico(
+                        codigo, 
+                        "DELETE USER NOT ADMIN", 
+                        "Solo el usuario admin puede eliminar usuarios.");
+            }
+            
         }else{
             //Hay una base de datos en uso
             if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
-
+                //El usuario actual tiene permisos en la Base de Datos actual
+                if(Archivos.bbdd.tienePermisos(Server.actualDB, Server.user)){
+                    switch(usqlObject.valor){
+                        case "TABLE":
+                            //Existe la tabla a eliminar
+                            if(Archivos.bbdd.existeTabla(Server.actualDB, idObject.valor)){
+                                
+                                //El usuario actual tiene permisos en la tabla
+                                if(Archivos.bbdd.tienePermisosTabla(Server.actualDB, idObject.valor, Server.user)){
+                                    //Eliminar tabla
+                                    Archivos.bbdd.eliminarTabla(Server.actualDB, idObject.valor);
+                                    Consola.writeln("Se ha eliminado la tabla [" + idObject.valor + " ]"
+                                            + "de la base de datos [" + Server.actualDB + "]");
+                                }else{
+                                    response = Error.logico(codigo, 
+                                                        "PERMISOS DELETE TABLE", 
+                                                        "El usuario [" + Server.user + "] "
+                                                                + "no tiene permisos"
+                                                                + "en la tabla [" + idObject.valor + "]");
+                                }
+                            }else{
+                                response = Error.lenguaje(
+                                                    codigo, 
+                                                    "USQL", 
+                                                    this.cadUsql, 
+                                                    "Semantico", 
+                                                    idObject.row,
+                                                    idObject.col,
+                                                    "No existe la tabla [" + idObject.valor + "]"
+                                                    + "en la Base de Datos [" + Server.actualDB + "]");
+                            }
+                            break;
+                        case "OBJECT":
+                            //Existe el objeto a eliminar
+                            if(Archivos.bbdd.existeObjeto(Server.actualDB, idObject.valor)){
+                                
+                                //El usuario actual tiene permisos en el objeto
+                                if(Archivos.bbdd.tienePermisosObjeto(Server.actualDB, idObject.valor, Server.user)){
+                                    //Eliminar objeto
+                                    Archivos.bbdd.eliminarObjeto(Server.actualDB, idObject.valor);
+                                    Consola.writeln("Se ha eliminado el objeto [" + idObject.valor + " ]"
+                                            + "de la base de datos [" + Server.actualDB + "]");
+                                }else{
+                                    response = Error.logico(codigo, 
+                                                        "PERMISOS DELETE OBJECT", 
+                                                        "El usuario [" + Server.user + "] "
+                                                                + "no tiene permisos"
+                                                                + "en el objeto [" + idObject.valor + "]");
+                                }
+                            }else{
+                                response = Error.lenguaje(
+                                                    codigo, 
+                                                    "USQL", 
+                                                    this.cadUsql, 
+                                                    "Semantico", 
+                                                    idObject.row,
+                                                    idObject.col,
+                                                    "No existe el objeto [" + idObject.valor + "]"
+                                                    + "en la Base de Datos [" + Server.actualDB + "]");
+                            }
+                            break;
+                        case "PROC":
+                        case "FUNC":
+                             //Existe el metodo a eliminar
+                            String nameAux = usqlObject.token.equals("PROC") ? "el procedimiento" : "la funcion";
+                            
+                            if(Archivos.bbdd.existeMetodo(Server.actualDB, idObject.valor)){
+                                
+                                //El usuario actual tiene permisos en el metodo
+                                if(Archivos.bbdd.tienePermisosMetodo(Server.actualDB, idObject.valor, Server.user)){
+                                    //Eliminar metodo
+                                    Archivos.bbdd.eliminarMetodo(Server.actualDB, idObject.valor);
+                                    Consola.writeln("Se ha eliminado " + nameAux + "  [" + idObject.valor + " ]"
+                                            + "de la base de datos [" + Server.actualDB + "]");
+                                }else{
+                                    response = Error.logico(codigo, 
+                                                        "PERMISOS DELETE OBJECT", 
+                                                        "El usuario [" + Server.user + "] "
+                                                                + "no tiene permisos"
+                                                                + "en " + nameAux + " [" + idObject.valor + "]");
+                                }
+                            }else{
+                                response = Error.lenguaje(
+                                                    codigo, 
+                                                    "USQL", 
+                                                    this.cadUsql, 
+                                                    "Semantico", 
+                                                    idObject.row,
+                                                    idObject.col,
+                                                    "No existe " + nameAux + " [" + idObject.valor + "]"
+                                                    + "en la Base de Datos [" + Server.actualDB + "]");
+                            }
+                            break;
+                    }
+                }else{
+                    response = Error.logico(codigo, 
+                                "PERMISOS DELETE", 
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos"
+                                        + "en la base de datos [" + Server.actualDB + "]");
+                }
+            }else{
+                response = Error.logico(
+                            codigo, 
+                            "CREATE TABLE", 
+                            "No se ha seleccionado una base de datos para usar.");
             }
         }
         

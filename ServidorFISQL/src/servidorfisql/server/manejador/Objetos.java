@@ -60,6 +60,20 @@ public class Objetos {
         Objeto obj = new Objeto(idObject, latr);
         this.objetos.put(idObject, obj);
     }
+
+    void denegarPermisos(String username) {
+        for(Objeto o : this.objetos.values()){
+            o.permissions.denegar(username);
+        }
+    }
+
+    boolean tienePermisos(String idObject, String user) {
+        return this.objetos.get(idObject).permissions.existe(user);
+    }
+
+    void eliminarObjeto(String idObject) {
+        this.objetos.remove(idObject);
+    }
 }
 
 

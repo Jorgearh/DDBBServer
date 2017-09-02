@@ -22,6 +22,12 @@ public class Usuarios {
             Consola.writeln("El usuario [" + user + "] ya existe.");
     }
     
+    public void eliminarUsuario(String idUser) {
+        this.usuarios.remove(idUser);
+    }
+    
+    
+    
     /***
      * Comprueba si existe el usuario con nombre username
      * @param username
@@ -67,6 +73,9 @@ public class Usuarios {
         
         return xml;
     }
+
+    
+
 }
 
 

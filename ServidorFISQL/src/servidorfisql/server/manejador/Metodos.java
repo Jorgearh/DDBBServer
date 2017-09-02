@@ -49,9 +49,23 @@ public class Metodos {
         return this.metodos.containsKey(idMet);
     }
 
-    void crearProc(String idProc, Nodo proc) {
+    void crearMetodo(String idProc, Nodo proc) {
         Metodo met = new Metodo(idProc, proc);
         this.metodos.put(idProc, met);
+    }
+
+    void denegarPermisos(String username) {
+        for(Metodo m : this.metodos.values()){
+            m.permissions.denegar(username);
+        }
+    }
+
+    boolean tienePermisos(String idMet, String user) {
+        return this.metodos.get(idMet).permissions.existe(user);
+    }
+
+    void eliminarMetodo(String idMet) {
+        this.metodos.remove(idMet);
     }
     
 }

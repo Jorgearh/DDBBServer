@@ -1255,6 +1255,8 @@ Nodo USQL_OBJECT_NAME() : {Nodo nodo = new Nodo("USQL_OBJECT");}
 	|<base_datos>	{nodo.setValor("DDBB");}
 	|<objeto>		{nodo.setValor("OBJECT");}
 	|<usuario>		{nodo.setValor("USER");}
+	|<procedimiento>{nodo.setValor("PROC");}{}
+	|<funcion>		{nodo.setValor("FUNC");}
 	)
 	{return nodo;}
 }

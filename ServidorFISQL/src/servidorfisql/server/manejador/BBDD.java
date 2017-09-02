@@ -106,6 +106,20 @@ public class BBDD {
         return this.bbdd.get(idDB).permissonsDB.existe(user);
     }
     
+    public boolean tienePermisosTabla(String idDB, String idTable, String user) {
+        return this.bbdd.get(idDB).tablas.tienePermisos(idTable, user);
+    }
+    
+    public boolean tienePermisosObjeto(String idDB, String idObject, String user) {
+        return this.bbdd.get(idDB).objetos.tienePermisos(idObject, user);
+    }
+    
+    public boolean tienePermisosMetodo(String idDB, String idMet, String user) {
+        return this.bbdd.get(idDB).metodos.tienePermisos(idMet, user);
+    }
+    
+    
+    
     
     public void crearBD(String idDB, String dirBD, String pathTables){
         this.bbdd.put(idDB, new BD(idDB, dirBD, pathTables));
@@ -129,12 +143,37 @@ public class BBDD {
     public void crearProc(String idDB, Nodo create) {
         String idProc = create.getHijo(0).valor;
         
-        this.bbdd.get(idDB).metodos.crearProc(idProc, create);
+        this.bbdd.get(idDB).metodos.crearMetodo(idProc, create);
     }
 
     
-
     
+    public void eliminarBD(String idDB) {
+        this.bbdd.remove(idDB);
+    }
+    
+    public void eliminarTabla(String idDB, String idTable) {
+        this.bbdd.get(idDB).tablas.eliminarTabla(idTable);
+    }
+    
+    public void eliminarObjeto(String idDB, String idObject) {
+        this.bbdd.get(idDB).objetos.eliminarObjeto(idObject);
+    }
+
+    public void eliminarMetodo(String idDB, String idMet) {
+        this.bbdd.get(idDB).metodos.eliminarMetodo(idMet);
+    }
+    
+    
+    public void denegarPermisosPara(String username) {
+        for(BD bd : this.bbdd.values()){
+            bd.permissonsDB.denegar(username);
+            bd.tablas.denegarPermisos(username);
+            bd.metodos.denegarPermisos(username);
+            bd.objetos.denegarPermisos(username);
+        }
+    }
+
 }
 
 

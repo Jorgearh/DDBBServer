@@ -59,6 +59,12 @@ public class Tablas {
         return this.tablas.get(idTable).columns.existe(idCol);
     }
     
+    
+    public boolean tienePermisos(String idTable, String user){
+        return this.tablas.get(idTable).permissions.existe(user);
+    }
+    
+    
     public String getTipoColumna(String idTable, String idCol){
         return this.tablas.get(idTable).columns.getTipoColumna(idCol);
     }
@@ -68,6 +74,16 @@ public class Tablas {
     public void crearTabla(String idTable, Nodo lcampo, String rowsPath){
         Tabla t = new Tabla(idTable, lcampo, rowsPath);
         this.tablas.put(idTable, t);
+    }
+
+    void denegarPermisos(String username) {
+        for(Tabla t : this.tablas.values()){
+            t.permissions.denegar(username);
+        }
+    }
+
+    void eliminarTabla(String idTable) {
+        this.tablas.remove(idTable);
     }
 }
 
