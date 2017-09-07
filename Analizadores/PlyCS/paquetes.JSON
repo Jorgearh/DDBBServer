@@ -98,3 +98,27 @@
 	"descripcion" : "Password invalida para usuario [admin]"
 
 ]
+
+//ERROR DE LENGUAJE
+
+[
+	"paquete": "error",
+	"validar": 1500,
+	"tipo": "lenguaje",
+	"detalles": [
+		"Lenguaje": "USSQL",
+		"Instruccion": "SELECCIONAR * DE miTabla;",
+		"Tipo": "Semantico",
+		"Fila": 1,
+		"Columna": 15,
+		"Descripcion": "No existe la tabla miTabla"
+	]
+]
+
+
+//EXITO
+[
+	"paquete": "exito",
+	"validar": 1500,
+	"sentencia": ""
+]

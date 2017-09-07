@@ -170,7 +170,8 @@ TOKEN :
 	|<booleano: "true" | "false" >
 	|<fecha: "\'"<digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>"\'">
 	|<fecha_hora: "\'"<fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>"\'">
-	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	//|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	|<cadena: ("\"") (~["\""])* ("\"") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<var: "@"<id>>
 	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
@@ -358,7 +359,7 @@ Nodo DEC_ATRIBUTO() :
 {
 	tipo = TIPO_DATO() t = <id>
 	{
-		nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), tipo);
+		nodo.agregarHijos(tipo, new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 		return nodo;
 	}
 }

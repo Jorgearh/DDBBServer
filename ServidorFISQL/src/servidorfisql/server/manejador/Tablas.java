@@ -25,7 +25,7 @@ public class Tablas {
             Consola.writeln("    tabla" + cont++ + "/" + tablas.hijos.size());
             
             Tabla t = new Tabla(tabla);
-            this.tablas.put(t.name, t);
+            this.tablas.put(t.idTable, t);
         }
     }
     
@@ -51,8 +51,8 @@ public class Tablas {
     
     
     
-    public boolean existe(String id){
-        return this.tablas.containsKey(id);
+    public boolean existe(String idTable){
+        return this.tablas.containsKey(idTable);
     }
     
     public boolean existeColumna(String idTable, String idCol){
@@ -76,29 +76,118 @@ public class Tablas {
         this.tablas.put(idTable, t);
     }
 
-    void denegarPermisos(String username) {
-        for(Tabla t : this.tablas.values()){
-            t.permissions.denegar(username);
+    
+    
+    
+    
+    void denegarPermisosEnTodas(String username) {
+        for(String idTable : this.tablas.keySet()){
+            denegarPermisosEn(idTable, username);
+        }
+    }
+    
+    /***
+     * Si existe una tabla con el nombre idE, se deniegan permisos en esta, para el usuario user
+     * @param idE
+     * @param user
+     * @return true si se otorgan los permisos, false si no existe la tabla.
+     */
+    boolean denegarPermisosSiExiste(String idE, String user){
+        if(this.tablas.containsKey(idE)){
+            this.tablas.get(idE).permissions.denegar(user);
+            return true;
+        }
+        return false;
+    }
+     
+    void denegarPermisosEn(String idTable, String user){
+        this.tablas.get(idTable).permissions.denegar(user);
+    }
+    
+    
+    
+    void otorgarPermisosEnTodas(String username) {
+        for(String idTable : this.tablas.keySet()){
+            otorgarPermisosEn(idTable, username);
+        }
+    }
+    
+    void otorgarPermisosEn(String idTable, String user){
+        this.tablas.get(idTable).permissions.otorgar(user);
+    }
+    
+    /***
+     * Si existe una tabla con el nombre idE, se otorgan permisos en esta, para el usuario user
+     * @param idE
+     * @param user
+     * @return true si se otorgan los permisos, false si no existe la tabla.
+     */
+    boolean otorgarPermisosSiExiste(String idE, String user){
+        if(this.tablas.containsKey(idE)){
+            this.tablas.get(idE).permissions.otorgar(user);
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
+    
+    
+    
+
+    void eliminarTabla(String idTable) {
+        Archivos.eliminarDirectorio(this.tablas.get(idTable).rowsPath);
+        this.tablas.remove(idTable);
+    }
+
+    void modificarTablaEliminar(String idTable, Nodo lid) {
+        for(Nodo id : lid.hijos){
+            this.tablas.get(idTable).columns.eliminarColumna(id.valor);
+        }
+    }
+    
+    void modificarTablaAgregar(String idTable, Nodo lcol) {
+        for(Nodo col : lcol.hijos){
+            String tipo = col.getHijo(0).valor;
+            String id = col.getHijo(1).valor;
+            Nodo lcomp = col.getHijo(2);
+            
+            this.tablas.get(idTable).columns.crearColumna(tipo, id, lcomp);
         }
     }
 
-    void eliminarTabla(String idTable) {
-        this.tablas.remove(idTable);
+    String obtenerPkIndex(String idTable) {
+        return this.tablas.get(idTable).obtenerPk();
     }
+
+    
 }
+
+
+
+
+
+
 
 
 class Tabla{
     Permisos permissions;
-    String name;
+    String idTable;
     String rowsPath;
     Columnas columns;
     Nodo records;
     
+    /***
+     * A partir de un nodo USQL
+     * @param idTable
+     * @param lcampo
+     * @param rowsPath 
+     */
     public Tabla(String idTable, Nodo lcampo, String rowsPath){
         this.permissions = new Permisos(Server.user);
         
-        this.name = idTable;
+        this.idTable = idTable;
         
         this.rowsPath = rowsPath;
         
@@ -114,6 +203,10 @@ class Tabla{
         this.records = new Nodo("RowsFile");
     }
     
+    /***
+     * A partir de un nodo Xml
+     * @param tabla 
+     */
     public Tabla(Nodo tabla){
         Nodo permisos, columnas;
         
@@ -121,7 +214,7 @@ class Tabla{
         this.columns = new Columnas();
         
         permisos = tabla.getHijo(0);
-        this.name = tabla.getHijo(1).getHijo(0).valor;
+        this.idTable = tabla.getHijo(1).getHijo(0).valor;
         this.rowsPath = tabla.getHijo(2).getHijo(0).valor;
         columnas = tabla.getHijo(3);
         
@@ -133,7 +226,7 @@ class Tabla{
     }
     
     public Tabla(String name, String rowsPath){
-        this.name = name;
+        this.idTable = name;
         this.rowsPath = rowsPath;
         
         this.permissions = new Permisos();
@@ -145,7 +238,7 @@ class Tabla{
         
         xml += "            <table>\n";
         xml += this.permissions.getXml();
-        xml += "                <name>" + this.name + "</name>\n";
+        xml += "                <name>" + this.idTable + "</name>\n";
         xml += "                <path>" + this.rowsPath + "</path>\n";
         xml += this.columns.getXml();
         xml += "            </table>\n";
@@ -176,6 +269,10 @@ class Tabla{
         xml += "</RowsFile>\n";
         
         Archivos.escribirArchivo(this.rowsPath, xml);
+    }
+
+    String obtenerPk() {
+        return this.columns.obtenerPk();
     }
     
     

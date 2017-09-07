@@ -299,7 +299,7 @@
         Token t;
     tipo = TIPO_DATO();
     t = jj_consume_token(id);
-                nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), tipo);
+                nodo.agregarHijos(tipo, new Nodo("ID", t.image, t.beginLine, t.beginColumn));
                 {if (true) return nodo;}
     throw new Error("Missing return statement in function");
   }
@@ -1958,11 +1958,6 @@
     finally { jj_save(2, xla); }
   }
 
-  private boolean jj_3R_26() {
-    if (jj_scan_token(var)) return true;
-    return false;
-  }
-
   private boolean jj_3R_25() {
     if (jj_scan_token(fecha_hora)) return true;
     return false;
@@ -2198,6 +2193,11 @@
     xsp = jj_scanpos;
     if (jj_3R_27()) jj_scanpos = xsp;
     if (jj_scan_token(98)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_26() {
+    if (jj_scan_token(var)) return true;
     return false;
   }
 

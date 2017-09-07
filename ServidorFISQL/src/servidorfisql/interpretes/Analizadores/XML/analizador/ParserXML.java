@@ -42,6 +42,7 @@
       case nonulo:
       case unico:
       case autoinc:
+      case simbolo:
       case entero:
       case doble:
       case booleano:
@@ -70,6 +71,7 @@
         Nodo nodo;
         Token t;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case simbolo:
     case entero:
     case doble:
     case booleano:
@@ -206,6 +208,10 @@
       t = jj_consume_token(fecha_hora);
                                  nodo = new Nodo("DATETIME", t.image, t.beginLine, t.beginColumn);
       break;
+    case simbolo:
+      t = jj_consume_token(simbolo);
+                                 nodo = new Nodo("SMB", t.image, t.beginLine, t.beginColumn);
+      break;
     default:
       jj_la1[4] = jj_gen;
       jj_consume_token(-1);
@@ -230,7 +236,7 @@
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1fffff80,0x1fffff80,0x7e000,0x1f80,0x1f80000,};
+      jj_la1_0 = new int[] {0x3fffff80,0x3fffff80,0x7e000,0x1f80,0x3f80000,};
    }
 
   /** Constructor with InputStream. */
@@ -347,7 +353,7 @@
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[30];
+    boolean[] la1tokens = new boolean[31];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -361,7 +367,7 @@
         }
       }
     }
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 31; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

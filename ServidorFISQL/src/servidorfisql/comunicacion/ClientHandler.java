@@ -46,14 +46,16 @@ public class ClientHandler extends Thread{
         try{
             while ((request = reader.readLine()) != null) {
                 /*ANALIZAR SOLICITUD DE LENGUAJE DE COMUNICACION PLYCS*/
-                Consola.writeln("Recibido: " + request);
-            
+                Consola.writeln("request original: \n" + request);
+                request = request.replace("!@#", "\n");
+                Consola.writeln("request transformada: \n" + request);
+                
                 response = interpretePlyCS.analizar(pwClient, request);
                 
                 if(response != null){
                     
-                    response = response.replace("\n", "").replace("\r", "").replace(" ", "");
-                    System.out.println(response);
+                    response = response.replace("\n", "!@#").replace("\r", "$%^").replace("\t", "&*(");
+                    System.out.println("Respondiendo...: \n" + response);
                     
                     if(!response.equals("LOGOUT"))
                         responderCliente(pwClient, response);
@@ -61,7 +63,8 @@ public class ClientHandler extends Thread{
                     Consola.writeln("interpretePlyCS retorno null a request " + request);
                 }
             
-            } 
+            }
+
             
           } 
           catch (Exception ex) 
@@ -80,7 +83,7 @@ public class ClientHandler extends Thread{
             try{
                 
                 cliente.println(respuesta);
-                Consola.writeln("Respondiendo a [" + user + "]" + respuesta + "\n");
+                //Consola.writeln("Respondiendo a [" + user + "]" + respuesta + "\n");
                 cliente.flush();
                 
             }catch(Exception ex){

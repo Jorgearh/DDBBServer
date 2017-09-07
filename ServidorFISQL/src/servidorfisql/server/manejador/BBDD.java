@@ -18,7 +18,7 @@ public class BBDD {
     
 
     public void cargarMaserFile(String pathMaster){
-        Consola.writeln("Cargando... ");
+        Consola.writeln("Cargando Bases de Datos... ");
         
         int cont = 1;
         Nodo astMaster = Archivos.levantarXML(pathMaster);
@@ -149,7 +149,11 @@ public class BBDD {
     
     
     public void eliminarBD(String idDB) {
+        String dirDB = Archivos.bbddDir + idDB + "/";
+        
+        Archivos.eliminarDirectorio(dirDB);
         this.bbdd.remove(idDB);
+        
     }
     
     public void eliminarTabla(String idDB, String idTable) {
@@ -165,14 +169,109 @@ public class BBDD {
     }
     
     
-    public void denegarPermisosPara(String username) {
+    
+    
+    /***
+     * Otorga permisos al usuario user en todos los objetos de la Base de Datos idDB
+     * @param idDB
+     * @param user 
+     */
+    public void otorgarPermisosEnTodo(String idDB, String user){
+        
+        BD bd = this.bbdd.get(idDB);
+        
+        bd.tablas.otorgarPermisosEnTodas(user);
+        bd.metodos.otorgarPermisosEnTodos(user);
+        bd.objetos.otorgarPermisosEnTodos(user);
+    }
+    
+    public boolean otorgarPermisosSiExiste(String idDB, String idE, String user){
+        BD bd = this.bbdd.get(idDB);
+        
+        if(bd.tablas.otorgarPermisosSiExiste(idE, user)) return true;
+        if(bd.metodos.otorgarPermisosSiExiste(idE, user)) return true;
+        if(bd.objetos.otorgarPermisosSiExiste(idE, user)) return true;
+        
+        return false;
+    }
+    
+    /***
+     * Deniega permisos al usuario user en todos los objetos de la base de Datos idDB.
+     * @param idDB
+     * @param user 
+     */
+    public void denegarPermisosEnTodo(String idDB, String user){
+        
+        BD bd = this.bbdd.get(idDB);
+        
+        bd.tablas.denegarPermisosEnTodas(user);
+        bd.metodos.denegarPermisosEnTodos(user);
+        bd.objetos.denegarPermisosEnTodos(user);
+    }
+    
+    
+    /***
+     * Si existe el elemento idE en la Base de Datos idDB, 
+     * se le otorgan los permisos en este, al usuario user.
+     * @param idDB
+     * @param idE
+     * @param user
+     * @return 
+     */
+    public boolean denegarPermisosSiExiste(String idDB, String idE, String user){
+        BD bd = this.bbdd.get(idDB);
+        
+        if(bd.tablas.denegarPermisosSiExiste(idE, user)) return true;
+        if(bd.metodos.denegarPermisosSiExiste(idE, user)) return true;
+        if(bd.objetos.denegarPermisosSiExiste(idE, user)) return true;
+        
+        return false;
+    }
+    
+    
+    
+    /***
+     * Deniega los permisos para todos los objetos, en todas las Bases de Datos, para un usuario.
+     * @param username 
+     */
+    public void denegarPermisosParaUsuario(String username) {
         for(BD bd : this.bbdd.values()){
             bd.permissonsDB.denegar(username);
-            bd.tablas.denegarPermisos(username);
-            bd.metodos.denegarPermisos(username);
-            bd.objetos.denegarPermisos(username);
+            bd.tablas.denegarPermisosEnTodas(username);
+            bd.metodos.denegarPermisosEnTodos(username);
+            bd.objetos.denegarPermisosEnTodos(username);
         }
     }
+    
+    
+
+    
+    
+    
+    public void modificarTablaEliminar(String idDB, String idTable, Nodo lid) {
+        this.bbdd.get(idDB).tablas.modificarTablaEliminar(idTable, lid);
+    }
+
+    public void modificarObjetoEliminar(String idDB, String idObject, Nodo lid) {
+        this.bbdd.get(idDB).objetos.modificarObjetoEliminar(idObject, lid);
+    }
+    
+    
+    public void modificarTablaAgregar(String idDB, String idTable, Nodo lcol) {
+        this.bbdd.get(idDB).tablas.modificarTablaAgregar(idTable, lcol);
+    }
+
+    public void modificarObjetoAgregar(String idDB, String idObject, Nodo latr) {
+        this.bbdd.get(idDB).objetos.modificarObjetoAgregar(idObject, latr);
+    }
+    
+    public String obtenerPk(String idDB, String idTable) {
+        return this.bbdd.get(idDB).tablas.obtenerPkIndex(idTable);
+    }
+
+    
+
+
 
 }
 
@@ -216,26 +315,26 @@ class BD{
     
     /***
      * Constructor para levantar una BD a partir de archivos xml
-     * @param id
+     * @param idDB
      * @param path 
      */
-    public BD(String id, String path){
-        Nodo dbFile, permisos, tables;
+    public BD(String idDB, String path){
+        Nodo nodoDBFile, permisos, tables;
         
         this.permissonsDB = new Permisos();
         this.tablas = new Tablas();
         this.metodos = new Metodos();
         this.objetos = new Objetos();
         
-        this.idDB = id;
+        this.idDB = idDB;
         this.pathXmlDB = path;
         
-        dbFile = Archivos.levantarXML(this.pathXmlDB);
+        nodoDBFile = Archivos.levantarXML(this.pathXmlDB);
         
-        permisos = dbFile.getHijo(0);
-        this.proceduresPath = dbFile.getHijo(1).getHijo(0).getHijo(0).valor;
-        this.objectsPath = dbFile.getHijo(2).getHijo(0).getHijo(0).valor;
-        tables = dbFile.getHijo(3);
+        permisos = nodoDBFile.getHijo(0);
+        this.proceduresPath = nodoDBFile.getHijo(1).getHijo(0).getHijo(0).valor;
+        this.objectsPath = nodoDBFile.getHijo(2).getHijo(0).getHijo(0).valor;
+        tables = nodoDBFile.getHijo(3);
         
         this.permissonsDB.crearPermisos(permisos);
         

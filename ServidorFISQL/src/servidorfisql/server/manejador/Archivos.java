@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import static servidorfisql.Constantes.FILE_AST_XML;
 import servidorfisql.gui.Consola;
+import servidorfisql.interpretes.Error;
 import servidorfisql.interpretes.Analizadores.Grafica;
 import servidorfisql.interpretes.Analizadores.Nodo;
 import servidorfisql.interpretes.Analizadores.USQL.analizador.ParserUSQL;
@@ -153,15 +154,41 @@ public class Archivos {
         return astXML;
     }
     
-    public static Nodo parsearUSQL(String instruccion){
+    public static Nodo parsearUSQL(int codigo, String instruccion) throws IOException{
         ParserUSQL parserUSQL;
         Nodo astUSQL = null;
         
         try {
             parserUSQL = new ParserUSQL(new StringReader(instruccion));
             astUSQL = parserUSQL.INI();
-        } catch (servidorfisql.interpretes.Analizadores.USQL.analizador.ParseException ex) {
+            
+            new Grafica().graficar(astUSQL, "/home/jorge/Escritorio/astUsql/ast");
+            
+        }catch(servidorfisql.interpretes.Analizadores.USQL.analizador.TokenMgrError ex){
             Consola.writeln(ex.getLocalizedMessage());
+            String token = "ERROR";
+            String valor = Error.lenguaje(
+                    codigo, 
+                    "USQL", 
+                    instruccion, 
+                    "Lexico", 
+                    0, 
+                    0, 
+                    ex.getMessage());
+            astUSQL = new Nodo(token, valor);
+            
+        }catch (servidorfisql.interpretes.Analizadores.USQL.analizador.ParseException ex) {
+            Consola.writeln(ex.getLocalizedMessage());
+            String token = "ERROR";
+            String valor = Error.lenguaje(
+                    codigo, 
+                    "USQL", 
+                    instruccion, 
+                    "Sintactico", 
+                    ex.currentToken.beginLine, 
+                    ex.currentToken.beginColumn, 
+                    ex.getMessage());
+            astUSQL = new Nodo(token, valor);
         }
         
         return astUSQL;
@@ -228,5 +255,28 @@ public class Archivos {
             Consola.writeln("Error, ya existe el directorio [" + path + "]");
     }
 
+    public static void eliminarDirectorio(String path){
+        File file = new File(path);
+        
+        if(file.exists()){
+            if(file.isFile()){
+                file.delete();
+                Consola.writeln("Eliminando " + path);
+            }else{
+                
+                String[] list = file.list();
+                
+                for(String l : list){
+                    Consola.writeln("Eliminando " + path + l);
+                    new File(path + l).delete();
+                }
+                
+                Consola.writeln("Eliminando " + path);
+                new File(path).delete();
+            }
+        }else{
+            Consola.writeln("No se ha eliminado [" + path + "] porque no existe");
+        }
+    }
 
 }

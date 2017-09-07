@@ -39,27 +39,29 @@ public interface ParserXMLConstants {
   /** RegularExpression Id. */
   int autoinc = 18;
   /** RegularExpression Id. */
-  int entero = 19;
+  int simbolo = 19;
   /** RegularExpression Id. */
-  int doble = 20;
+  int entero = 20;
   /** RegularExpression Id. */
-  int booleano = 21;
+  int doble = 21;
   /** RegularExpression Id. */
-  int fecha = 22;
+  int booleano = 22;
   /** RegularExpression Id. */
-  int fecha_hora = 23;
+  int fecha = 23;
   /** RegularExpression Id. */
-  int cadena = 24;
+  int fecha_hora = 24;
   /** RegularExpression Id. */
-  int codigo = 25;
+  int cadena = 25;
   /** RegularExpression Id. */
-  int id = 26;
+  int codigo = 26;
   /** RegularExpression Id. */
-  int path = 27;
+  int id = 27;
   /** RegularExpression Id. */
-  int open = 28;
+  int path = 28;
   /** RegularExpression Id. */
-  int close = 29;
+  int open = 29;
+  /** RegularExpression Id. */
+  int close = 30;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -82,9 +84,10 @@ public interface ParserXMLConstants {
     "\"PK\"",
     "\"FK\"",
     "\"NULL\"",
-    "\"NOT NULLL\"",
+    "\"NOT NULL\"",
     "\"UNIQUE\"",
     "\"AUTOINC\"",
+    "<simbolo>",
     "<entero>",
     "<doble>",
     "<booleano>",

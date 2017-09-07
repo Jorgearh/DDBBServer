@@ -54,9 +54,14 @@ TOKEN :
 	<pk: "PK">
    |<fk: "FK">
    |<nulo: "NULL">
-   |<nonulo: "NOT NULLL">
+   |<nonulo: "NOT NULL">
    |<unico: "UNIQUE">
    |<autoinc: "AUTOINC">
+}
+
+TOKEN:
+{
+	<simbolo: "." | "=" | "+" | "-" | "*" | "/" | "^" | "_" | "==" | "!=" | ">" | ">=" | "<" | "<=" | "||" | "&&" | "!" | "++" | "--" >
 }
 
 TOKEN :
@@ -162,6 +167,7 @@ Nodo VALUE() :
 	|t = <booleano>		{nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha>		{nodo = new Nodo("DATE", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha_hora>	{nodo = new Nodo("DATETIME", t.image, t.beginLine, t.beginColumn);}
+	|t = <simbolo>		{nodo = new Nodo("SMB", t.image, t.beginLine, t.beginColumn);}
 	)
 	{return nodo;}
 }

@@ -26,6 +26,9 @@ public class Usuarios {
         this.usuarios.remove(idUser);
     }
     
+    public void modificarUsuario(String user, String password) {
+        this.usuarios.get(user).setPassword(password);
+    }
     
     
     /***
@@ -76,12 +79,14 @@ public class Usuarios {
 
     
 
+    
+
 }
 
 
 class Usuario{
     private final String username;
-    private final String password;
+    private String password;
     
     public Usuario(String user, String pass){
         this.username = user;
@@ -94,6 +99,10 @@ class Usuario{
 
     public String getPassword() {
         return password;
+    }
+
+    void setPassword(String password) {
+        this.password = password;
     }
     
     

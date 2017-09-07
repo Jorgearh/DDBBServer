@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JFrame;
 import servidorfisql.server.Server;
+import servidorfisql.server.manejador.Archivos;
 
 /**
  *
@@ -155,14 +156,7 @@ public class Consola extends javax.swing.JFrame{
     }//GEN-LAST:event_jbRestartActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        int a, b, c, d;
-        
-        a = b = c = d = 54;
-        
-        System.out.println("" + a);
-        System.out.println("" + b);
-        System.out.println("" + c);
-        System.out.println("" + d);
+        Archivos.eliminarDirectorio("/home/jorge/FISQL/bbdd/Proyecto5");
         
     }//GEN-LAST:event_jButton1ActionPerformed
 

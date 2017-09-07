@@ -18,7 +18,7 @@ public class Columnas {
     public void cargarColumnas(Nodo columnas){
         for(Nodo c : columnas.hijos){
             Columna col = new Columna(c);
-            this.columnas.put(col.id, col);
+            this.columnas.put(col.idColumna, col);
         }
     }
     
@@ -48,31 +48,46 @@ public class Columnas {
     }
     
     public String getTipoColumna(String idCol){
-        return this.columnas.get(idCol).tipo;
+        return this.columnas.get(idCol).tipoColumna;
     }
+
+    void eliminarColumna(String idCol) {
+        this.columnas.remove(idCol);
+    }
+
+    String obtenerPk() {
+        String pk = null;
+        for(Columna c : this.columnas.values()){
+            if(c.pk)
+                return c.idColumna;
+        }
+        return pk;
+    }
+
 }
 
 
 class Columna{
-    String tipo;
-    String id;
+    String tipoColumna;
+    String idColumna;
     
     /***
      * COMPLEMENTOS
      */
     boolean pk;
     boolean fk;
-    String tabla, columna;
+    String tablaRef, columnaRef;
     boolean nulo;
     boolean unique;
     boolean autoinc;
     
     public Columna(String tipo, String id, Nodo lcomp){
-        this.tipo = tipo;
-        this.id = id;
+        this.tipoColumna = tipo;
+        this.idColumna = id;
         
-        this.pk = this.fk = this.nulo = this.unique = this.autoinc = false;
-        this.tabla = this.columna =  "";
+        this.pk = this.fk = this.unique = this.autoinc = false;
+        this.nulo = true;
+        this.tablaRef = this.columnaRef =  "";
         
         setComplements(lcomp);
     }
@@ -80,10 +95,11 @@ class Columna{
     public Columna(Nodo column){
         Nodo lcomp;
         
-        this.tipo = column.getHijo(0).getHijo(0).valor;
-        this.id = column.getHijo(1).getHijo(0).valor;
-        this.pk = this.fk = this.nulo = this.unique = this.autoinc = false;
-        this.tabla = this.columna =  "";
+        this.tipoColumna = column.getHijo(0).getHijo(0).valor;
+        this.idColumna = column.getHijo(1).getHijo(0).valor;
+        this.pk = this.fk = this.unique = this.autoinc = false;
+        this.nulo = true;
+        this.tablaRef = this.columnaRef =  "";
         
         lcomp = column.getHijo(2);
         
@@ -93,22 +109,22 @@ class Columna{
     }
     
     private void setComplements(Nodo lcomp){
-        for(Nodo complemento : lcomp.hijos){
-            Nodo comp = complemento.getHijo(0);
+        for(Nodo comp : lcomp.hijos){
             
             switch(comp.token){
                 case "PK":
                     this.pk = true;
+                    this.nulo = false;
                     break;
                 case "FK":
                     this.fk = true;
-                    this.tabla = comp.getHijo(0).getHijo(0).valor;
-                    this.columna = comp.getHijo(1).getHijo(0).valor;
+                    this.tablaRef = comp.getHijo(0).valor;
+                    this.columnaRef = comp.getHijo(1).valor;
                 break;
-                case "NULL":
+                case "NULO":
                     this.nulo = true;
                 break;
-                case "NOT NULL":
+                case "NO_NULO":
                     this.nulo = false;
                 break;
                 case "UNIQUE":
@@ -127,8 +143,8 @@ class Columna{
         String xml = "";
         
         xml += "                <row>\n"
-             + "                    <type>" + this.tipo + "</type>\n"
-             + "                    <name>" + this.id + "</name>\n";
+             + "                    <type>" + this.tipoColumna + "</type>\n"
+             + "                    <name>" + this.idColumna + "</name>\n";
         
         xml += getXmlComplementos();
         
@@ -145,8 +161,8 @@ class Columna{
         if(this.fk) {
             xml += "                        <complemento>\n"
                  + "                            <FK>\n"
-                 + "                                <tabla>" + this.tabla + "</tabla>\n"
-                 + "                                <columna>" + this.columna + "</columna>\n"   
+                 + "                                <tabla>" + this.tablaRef + "</tabla>\n"
+                 + "                                <columna>" + this.columnaRef + "</columna>\n"   
                  + "                            </FK>\n"   
                  + "                        </complemento>\n";
         }

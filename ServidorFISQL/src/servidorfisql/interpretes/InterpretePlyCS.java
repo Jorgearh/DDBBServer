@@ -9,6 +9,7 @@ import servidorfisql.interpretes.Analizadores.Nodo;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.ParseException;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.ParserPlyCS;
 import static servidorfisql.Constantes.FILE_AST_PLYCS;
+import servidorfisql.interpretes.Analizadores.PlyCS.analizador.TokenMgrError;
 import servidorfisql.server.Server;
 import servidorfisql.server.manejador.Archivos;
 
@@ -40,18 +41,24 @@ public class InterpretePlyCS {
             
             response = interpretar(pw, astPlyCS);
             
+        }catch(TokenMgrError ex){
+            response = "Error lexico en el analisis del paquete PlyCS\n    " + ex.getMessage() + "\n" + request;
+            Consola.writeln(response);
+            
         }catch(ParseException pe){
-            Consola.writeln(pe.getMessage());
-            response = "ERROR EN EL PARSEO";
+            response = "Error sintactico en el analisis del paquete PlyCS\n    " + pe.getMessage() + "\n" + request;
+            Consola.writeln(response);
+            
         } catch (IOException ex) {
             Consola.writeln(ex.getMessage());
             response = "ERROR DE IO";
+            
         }
         
         return response;
     }
     
-    private String interpretar(PrintWriter pw, Nodo ast){
+    private String interpretar(PrintWriter pw, Nodo ast) throws IOException{
         String response, paquete, usql;
         int codigo;
         
@@ -76,7 +83,7 @@ public class InterpretePlyCS {
                 
             case "usql":
                 codigo = Integer.parseInt(ast.getHijo(1).valor);
-                usql = ast.getHijo(2).valor;
+                usql = ast.getHijo(2).valor.replace("~", "\"");
                 response = usql(codigo, usql);
                 break;
                 
@@ -124,11 +131,11 @@ public class InterpretePlyCS {
                             "]";
                 
             }else{
+                response = Error.logico(codigo, "login", "Password invalida para usuario [" + user + "]");
                 
-                response = Error.logico(codigo, "login", "El usuario [" + user + "] invalido.");
             }
         }else{
-            response = Error.logico(codigo, "login", "Password invalida para usuario [" + user + "]");
+            response = Error.logico(codigo, "login", "El usuario [" + user + "] es invalido.");
         }
         
         
@@ -151,10 +158,14 @@ public class InterpretePlyCS {
     
     
     
-    private String usql(int codigo, String cadUsql){
+    private String usql(int codigo, String cadUsql) throws IOException{
         //return interpreteUSQL.analizar(usql);
-        Nodo astUSQL = Archivos.parsearUSQL(cadUsql);
-        return interpreteUSQL.interpretar(codigo, astUSQL, cadUsql);
+        Nodo astUSQL = Archivos.parsearUSQL(codigo, cadUsql);
+        
+        if(astUSQL.token.equals("ERROR"))
+            return astUSQL.valor;
+        else
+            return interpreteUSQL.interpretar(codigo, astUSQL, cadUsql);
     }
     
     

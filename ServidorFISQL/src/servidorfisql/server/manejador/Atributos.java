@@ -1,6 +1,7 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
+import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Analizadores.Nodo;
 
 /**
@@ -51,26 +52,31 @@ public class Atributos {
         Atributo atr = new Atributo(tipoAtr, idAtr);
         
         this.atributos.put(idAtr, atr);
+        Consola.writeln("Creado el atributo [ " + tipoAtr + " " + idAtr + " ]");
+    }
+
+    void eliminarAtributo(String idAtr) {
+        this.atributos.remove(idAtr);
     }
     
 }
 
 
 class Atributo{
-    String tipo;
-    String id;
+    String tipoAtributo;
+    String idAtributo;
     
     public Atributo(String tipo, String id){
-        this.tipo = tipo;
-        this.id = id;
+        this.tipoAtributo = tipo;
+        this.idAtributo = id;
     }
     
     public String getXml(){
-        String xml = "";
+        String xml;
         
         xml = "            <atribute>\n"
-            + "                <type>" + this.tipo + "</type>\n"
-            + "                <name" + this.id + "</name>\n"    
+            + "                <type>" + this.tipoAtributo + "</type>\n"
+            + "                <name>" + this.idAtributo + "</name>\n"    
             + "            </atribute>\n";
         
         return xml;

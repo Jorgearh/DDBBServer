@@ -78,7 +78,8 @@ public class Nodo {
             return this.hijos.get(index);
         else{
             System.err.println("Error accesando hijo ["+ index +"], el indice mayor es ["+ (this.hijos.size() - 1) +"] hijos");
-            System.err.println("Nodo padre => " + this.token);
+            System.err.println("Token padre => " + this.token + " Valor padre => " + this.valor);
+            System.out.println("Fila => " + this.row + " Columna => " + this.col + "\n");
             return null;
         }
     }
