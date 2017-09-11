@@ -7,7 +7,7 @@ options{
 PARSER_BEGIN(ParserUSQL)
 	package servidorfisql.interpretes.Analizadores.USQL.analizador;
 
-	import servidorfisql.interpretes.Analizadores.Nodo;
+	import servidorfisql.interpretes.Nodo;
 
 	public class ParserUSQL{
 		public static void main(String[] args) throws ParseException{
@@ -168,9 +168,9 @@ TOKEN :
 	 <entero: (("-")? <digito>)+ >
 	|<doble: (("-")? <digito>)+ "." (<digito>)+>
 	|<booleano: "true" | "false" >
+	|<val_null: "NULL">
 	|<fecha: "\'"<digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>"\'">
 	|<fecha_hora: "\'"<fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>"\'">
-	//|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
 	|<cadena: ("\"") (~["\""])* ("\"") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<var: "@"<id>>
@@ -689,10 +689,11 @@ Nodo SSL() : {Nodo nodo;}
 	|nodo = SSL_DETENER() ";"
 	|nodo = SSL_RETORNO() ";"
 	|nodo = SSL_IMPRIMIR() ";"
+	/*
 	|nodo = SSL_FECHA() ";"
 	|nodo = SSL_FECHA_HORA() ";"
 	|nodo = SSL_CONTAR() ";"
-
+	*/
 	|nodo = CALL() ";"
 	)
 	{return nodo;}
@@ -952,8 +953,8 @@ Nodo RESTAURAR() :
 }
 {
 	<restaurar>	(
-					 <usqldump> {nodo = new Nodo("RESTAURAR_USQLDUMP");}
-					|<completo> {nodo = new Nodo("RESTAURAR_COMPLETO");}
+					 <usqldump> {nodo = new Nodo("RESTORE_USQLDUMP");}
+					|<completo> {nodo = new Nodo("RESTORE_COMPLETO");}
 				) [t = <cadena>	{nodo.agregarHijo(new Nodo("CAD", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn));}]
 				{return nodo;}
 }
@@ -1166,6 +1167,7 @@ Nodo INSTRUCCION() : {Nodo nodo;}
 {
 	(
 	nodo = DML() ";"
+   |nodo = DDL() ";"
    |nodo = SSL()
    )
    {return nodo;}
@@ -1219,6 +1221,7 @@ Nodo VAL() :
 	 t = <entero>		{nodo = new Nodo("ENT", t.image, t.beginLine, t.beginColumn);}
 	|t = <doble>		{nodo = new Nodo("DOB", t.image, t.beginLine, t.beginColumn);}
 	|t = <booleano>		{nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);}
+	|t = <val_null>			{nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);}
 	|t = <cadena>		{nodo = new Nodo("CAD", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha>		{nodo = new Nodo("FECHA", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha_hora>	{nodo = new Nodo("FECHAHORA", t.image, t.beginLine, t.beginColumn);}

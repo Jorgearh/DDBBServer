@@ -1,4 +1,4 @@
-package servidorfisql.interpretes.Analizadores;
+package servidorfisql.interpretes;
 
 import java.util.ArrayList;
 

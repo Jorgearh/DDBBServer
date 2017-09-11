@@ -1,8 +1,6 @@
 package servidorfisql.interpretes;
 
 import java.util.ArrayList;
-import servidorfisql.Constantes;
-import servidorfisql.gui.Consola;
 import servidorfisql.server.Server;
 import servidorfisql.server.manejador.Archivos;
 
@@ -10,49 +8,25 @@ import servidorfisql.server.manejador.Archivos;
  *
  * @author jorge
  */
-public class InterpreteUSQL implements Constantes{
+public class SemanticoUSQL {
     
-    int codigo;
-    String cadUsql;
+    private static int codigo;
+    private static String cadUsql;
     
-    
-    public InterpreteUSQL(){
-    }
-
-    
-    public static String interpretarSentenciaUsql(int codigo, Nodo lsent, String cadUsql){
-        String response = "";
-        String result;
+    /***
+     * Analisis Semantico de las sentencias USQL
+     * @param usqlSent
+     * @param cod
+     * @param cad
+     * @return null si no existen erroresSSL, una cadena de error si existen erroresSSL.
+     */
+    public static String analizar(Nodo usqlSent, int cod, String cad){
+        String response = null;
         
-        for(Nodo sent : lsent.hijos){
-            result = SemanticoUSQL.analizar(sent, codigo, cadUsql);
-            
-            if(result == null){
-                
-                //EJECUTAR
-                EjecucionUSQL.ejecutar(sent);
-                
-                response += "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + codigo + ",\n" +
-                            "	\"sentencia\": \"" + sent.token + "\"\n" +
-                            "]\n";
-            }else
-                response += result;
-        }
+        codigo = cod;
+        cadUsql = cad;
         
-        return response;
-    }
-    
-    public String interpretar(int codigo, Nodo lsent, String cadUsql){
-        String response = "";
-        this.codigo = codigo;
-        this.cadUsql = cadUsql;
-        
-        for(Nodo sent : lsent.hijos){
-            String idSent = sent.token;
-            
-            switch(idSent){
+        switch(usqlSent.token){
                 /*   SENTENCIAS DDL   */
                 case "CREATE_DB":
                 case "CREATE_TABLE":
@@ -60,11 +34,11 @@ public class InterpreteUSQL implements Constantes{
                 case "CREATE_USER":
                 case "PROC":
                 case "FUNC":
-                    response += create(sent);
+                    response = create(usqlSent);
                     break;
                     
                 case "USE":
-                    response += usar(sent);
+                    response = usar(usqlSent);
                     break;
                     
                 case "ALTER_TABLE_ADD":
@@ -72,17 +46,17 @@ public class InterpreteUSQL implements Constantes{
                 case "ALTER_OBJECT_ADD":
                 case "ALTER_OBJECT_QUIT":
                 case "ALTER_USER":
-                    response += alter(sent);
+                    response = alter(usqlSent);
                     break;
                     
                 case "DELETE":
-                    response += delete(sent);
+                    response = delete(usqlSent);
                     break;
                     
                     
                 /*   SENTENCIAS DML*/
                 case "INSERT":
-                    response += insert(sent);
+                    response = insert(usqlSent);
                     break;
                 case "SELECT":
                     break;
@@ -94,29 +68,44 @@ public class InterpreteUSQL implements Constantes{
                     
                 /*   SENTENCIAS DCL   */
                 case "GRANT":
-                    response += grant(sent);
+                    response = grant(usqlSent);
                     break;
                 case "DENY":
-                    response += deny(sent);
+                    response = deny(usqlSent);
+                    break;
+                    
+                case "CALL":
+                    break;
+                    
+                case "PRINT":
+                    break;
+                    
+                case "BACKUP_USQLDUMP":
+                    break;
+                    
+                case "BACKUP_COMPLETO":
+                    break;
+                    
+                case "RESTORE_USQLDUMP":
+                    break;
+                    
+                case "RESTORE_COMPLETO":
                     break;
                     
                 default:
-                    response += Error.logico(codigo, "logico", "Sentencia " + idSent + "invalida");
+                    response = Error.logico(
+                            codigo, 
+                            "logico", 
+                            "Sentencia " + usqlSent.token + "invalida");
             }
-        }
-        
         
         return response;
     }
     
     /*    SENTENCIAS DDL    */
     
-    private String create(Nodo create){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + create.token + "\"\n" +
-                            "]";
+    private static String create(Nodo create){
+        String response = null;
         Nodo nodoID;
         
         switch(create.token){
@@ -130,25 +119,11 @@ public class InterpreteUSQL implements Constantes{
                     response = Error.lenguaje(
                             codigo, 
                             "USQL", 
-                            this.cadUsql, 
+                            cadUsql, 
                             "Semantico", 
                             nodoID.row, 
                             nodoID.col, 
                             "Ya existe la base de datos [" + idDB + "]");
-                }else{
-                    
-                    /*crear el directorio de la base de datos*/
-                    String dirBD = Archivos.bbddDir + idDB;
-                    String dirTables = dirBD + "/tables/";
-                    
-                    Archivos.crearDirectorio(dirTables);
-                    
-                    /*crear la base de datos en memoria, 
-                    */
-                    Archivos.bbdd.crearBD(idDB, dirBD, dirTables);
-                    Server.actualDB = idDB;
-                    
-                    Consola.writeln ("Base de datos [" + idDB + "] creada exitosamente\n");
                 }
                 break;
                 
@@ -159,7 +134,6 @@ public class InterpreteUSQL implements Constantes{
                     
                     
                     nodoID = create.getHijo(0);
-                    Nodo lcampo = create.getHijo(1);
                     
                     String idTable = nodoID.valor;
                     
@@ -169,18 +143,14 @@ public class InterpreteUSQL implements Constantes{
                         //No se repite ningun campo
                         String analisis = analisisDeclaracionColumnas(create);
                         
-                        if(analisis == null){
-                            Archivos.bbdd.crearTabla(Server.actualDB, create);
-                            Consola.writeln("Tabla [" + idTable + "] creada exitosamente.\n");
-                        }else{
+                        if(analisis != null)
                             return analisis;
-                        }
                         
                     }else{
                         response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
-                                this.cadUsql, 
+                                cadUsql, 
                                 "Semantico", 
                                 nodoID.row, 
                                 nodoID.col, 
@@ -201,20 +171,17 @@ public class InterpreteUSQL implements Constantes{
                     Nodo user = create.getHijo(0);
                     Nodo pass = create.getHijo(1);
 
-                    if(!Archivos.usuarios.existsUser(user.valor)){
-                        Archivos.usuarios.agregarUsuario(user.valor, pass.valor);
-                        Consola.writeln("Usuario [" + user.valor + "] creado exitosamente.");
-                    }else{
+                    if(Archivos.usuarios.existsUser(user.valor)){
                         response = 
                                 Error.lenguaje(
-                                        codigo, 
-                                        "USQL", 
-                                        this.cadUsql, 
-                                        "Semantico", 
-                                        user.row, 
+                                        codigo,
+                                        "USQL",
+                                        cadUsql,
+                                        "Semantico",
+                                        user.row,
                                         user.col, 
                                         "Ya existe el usuario [" + user.valor + "]. "
-                                        + "Vuelva a intentarlo con otro nombre de usuario");
+                                                + "Vuelva a intentarlo con otro nombre de usuario");
                     }
                 }else{
                     response = Error.logico(codigo, 
@@ -235,11 +202,7 @@ public class InterpreteUSQL implements Constantes{
                     if(!Archivos.bbdd.existeObjeto(Server.actualDB, idObj.valor)){
 
                         String analisis = analisisDeclaracionAtributos(create);
-                        if(analisis == null){
-                            //Si no hay errores en la declaracion de atributos
-                            Archivos.bbdd.crearObjeto(Server.actualDB, create); 
-                            Consola.writeln("Objeto [" + idObj.valor + "] creado exitosamente.\n");
-                        }else{
+                        if(analisis != null){
                             return analisis;
                         }
 
@@ -248,7 +211,7 @@ public class InterpreteUSQL implements Constantes{
                             Error.lenguaje(
                                     codigo, 
                                     "USQL", 
-                                    this.cadUsql, 
+                                    cadUsql, 
                                     "Semantico", 
                                     idObj.row, 
                                     idObj.col, 
@@ -273,23 +236,18 @@ public class InterpreteUSQL implements Constantes{
                     if(!Archivos.bbdd.existeMetodo(Server.actualDB, idProc.valor)){
 
                         //Analisis semantico SSL(parametros, variables locales, comprobacion de tipos)
-                        String erroresSSL = analisisSemanticoSSL(create);
+                        SemanticoSSL.analizarMetodo(create, codigo, cadUsql);
                         
-                        if(erroresSSL != null){
-                            return erroresSSL;
+                        if(SemanticoSSL.erroresSSL.isEmpty()){
+                            return SemanticoSSL.cadenaErrores();
                         }
-
                         
-                        //Si no hay errores en la declaracion del metodo
-                        Archivos.bbdd.crearProc(Server.actualDB, create);
-                        Consola.writeln((create.token.equals("PROC") ? "PROCEDIMIENTO" : "FUNCION") + " [" + idProc.valor + "] creado exitosamente.\n");
-
                     }else{
                         response = 
                             Error.lenguaje(
                                     codigo, 
                                     "USQL", 
-                                    this.cadUsql, 
+                                    cadUsql, 
                                     "Semantico", 
                                     idProc.row, 
                                     idProc.col, 
@@ -310,31 +268,24 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
-    private String usar(Nodo use){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + use.token + "\"\n" +
-                            "]";
+    private static String usar(Nodo use){
+        String response = null;
         
         String idDB = use.getHijo(0).valor;
         
         if(Archivos.bbdd.existeBD(idDB)){
-            if(Archivos.bbdd.tienePermisos(idDB, Server.user)){
-                Server.actualDB = idDB;
-                Consola.writeln("Usando Base de Datos [" + idDB + "]\n");
-            }else{
-                response = Error.logico(codigo, 
-                                "PERMISOS USE", 
-                                "El usuario [" + Server.user + "] "
-                                        + "no tiene permisos"
-                                        + "en la base de datos [" + Server.actualDB + "]");
+            if(!Archivos.bbdd.tienePermisos(idDB, Server.user)){
+                response = Error.logico(codigo,
+                        "PERMISOS USE",
+                        "El usuario [" + Server.user + "] "
+                                + "no tiene permisos"
+                                + "en la base de datos [" + Server.actualDB + "]");
             }
         }else{
             response = Error.lenguaje(
                     codigo, 
                     "USQL", 
-                    this.cadUsql, 
+                    cadUsql, 
                     "Semantico", 
                     use.getHijo(0).row, 
                     use.getHijo(0).col,
@@ -344,12 +295,8 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
-    private String alter(Nodo alter){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + alter.token + "\"\n" +
-                            "]";
+    private static String alter(Nodo alter){
+        String response = null;
         Nodo idTable;
         Nodo idObject;
         Nodo lid;
@@ -362,15 +309,9 @@ public class InterpreteUSQL implements Constantes{
                 //Existe el usuario a modificar
                 if(Archivos.usuarios.existsUser(idUser.valor)){
                     //Un usuario modifica sus credenciales
-                    if(Server.user.equals("admin") || Server.user.equals(idUser.valor)){
-                        
-                        //Modificar password
-                        Archivos.usuarios.modificarUsuario(idUser.valor, passUser.valor);
-                        Consola.writeln("Se ha modificado el password del usuario [" + idUser.valor + "]\n");
-
-                    }else{                                  //Un usuario no admin 
+                    if(!Server.user.equals("admin") && !Server.user.equals(idUser.valor)){                                  //Un usuario no admin 
                         response = Error.logico(
-                                codigo, 
+                                codigo,
                                 cadUsql, 
                                 "Solo el usuario admin puede modificar credenciales ajenas.");
                     }
@@ -378,7 +319,7 @@ public class InterpreteUSQL implements Constantes{
                     response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idUser.row, 
                                             idUser.col,
@@ -402,7 +343,7 @@ public class InterpreteUSQL implements Constantes{
                                     response = Error.lenguaje(
                                                 codigo, 
                                                 "USQL", 
-                                                this.cadUsql, 
+                                                cadUsql, 
                                                 "Semantico", 
                                                 col.row, 
                                                 col.col,
@@ -410,14 +351,6 @@ public class InterpreteUSQL implements Constantes{
                                     return response;
                                 }
                             }
-
-                            //Eliminar las columnas especificadas
-                            Archivos.bbdd.modificarTablaEliminar(Server.actualDB, idTable.valor, lid);
-                            Consola.write("Se han eliminado de la tabla [" + idTable.valor + "] las columnas { ");
-                            lid.hijos.stream().forEach((id) -> {
-                                Consola.append(id.valor + " ");
-                            });
-                            Consola.append("}\n");
                         }else{
                             response = Error.logico(codigo, 
                                         "ALTER TABLE QUIT", 
@@ -429,7 +362,7 @@ public class InterpreteUSQL implements Constantes{
                         response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idTable.row, 
                                             idTable.col,
@@ -459,7 +392,7 @@ public class InterpreteUSQL implements Constantes{
                                     response = Error.lenguaje(
                                                 codigo, 
                                                 "USQL", 
-                                                this.cadUsql, 
+                                                cadUsql, 
                                                 "Semantico", 
                                                 atr.row, 
                                                 atr.col,
@@ -467,14 +400,6 @@ public class InterpreteUSQL implements Constantes{
                                     return response;
                                 }
                             }
-
-                            //Eliminar los atributos especificadas
-                            Archivos.bbdd.modificarObjetoEliminar(Server.actualDB, idObject.valor, lid);
-                            Consola.write("Se han eliminado del objeto [" + idObject.valor + "] los atributos { ");
-                            lid.hijos.stream().forEach((id) -> {
-                                Consola.append(id.valor + " ");
-                            });
-                            Consola.append("}\n");
 
                         }else{
                             response = Error.logico(codigo, 
@@ -486,7 +411,7 @@ public class InterpreteUSQL implements Constantes{
                         response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idObject.row, 
                                             idObject.col,
@@ -523,7 +448,7 @@ public class InterpreteUSQL implements Constantes{
                                 if(Archivos.bbdd.existeColumna(Server.actualDB, idTable.valor, idCol.valor)){
                                     response = Error.lenguaje(codigo, 
                                                                 "USQL", 
-                                                                this.cadUsql, 
+                                                                cadUsql, 
                                                                 "Semantico",
                                                                 idCol.row, 
                                                                 idCol.col, 
@@ -546,7 +471,7 @@ public class InterpreteUSQL implements Constantes{
                                                 Error.lenguaje(
                                                         codigo, 
                                                         "USQL", 
-                                                        this.cadUsql, 
+                                                        cadUsql, 
                                                         "Semantico", 
                                                         idCol.row, 
                                                         idCol.col, 
@@ -556,14 +481,6 @@ public class InterpreteUSQL implements Constantes{
                                     }
                                 }
                             }
-                            
-                            //Agregar las columnas especificadas
-                            Archivos.bbdd.modificarTablaAgregar(Server.actualDB, idTable.valor, lcol);
-                            Consola.write("Se han agregado a la tabla [" + idTable.valor + "] las columnas { ");
-                            lcol.hijos.stream().forEach((col) -> {
-                                Consola.append(col.getHijo(1).valor + " ");
-                            });
-                            Consola.append("}\n");
                             
                         }else{
                             response = Error.logico(codigo, 
@@ -576,7 +493,7 @@ public class InterpreteUSQL implements Constantes{
                         response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idTable.row, 
                                             idTable.col,
@@ -615,7 +532,7 @@ public class InterpreteUSQL implements Constantes{
                                     response = Error.lenguaje(
                                                 codigo, 
                                                 "USQL", 
-                                                this.cadUsql, 
+                                                cadUsql, 
                                                 "Semantico", 
                                                 atr.row, 
                                                 atr.col,
@@ -628,7 +545,7 @@ public class InterpreteUSQL implements Constantes{
                                     response = Error.lenguaje(
                                                 codigo, 
                                                 "USQL", 
-                                                this.cadUsql, 
+                                                cadUsql, 
                                                 "Semantico", 
                                                 atr.row, 
                                                 atr.col,
@@ -636,15 +553,6 @@ public class InterpreteUSQL implements Constantes{
                                     return response;
                                 }
                             }
-
-                            //Eliminar los atributos especificadas
-                            Archivos.bbdd.modificarObjetoAgregar(Server.actualDB, idObject.valor, latr);
-                            
-                            Consola.write("Se han agregado al objeto [" + idObject.valor + "] los atributos { ");
-                            latr.hijos.stream().forEach((atr) -> {
-                                Consola.append(atr.getHijo(0).valor + " " + atr.getHijo(1).valor + "  ");
-                            });
-                            Consola.append("}\n");
 
                         }else{
                             response = Error.logico(codigo, 
@@ -656,7 +564,7 @@ public class InterpreteUSQL implements Constantes{
                         response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idObject.row, 
                                             idObject.col,
@@ -676,12 +584,8 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
-    private String delete(Nodo delete){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + delete.token + "\"\n" +
-                            "]";
+    private static String delete(Nodo delete){
+        String response = null;
         Nodo usqlObject = delete.getHijo(0);
         Nodo idObject = delete.getHijo(1);
         
@@ -698,20 +602,18 @@ public class InterpreteUSQL implements Constantes{
                 if(Archivos.bbdd.existeBD(idObject.valor)){
                     //No tiene permisos en la base de datos
                     if(!Archivos.bbdd.tienePermisos(idObject.valor, Server.user)){
-                        response = Error.logico(codigo, 
-                                    "PERMISOS DELETE DB", 
-                                    "El usuario [" + Server.user + "] "
-                                            + "no tiene permisos"
-                                            + "en la base de datos [" + Server.actualDB + "]");
-                    }else{
-                        Archivos.bbdd.eliminarBD(idObject.valor);
-                        Consola.writeln("Se ha eliminado la Base de Datos [" + idObject.valor + "]\n");
+                        response = Error.logico(
+                                codigo, 
+                                "PERMISOS DELETE DB", 
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos"
+                                        + "en la base de datos [" + Server.actualDB + "]");
                     }
                 }else{
                     response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idObject.row, 
                                             idObject.col,
@@ -723,19 +625,13 @@ public class InterpreteUSQL implements Constantes{
             if(Server.user.equals("admin")){
                 if(!idObject.valor.equals("admin")){
                     //Existe el usuario a eliminar
-                    if(Archivos.usuarios.existsUser(idObject.valor)){
-                        //Eliminar todos los permisos para el usuario
-                        Archivos.bbdd.denegarPermisosParaUsuario(idObject.valor);
-                        //Eliminar el usuario
-                        Archivos.usuarios.eliminarUsuario(idObject.valor);
-                        Consola.writeln("Se ha eliminado el usuario [" + idObject.valor + "]\n");
-                    }else{
+                    if(!Archivos.usuarios.existsUser(idObject.valor)){
                         response = Error.lenguaje(
-                                codigo, 
-                                "USQL", 
-                                cadUsql, 
-                                "Semantico", 
-                                idObject.row, 
+                                codigo,
+                                "USQL",
+                                cadUsql,
+                                "Semantico",
+                                idObject.row,
                                 idObject.col, 
                                 "No existe el usuario [" + idObject.valor + "]");
                     }
@@ -763,23 +659,18 @@ public class InterpreteUSQL implements Constantes{
                             if(Archivos.bbdd.existeTabla(Server.actualDB, idObject.valor)){
                                 
                                 //El usuario actual tiene permisos en la tabla
-                                if(Archivos.bbdd.tienePermisosTabla(Server.actualDB, idObject.valor, Server.user)){
-                                    //Eliminar tabla
-                                    Archivos.bbdd.eliminarTabla(Server.actualDB, idObject.valor);
-                                    Consola.writeln("Se ha eliminado la tabla [" + idObject.valor + " ]"
-                                            + "de la base de datos [" + Server.actualDB + "]\n");
-                                }else{
-                                    response = Error.logico(codigo, 
-                                                        "PERMISOS DELETE TABLE", 
-                                                        "El usuario [" + Server.user + "] "
-                                                                + "no tiene permisos"
-                                                                + "en la tabla [" + idObject.valor + "]");
+                                if(!Archivos.bbdd.tienePermisosTabla(Server.actualDB, idObject.valor, Server.user)){
+                                    response = Error.logico(codigo,
+                                            "PERMISOS DELETE TABLE",
+                                            "El usuario [" + Server.user + "] "
+                                                    + "no tiene permisos"
+                                                    + "en la tabla [" + idObject.valor + "]");
                                 }
                             }else{
                                 response = Error.lenguaje(
                                                     codigo, 
                                                     "USQL", 
-                                                    this.cadUsql, 
+                                                    cadUsql, 
                                                     "Semantico", 
                                                     idObject.row,
                                                     idObject.col,
@@ -792,23 +683,18 @@ public class InterpreteUSQL implements Constantes{
                             if(Archivos.bbdd.existeObjeto(Server.actualDB, idObject.valor)){
                                 
                                 //El usuario actual tiene permisos en el objeto
-                                if(Archivos.bbdd.tienePermisosObjeto(Server.actualDB, idObject.valor, Server.user)){
-                                    //Eliminar objeto
-                                    Archivos.bbdd.eliminarObjeto(Server.actualDB, idObject.valor);
-                                    Consola.writeln("Se ha eliminado el objeto [" + idObject.valor + " ]"
-                                            + "de la base de datos [" + Server.actualDB + "]");
-                                }else{
-                                    response = Error.logico(codigo, 
-                                                        "PERMISOS DELETE OBJECT", 
-                                                        "El usuario [" + Server.user + "] "
-                                                                + "no tiene permisos"
-                                                                + "en el objeto [" + idObject.valor + "]");
+                                if(!Archivos.bbdd.tienePermisosObjeto(Server.actualDB, idObject.valor, Server.user)){
+                                    response = Error.logico(codigo,
+                                            "PERMISOS DELETE OBJECT",
+                                            "El usuario [" + Server.user + "] "
+                                                    + "no tiene permisos"
+                                                    + "en el objeto [" + idObject.valor + "]");
                                 }
                             }else{
                                 response = Error.lenguaje(
                                                     codigo, 
                                                     "USQL", 
-                                                    this.cadUsql, 
+                                                    cadUsql, 
                                                     "Semantico", 
                                                     idObject.row,
                                                     idObject.col,
@@ -824,23 +710,18 @@ public class InterpreteUSQL implements Constantes{
                             if(Archivos.bbdd.existeMetodo(Server.actualDB, idObject.valor)){
                                 
                                 //El usuario actual tiene permisos en el metodo
-                                if(Archivos.bbdd.tienePermisosMetodo(Server.actualDB, idObject.valor, Server.user)){
-                                    //Eliminar metodo
-                                    Archivos.bbdd.eliminarMetodo(Server.actualDB, idObject.valor);
-                                    Consola.writeln("Se ha eliminado " + nameAux + "  [" + idObject.valor + " ]"
-                                            + "de la base de datos [" + Server.actualDB + "]\n");
-                                }else{
-                                    response = Error.logico(codigo, 
-                                                        "PERMISOS DELETE OBJECT", 
-                                                        "El usuario [" + Server.user + "] "
-                                                                + "no tiene permisos"
-                                                                + "en " + nameAux + " [" + idObject.valor + "]");
+                                if(!Archivos.bbdd.tienePermisosMetodo(Server.actualDB, idObject.valor, Server.user)){
+                                    response = Error.logico(codigo,
+                                            "PERMISOS DELETE OBJECT",
+                                            "El usuario [" + Server.user + "] "
+                                                    + "no tiene permisos"
+                                                    + "en " + nameAux + " [" + idObject.valor + "]");
                                 }
                             }else{
                                 response = Error.lenguaje(
                                                     codigo, 
                                                     "USQL", 
-                                                    this.cadUsql, 
+                                                    cadUsql, 
                                                     "Semantico", 
                                                     idObject.row,
                                                     idObject.col,
@@ -863,11 +744,7 @@ public class InterpreteUSQL implements Constantes{
                             "No se ha seleccionado una base de datos para usar.");
             }
         }
-        
-        
-        
-        
-        
+  
         return response;
     }
     
@@ -875,12 +752,8 @@ public class InterpreteUSQL implements Constantes{
     
     /*    SENTENCIAS DML    */
     
-    private String insert(Nodo insert){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + insert.token + "\"\n" +
-                            "]";
+    private static String insert(Nodo insert){
+        String response = null;
         
         Nodo idTable = insert.getHijo(0);
         Nodo lidCols = insert.getHijo(1);
@@ -904,7 +777,6 @@ public class InterpreteUSQL implements Constantes{
                         //No considera las columnas autoincrementables
                         for(int i = 0; i < lexp.hijos.size(); i++){
                             Nodo exp = lexp.getHijo(i);
-                            String valExp = evaluarExp(exp);
                             
                             //if(valExp.equals("NULL"))
                             
@@ -941,7 +813,7 @@ public class InterpreteUSQL implements Constantes{
                 response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idTable.row, 
                                             idTable.col,
@@ -963,12 +835,8 @@ public class InterpreteUSQL implements Constantes{
 
     /*    SENTENCIAS DCL    */
 
-    private String grant(Nodo grant){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + grant.token + "\"\n" +
-                            "]";
+    private static String grant(Nodo grant){
+        String response = null;
         
         //Solo el usuario admin puede otorgar permisos
         if(Server.user.equals("admin")){
@@ -982,33 +850,26 @@ public class InterpreteUSQL implements Constantes{
                 
                 //Existe la Base de Datos
                 if(Archivos.bbdd.existeBD(idDB.valor)){
-                    if(dbObj.token.equals("*")){
-                        Archivos.bbdd.otorgarPermisosEnTodo(idDB.valor, idUser.valor);
-                        Consola.writeln("Se ha otorgado permisos al usuario [" + idUser.valor + "] "
-                                + "en todos los objetos de la Base de Datos [" + idDB.valor + "]");
-                    }else{
+                    if(!dbObj.token.equals("*")){
                         
                         //No se ha encontrado el objeto
-                        if(!Archivos.bbdd.otorgarPermisosSiExiste(idDB.valor, dbObj.valor, idUser.valor)){
+                        if(!Archivos.bbdd.existeObjetoUsql(idDB.valor, dbObj.valor, idUser.valor)){
                             response = Error.lenguaje(
                                     codigo,
                                     "USQL",
-                                    this.cadUsql,
+                                    cadUsql,
                                     "Semantico",
                                     dbObj.row,
                                     dbObj.col,
                                     "No existe el elemento [" + dbObj.valor + "] "
                                             + "en la Base de Datos [" + idDB.valor + "]");
-                        }else{
-                            Consola.writeln("Se han otorgado los permisos al usuario [" + idUser.valor + "] "
-                                + "en el elemento [" + dbObj.valor + "] de la Base de Datos [" + idDB.valor + "]");
                         }
                     }
                 }else{
                  response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idDB.row, 
                                             idDB.col,
@@ -1018,7 +879,7 @@ public class InterpreteUSQL implements Constantes{
                 response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idUser.row, 
                                             idUser.col,
@@ -1035,12 +896,8 @@ public class InterpreteUSQL implements Constantes{
         return response;
     } 
     
-    private String deny(Nodo deny){
-        String response = "[\n" +
-                            "	\"paquete\": \"exito\",\n" +
-                            "	\"validar\": " + this.codigo + ",\n" +
-                            "	\"sentencia\": \"" + deny.token + "\"\n" +
-                            "]";
+    private static String deny(Nodo deny){
+        String response = null;
         
         //Solo el usuario admin puede otorgar permisos
         if(Server.user.equals("admin")){
@@ -1054,33 +911,28 @@ public class InterpreteUSQL implements Constantes{
                 
                 //Existe la Base de Datos
                 if(Archivos.bbdd.existeBD(idDB.valor)){
-                    if(dbObj.token.equals("*")){
-                        Archivos.bbdd.denegarPermisosEnTodo(idDB.valor, idUser.valor);
-                        Consola.writeln("Se ha denegado permisos al usuario [" + idUser.valor + "] "
-                                + "en todos los objetos de la Base de Datos [" + idDB.valor + "]");
-                    }else{
+                    if(!dbObj.token.equals("*")){
                         
                         //No se ha encontrado el objeto
-                        if(!Archivos.bbdd.denegarPermisosSiExiste(idDB.valor, dbObj.valor, idUser.valor)){
+                        if(!Archivos.bbdd.existeObjetoUsql(idDB.valor, dbObj.valor, idUser.valor)){
                             response = Error.lenguaje(
                                     codigo,
                                     "USQL",
-                                    this.cadUsql,
+                                    cadUsql,
                                     "Semantico",
                                     dbObj.row,
                                     dbObj.col,
                                     "No existe el elemento [" + dbObj.valor + "] "
                                             + "en la Base de Datos [" + idDB.valor + "]");
-                        }else{
-                            Consola.writeln("Se han denegado los permisos al usuario [" + idUser.valor + "] "
-                                + "en el elemento [" + dbObj.valor + "] de la Base de Datos [" + idDB.valor + "]");
                         }
+                    }else{
+                        
                     }
                 }else{
                  response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idDB.row, 
                                             idDB.col,
@@ -1090,7 +942,7 @@ public class InterpreteUSQL implements Constantes{
                 response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idUser.row, 
                                             idUser.col,
@@ -1106,23 +958,9 @@ public class InterpreteUSQL implements Constantes{
         
         return response;
     }
+        
     
-    
-    
-
-    /*    SENTENCIAS SSL*/
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    private String analisisDeclaracionColumnas(Nodo nodo){
+    private static String analisisDeclaracionColumnas(Nodo nodo){
         String response = null;
         String idTable = nodo.getHijo(0).valor;
         Nodo lcampo = nodo.getHijo(1);
@@ -1137,7 +975,7 @@ public class InterpreteUSQL implements Constantes{
                 
                 response = Error.lenguaje(codigo, 
                                     "USQL", 
-                                    this.cadUsql, 
+                                    cadUsql, 
                                     "Semantico",
                                     nieto.row, 
                                     nieto.col, 
@@ -1172,7 +1010,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idColDef.row, 
                                             idColDef.col, 
@@ -1185,7 +1023,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idColDef.row, 
                                             idColDef.col, 
@@ -1210,7 +1048,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idColDef.row, 
                                             idColDef.col, 
@@ -1225,7 +1063,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idColRef.row, 
                                             idColRef.col, 
@@ -1241,7 +1079,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idTableRef.row, 
                                             idTableRef.col, 
@@ -1260,7 +1098,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                     codigo, 
                                     "USQL", 
-                                    this.cadUsql, 
+                                    cadUsql, 
                                     "Semantico", 
                                     idColDef.row, 
                                     idColDef.col, 
@@ -1279,7 +1117,7 @@ public class InterpreteUSQL implements Constantes{
                                     Error.lenguaje(
                                             codigo, 
                                             "USQL", 
-                                            this.cadUsql, 
+                                            cadUsql, 
                                             "Semantico", 
                                             idColDef.row, 
                                             idColDef.col, 
@@ -1297,7 +1135,7 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
-    private String analisisDeclaracionAtributos(Nodo nodo){
+    private static String analisisDeclaracionAtributos(Nodo nodo){
         String response = null;
         Nodo latr = nodo.getHijo(1);
 
@@ -1311,7 +1149,7 @@ public class InterpreteUSQL implements Constantes{
                 
                 response = Error.lenguaje(codigo, 
                                     "USQL", 
-                                    this.cadUsql, 
+                                    cadUsql, 
                                     "Semantico",
                                     idAtr.row, 
                                     idAtr.col, 
@@ -1325,12 +1163,4 @@ public class InterpreteUSQL implements Constantes{
         return response;
     }
     
-    
-    private String analisisSemanticoSSL(Nodo metodo){
-        return null;
-    }
-    
-    private String evaluarExp(Nodo exp){
-        return "NULO";
-    }
 }

@@ -1,33 +1,51 @@
 package servidorfisql.server.manejador;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Nodo;
 
 /**
  *
  * @author jorge
  */
 public class Columnas {
-    private final HashMap<String, Columna> columnas;
+    //private final HashMap<String, Columna> columnas;
+    private final ArrayList<Columna> columnas;
     
     public Columnas(){
-        this.columnas = new HashMap<>();
+        //this.columnas = new HashMap<>();
+        this.columnas = new ArrayList<>();
     }
     
     
     public void cargarColumnas(Nodo columnas){
+//        for(Nodo c : columnas.hijos){
+//            Columna col = new Columna(c);
+//            this.columnas.put(col.idColumna, col);
+//        }
         for(Nodo c : columnas.hijos){
             Columna col = new Columna(c);
-            this.columnas.put(col.idColumna, col);
+            this.columnas.add(col);
         }
     }
     
     public String getXml(){
+//        String xml = "";
+//        
+//        xml += "            <rows>\n";
+//        
+//        for(Columna c : this.columnas.values())
+//            xml += c.getXml();
+//        
+//        xml += "            </rows>\n";
+//        
+//        return xml;
+
         String xml = "";
         
         xml += "            <rows>\n";
         
-        for(Columna c : this.columnas.values())
+        for(Columna c : this.columnas)
             xml += c.getXml();
         
         xml += "            </rows>\n";
@@ -37,31 +55,70 @@ public class Columnas {
 
       
     void crearColumna(String tipo, String idCol, Nodo lcomp) {
+//        Columna col = new Columna(tipo, idCol, lcomp);
+//        this.columnas.put(idCol, col);
         Columna col = new Columna(tipo, idCol, lcomp);
-        this.columnas.put(idCol, col);
+        this.columnas.add(col);
     }
 
     
     
     public boolean existe(String idCol) {
-        return this.columnas.containsKey(idCol);
+//        return this.columnas.containsKey(idCol);
+        for(Columna c : this.columnas)
+            if(c.idColumna.equals(idCol))
+                return true;
+        return false;
     }
     
     public String getTipoColumna(String idCol){
-        return this.columnas.get(idCol).tipoColumna;
+        //return this.columnas.get(idCol).tipoColumna;
+        for(Columna c : this.columnas)
+            if(c.idColumna.equals(idCol))
+                return c.tipoColumna;
+        
+        return null;
     }
 
     void eliminarColumna(String idCol) {
-        this.columnas.remove(idCol);
+//        this.columnas.remove(idCol);
+        for(Columna c : this.columnas)
+            if(c.idColumna.equals(idCol))
+                this.columnas.remove(c);
     }
 
     String obtenerPk() {
+//        String pk = null;
+//        for(Columna c : this.columnas.values()){
+//            if(c.pk)
+//                return c.idColumna;
+//        }
+//        return pk;
+
         String pk = null;
-        for(Columna c : this.columnas.values()){
+        for(Columna c : this.columnas){
             if(c.pk)
                 return c.idColumna;
         }
         return pk;
+    }
+
+    int cantColsInsertables() {
+//        int cant = 0;
+//        
+//        for(Columna col : this.columnas.values()){
+//            cant += col.autoinc ? 0 : 1;
+//        }
+//        
+//        return cant;
+
+        int cant = 0;
+        
+        for(Columna col : this.columnas){
+            cant += col.autoinc ? 0 : 1;
+        }
+        
+        return cant;
     }
 
 }
@@ -115,9 +172,11 @@ class Columna{
                 case "PK":
                     this.pk = true;
                     this.nulo = false;
+                    this.unique = true;
                     break;
                 case "FK":
                     this.fk = true;
+                    this.nulo = false;
                     this.tablaRef = comp.getHijo(0).valor;
                     this.columnaRef = comp.getHijo(1).valor;
                 break;

@@ -8,7 +8,7 @@ options{
 PARSER_BEGIN(ParserXML)
 	package servidorfisql.interpretes.Analizadores.XML.analizador;
 
-	import servidorfisql.interpretes.Analizadores.Nodo;
+	import servidorfisql.interpretes.Nodo;
 
 	public class ParserXML{
 		public static void main(String[] args) throws ParseException{

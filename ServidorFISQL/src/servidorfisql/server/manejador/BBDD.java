@@ -2,7 +2,7 @@ package servidorfisql.server.manejador;
 
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Nodo;
 import servidorfisql.server.Server;
 
 /**
@@ -101,6 +101,11 @@ public class BBDD {
         return this.bbdd.get(idDB).tablas.getTipoColumna(idTable, idCol);
     }
     
+    public String getTipoMetodo(String idDB, String idMet){
+        return this.bbdd.get(idDB).metodos.getTipoMetodo(idMet);
+    }
+    
+    
     
     public boolean tienePermisos(String idDB, String user){
         return this.bbdd.get(idDB).permissonsDB.existe(user);
@@ -185,6 +190,17 @@ public class BBDD {
         bd.objetos.otorgarPermisosEnTodos(user);
     }
     
+    public boolean existeObjetoUsql(String idDB, String idE, String user){
+        BD bd = this.bbdd.get(idDB);
+        
+        if(bd.tablas.existe(idE)) return true;
+        if(bd.metodos.exists(idE)) return true;
+        if(bd.objetos.existeObjeto(idE)) return true;
+        
+        return false;
+    }
+    
+    
     public boolean otorgarPermisosSiExiste(String idDB, String idE, String user){
         BD bd = this.bbdd.get(idDB);
         
@@ -267,6 +283,13 @@ public class BBDD {
     
     public String obtenerPk(String idDB, String idTable) {
         return this.bbdd.get(idDB).tablas.obtenerPkIndex(idTable);
+    }
+
+    
+    
+    
+    public int cantColsInsertables(String idDB, String idTable) {
+        return this.bbdd.get(idDB).tablas.cantColsInsertables(idTable);
     }
 
     

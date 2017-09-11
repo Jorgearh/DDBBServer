@@ -2,7 +2,7 @@ package servidorfisql.server.manejador;
 
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Nodo;
 
 /**
  *

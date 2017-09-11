@@ -16,7 +16,7 @@ public class Error {
                 "	\"tipo\": \"" + clase + "\",\n" +
                 "	\"descripcion\": \"" + descripcion + "\"\n" +
                 "	\n" +
-                "]";
+                "]\n";
         
         return error;
     }
@@ -37,7 +37,7 @@ public class Error {
                 "		\"Columna\": " + col + ",\n" +
                 "		\"Descripcion\": \"" + descripcion + "\"\n" +
                 "	]\n" +
-                "]";
+                "]\n";
         
         return error;
     }

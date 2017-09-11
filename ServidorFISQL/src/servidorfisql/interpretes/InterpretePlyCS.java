@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Analizadores.Grafica;
-import servidorfisql.interpretes.Analizadores.Nodo;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.ParseException;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.ParserPlyCS;
-import static servidorfisql.Constantes.FILE_AST_PLYCS;
 import servidorfisql.interpretes.Analizadores.PlyCS.analizador.TokenMgrError;
 import servidorfisql.server.Server;
 import servidorfisql.server.manejador.Archivos;
@@ -20,13 +17,13 @@ import servidorfisql.server.manejador.Archivos;
 public class InterpretePlyCS {
     
     ParserPlyCS parserPlyCS;
-    InterpreteUSQL interpreteUSQL;
+    //InterpreteUSQL interpreteUSQL;
     
     Grafica grafica;
     
     public InterpretePlyCS(){
         this.grafica = new Grafica();
-        this.interpreteUSQL = new InterpreteUSQL();
+        //this.interpreteUSQL = new InterpreteUSQL();
     }
     
     public String analizar(PrintWriter pw, String request){
@@ -37,7 +34,7 @@ public class InterpretePlyCS {
             
             parserPlyCS = new ParserPlyCS(new StringReader(request));
             astPlyCS = parserPlyCS.INI();
-            grafica.graficar(astPlyCS, FILE_AST_PLYCS);
+            grafica.graficar(astPlyCS, "/home/jorge/Escritorio/ASTs/plycs/request");
             
             response = interpretar(pw, astPlyCS);
             
@@ -164,8 +161,11 @@ public class InterpretePlyCS {
         
         if(astUSQL.token.equals("ERROR"))
             return astUSQL.valor;
-        else
-            return interpreteUSQL.interpretar(codigo, astUSQL, cadUsql);
+        else{
+            //return interpreteUSQL.interpretar(codigo, astUSQL, cadUsql);
+            //return interpreteUSQL.interpretarSentenciaUsql(codigo, astUSQL, cadUsql);
+            return InterpreteUSQL.interpretarSentenciaUsql(codigo, astUSQL, cadUsql);
+        }
     }
     
     

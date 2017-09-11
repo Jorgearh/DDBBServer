@@ -8,7 +8,7 @@ options{
 PARSER_BEGIN(ParserPlyCS)
 	package servidorfisql.interpretes.Analizadores.PlyCS.analizador;
 
-	import servidorfisql.interpretes.Analizadores.Nodo;
+	import servidorfisql.interpretes.Nodo;
 
 	public class ParserPlyCS{
 		public static void main(String[] args) throws ParseException{

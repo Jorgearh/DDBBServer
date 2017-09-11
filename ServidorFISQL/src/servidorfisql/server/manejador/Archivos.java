@@ -7,11 +7,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import static servidorfisql.Constantes.FILE_AST_XML;
+import servidorfisql.Constantes;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Error;
-import servidorfisql.interpretes.Analizadores.Grafica;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Grafica;
+import servidorfisql.interpretes.Nodo;
 import servidorfisql.interpretes.Analizadores.USQL.analizador.ParserUSQL;
 import servidorfisql.interpretes.Analizadores.XML.analizador.ParseException;
 import servidorfisql.interpretes.Analizadores.XML.analizador.ParserXML;
@@ -20,7 +20,7 @@ import servidorfisql.interpretes.Analizadores.XML.analizador.ParserXML;
  *
  * @author jorge
  */
-public class Archivos {
+public class Archivos implements Constantes{
     
     /*NOMBRES*/
     private static final String dbms = "FISQL";
@@ -133,7 +133,6 @@ public class Archivos {
     
     public static Nodo levantarXML(String path){
         ParserXML parserXML;
-        Grafica grafica = new Grafica();
         String xml;
         Nodo astXML = null;
         
@@ -142,7 +141,7 @@ public class Archivos {
         try{
             parserXML = new ParserXML(new StringReader(xml));
             astXML = parserXML.INI();
-            grafica.graficar(astXML, FILE_AST_XML);
+            new Grafica().graficar(astXML, "/home/jorge/Escritorio/ASTs/xml/" + new File(path).getName());
             
         } catch (ParseException ex) {
             Consola.writeln("ERROR EN EL PARSEO DE ARCHIVO XML {" + new File(path).getName() + "}");
@@ -162,7 +161,7 @@ public class Archivos {
             parserUSQL = new ParserUSQL(new StringReader(instruccion));
             astUSQL = parserUSQL.INI();
             
-            new Grafica().graficar(astUSQL, "/home/jorge/Escritorio/astUsql/ast");
+            new Grafica().graficar(astUSQL, "/home/jorge/Escritorio/ASTs/usql/instruccion");
             
         }catch(servidorfisql.interpretes.Analizadores.USQL.analizador.TokenMgrError ex){
             Consola.writeln(ex.getLocalizedMessage());

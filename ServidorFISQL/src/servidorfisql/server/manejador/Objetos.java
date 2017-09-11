@@ -2,7 +2,7 @@ package servidorfisql.server.manejador;
 
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Nodo;
 import servidorfisql.server.Server;
 
 /**
@@ -16,22 +16,30 @@ public class Objetos {
         this.objetos = new HashMap<>();
     }
     
-    
+    /***
+     * Construye objetos a partir de un AST de un archivo XML
+     * @param path 
+     */
     public void cargarObjetos(String path){
         Nodo objectFiles = Archivos.levantarXML(path);
         Objeto obj;
         int cont = 1;
         
-        Consola.writeln("Cargando objetos...");
+        Consola.writeln("        Cargando objetos...");
         
         for(Nodo object : objectFiles.hijos){
-            Consola.writeln("    objeto" + cont++ + "/" + objectFiles.hijos.size());
+            Consola.writeln("            objeto" + cont++ + "/" + objectFiles.hijos.size());
             
             obj = new Objeto(object);
             this.objetos.put(obj.idObjeto, obj);
         }
     }
     
+    
+    /***
+     * Escribe el archivo XML de objetos a partir de los objetos en memoria
+     * @param path 
+     */
     public void guardarObjectsFile(String path){
         String xml = "";
         
@@ -47,15 +55,33 @@ public class Objetos {
     }
 
     
-    
+    /***
+     * Verifica si existe el objeto con el identificador idObj
+     * @param idObj
+     * @return true si existe, false si no existe
+     */
     boolean existeObjeto(String idObj) {
         return this.objetos.containsKey(idObj);
     }
 
+    
+    /***
+     * Verifica si un objeto contiene un atributo con identificador idAtr
+     * @param idObj
+     * @param idAtr
+     * @return true si existe el atributo, false si no existe
+     */
     boolean existeAtributo(String idObj, String idAtr) {
         return this.objetos.get(idObj).atributes.exists(idAtr);
     }
 
+    
+    
+    /***
+     * Construye un objeto a partir del AST de una instruccion USQL
+     * @param idObject
+     * @param latr 
+     */
     void crearObjeto(String idObject, Nodo latr) {
         Objeto obj = new Objeto(idObject, latr);
         this.objetos.put(idObject, obj);

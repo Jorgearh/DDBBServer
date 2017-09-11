@@ -2,7 +2,7 @@ package servidorfisql.server.manejador;
 
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Nodo;
 import servidorfisql.server.Server;
 
 /**
@@ -18,11 +18,11 @@ public class Tablas {
     
     
     public void cargarTablas(Nodo tablas){
-        Consola.writeln("Cargando tablas...");
+        Consola.writeln("        Cargando tablas...");
         int cont = 1;
        
         for(Nodo tabla : tablas.hijos){
-            Consola.writeln("    tabla" + cont++ + "/" + tablas.hijos.size());
+            Consola.writeln("            tabla" + cont++ + "/" + tablas.hijos.size());
             
             Tabla t = new Tabla(tabla);
             this.tablas.put(t.idTable, t);
@@ -159,6 +159,10 @@ public class Tablas {
 
     String obtenerPkIndex(String idTable) {
         return this.tablas.get(idTable).obtenerPk();
+    }
+
+    int cantColsInsertables(String idTable) {
+        return this.tablas.get(idTable).columns.cantColsInsertables();
     }
 
     

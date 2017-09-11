@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Analizadores.Grafica;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Grafica;
+import servidorfisql.interpretes.Nodo;
 import servidorfisql.server.Server;
 
 /**
@@ -25,10 +25,10 @@ public class Metodos {
         Metodo metodo;
         int cont = 1;
         
-        Consola.writeln("Cargando Metodos...");
+        Consola.writeln("        Cargando Metodos...");
         
         for(Nodo method : nodoMethodFile.hijos){
-            Consola.writeln("    metodo" + cont++ + "/" + nodoMethodFile.hijos.size());
+            Consola.writeln("            metodo" + cont++ + "/" + nodoMethodFile.hijos.size());
             metodo = new Metodo(method);
             this.metodos.put(metodo.idMethod, metodo);
         }
@@ -123,6 +123,10 @@ public class Metodos {
         this.metodos.remove(idMet);
     }
 
+    String getTipoMetodo(String idMet) {
+        return this.metodos.get(idMet).tipoMetodo;
+    }
+
     
     
 }
@@ -180,11 +184,11 @@ class Metodo{
         
         for(Nodo param : nodoLpar.hijos){
             Nodo par = new Nodo("PAR");
-            par.agregarHijos(new Nodo("TIPO", param.valor), new Nodo("VAR", param.getHijo(0).valor));
+            par.agregarHijos(new Nodo("TIPO", param.token), new Nodo("VAR", param.getHijo(0).valor));
             lpar.agregarHijo(par);
         }
         try {
-            new Grafica().graficar(lpar, "/home/jorge/Escritorio/astUsql/parametros");
+            new Grafica().graficar(lpar, "/home/jorge/Escritorio/ASTs/usql/metodos/parametros_" + this.idMethod);
         } catch (IOException ex) {
             Logger.getLogger(Metodo.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -209,7 +213,7 @@ class Metodo{
         }
         
         try {
-            new Grafica().graficar(nodo, "/home/jorge/Escritorio/astUsql/sentencias");
+            new Grafica().graficar(nodo, "/home/jorge/Escritorio/ASTs/usql/metodos/sentencias_" + this.idMethod);
         } catch (IOException ex) {
             Logger.getLogger(Metodo.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -1,7 +1,7 @@
 package servidorfisql.server.manejador;
 
 import java.util.ArrayList;
-import servidorfisql.interpretes.Analizadores.Nodo;
+import servidorfisql.interpretes.Nodo;
 
 /**
  *
