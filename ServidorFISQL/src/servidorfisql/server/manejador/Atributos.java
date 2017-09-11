@@ -58,6 +58,10 @@ public class Atributos {
     void eliminarAtributo(String idAtr) {
         this.atributos.remove(idAtr);
     }
+
+    String getTipoAtr(String idAtr) {
+        return this.atributos.get(idAtr).tipoAtributo;
+    }
     
 }
 

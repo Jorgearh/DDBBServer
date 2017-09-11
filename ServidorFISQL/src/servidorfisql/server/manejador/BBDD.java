@@ -105,6 +105,10 @@ public class BBDD {
         return this.bbdd.get(idDB).metodos.getTipoMetodo(idMet);
     }
     
+    public String getTipoAtributo(String idDB, String idObj, String idAtr){
+        return this.bbdd.get(idDB).objetos.getTipoAtributo(idObj, idAtr);
+    }
+    
     
     
     public boolean tienePermisos(String idDB, String user){

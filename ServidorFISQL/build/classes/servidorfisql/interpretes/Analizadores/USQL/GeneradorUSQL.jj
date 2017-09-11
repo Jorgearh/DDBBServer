@@ -1,4 +1,4 @@
-options{
+	options{
 	STATIC = false;
 	IGNORE_CASE = true;
 	OUTPUT_DIRECTORY = "analizador/";
@@ -711,7 +711,10 @@ Nodo SSL_DEC_VAR_OBJ() :
 {
 	<declarar> lvar = L_VAR()	(
 									 tipo = TIPO_DATO() [ "=" exp = EXPRESION() ]
-									|t = <id>	{tipo = new Nodo("TIPO", t.image, t.beginLine, t.beginColumn);}
+									|t = <id>	{
+													tipo = new Nodo("TIPO", t.image, t.beginLine, t.beginColumn);
+													nodo.setToken("INST");
+												}
 								)
 								{
 									nodo.agregarHijos(lvar, tipo);

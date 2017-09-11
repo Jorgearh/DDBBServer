@@ -860,7 +860,8 @@
       break;
     case id:
       t = jj_consume_token(id);
-                                                                                         tipo = new Nodo("TIPO", t.image, t.beginLine, t.beginColumn);
+                                                                                                        tipo = new Nodo("TIPO", t.image, t.beginLine, t.beginColumn);
+                                                                                                        nodo.setToken("INST");
       break;
     default:
       jj_la1[24] = jj_gen;
@@ -1956,21 +1957,6 @@
     finally { jj_save(2, xla); }
   }
 
-  private boolean jj_3R_23() {
-    if (jj_scan_token(val_null)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_22() {
-    if (jj_scan_token(booleano)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_21() {
-    if (jj_scan_token(doble)) return true;
-    return false;
-  }
-
   private boolean jj_3R_20() {
     if (jj_scan_token(entero)) return true;
     return false;
@@ -2171,14 +2157,14 @@
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(98)) return true;
-    if (jj_3R_17()) return true;
+  private boolean jj_3R_27() {
+    if (jj_scan_token(var)) return true;
     return false;
   }
 
-  private boolean jj_3R_27() {
-    if (jj_scan_token(var)) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(98)) return true;
+    if (jj_3R_17()) return true;
     return false;
   }
 
@@ -2204,6 +2190,21 @@
 
   private boolean jj_3R_24() {
     if (jj_scan_token(cadena)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_23() {
+    if (jj_scan_token(val_null)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_22() {
+    if (jj_scan_token(booleano)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_21() {
+    if (jj_scan_token(doble)) return true;
     return false;
   }
 

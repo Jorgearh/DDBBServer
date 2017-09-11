@@ -166,6 +166,10 @@ public class Objetos {
             this.objetos.get(idObject).atributes.crearAtributo(id, tipo);
         });
     }
+
+    String getTipoAtributo(String idObj, String idAtr) {
+        return this.objetos.get(idObj).atributes.getTipoAtr(idAtr);
+    }
 }
 
 
