@@ -1,7 +1,6 @@
 package servidorfisql.server.manejador;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import servidorfisql.interpretes.Nodo;
 
 /**
@@ -121,6 +120,15 @@ public class Columnas {
         return cant;
     }
 
+    Iterable<Columna> getColumnas() {
+        return this.columnas;
+    }
+    
+    
+    
+    
+    
+
 }
 
 
@@ -191,6 +199,7 @@ class Columna{
                 break;
                 case "AUTOINC":
                     this.autoinc = true;
+                    this.nulo = false;
                 break;
             }
         }

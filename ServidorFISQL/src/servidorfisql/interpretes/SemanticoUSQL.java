@@ -75,6 +75,7 @@ public class SemanticoUSQL {
                     break;
                     
                 case "CALL":
+                    
                     break;
                     
                 case "PRINT":
@@ -238,7 +239,7 @@ public class SemanticoUSQL {
                         //Analisis semantico SSL(parametros, variables locales, comprobacion de tipos)
                         SemanticoSSL.analizarMetodo(create, codigo, cadUsql);
                         
-                        if(SemanticoSSL.erroresSSL.isEmpty()){
+                        if(!SemanticoSSL.erroresSSL.isEmpty()){
                             return SemanticoSSL.cadenaErrores();
                         }
                         
@@ -771,19 +772,7 @@ public class SemanticoUSQL {
                     int cantCols = Archivos.bbdd.cantColsInsertables(Server.actualDB, idTable.valor);
                     
                     //Coincide la cantidad de columnas insertables con la cantidad de expresiones
-                    if(cantExps == cantCols){
-                        
-                        //Evaluar coincidencia de valores nulos
-                        //No considera las columnas autoincrementables
-                        for(int i = 0; i < lexp.hijos.size(); i++){
-                            Nodo exp = lexp.getHijo(i);
-                            
-                            //if(valExp.equals("NULL"))
-                            
-                        }
-                        
-                        
-                    }else if (cantExps > cantCols){
+                    if (cantExps > cantCols){
                         response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
@@ -792,7 +781,7 @@ public class SemanticoUSQL {
                                 idTable.row, 
                                 idTable.col, 
                                 "Error insertando valores en columnas autoincrementables "
-                                    + "de tabla [" + idTable + "]");
+                                    + "de tabla [" + idTable.valor + "]");
                     }else{
                         response = Error.lenguaje(
                                 codigo, 
@@ -801,12 +790,24 @@ public class SemanticoUSQL {
                                 "Semantico", 
                                 idTable.row, 
                                 idTable.col, 
-                                "Error insertando valores tabla [" + idTable + "]. "
+                                "Error insertando valores tabla [" + idTable.valor + "]. "
                                         + "Se esperan [" + cantCols + "] valores.");
                     }
                     
                 }else{//Insertar especial
-                    
+                    for(Nodo idCol : lidCols.hijos){
+                        if(!Archivos.bbdd.existeColumna(Server.actualDB, idTable.valor, idCol.valor)){
+                            response = Error.lenguaje(
+                                codigo, 
+                                "USQL", 
+                                cadUsql, 
+                                "Semantico", 
+                                idTable.row, 
+                                idTable.col, 
+                                "Error insertando valores tabla [" + idTable.valor + "]. "
+                                        + "No existe la columna [" + idCol.valor + "]");
+                        }
+                    }
                 }
                 
             }else{

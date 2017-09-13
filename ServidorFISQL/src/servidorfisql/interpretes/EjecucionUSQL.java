@@ -11,7 +11,9 @@ import servidorfisql.server.manejador.Archivos;
 public class EjecucionUSQL {
     
     
-    public static void ejecutar(Nodo usqlSent){
+    public static String ejecutar(Nodo usqlSent){
+        
+        String response = null;
         
         switch(usqlSent.token){
                 /*   SENTENCIAS DDL   */
@@ -193,8 +195,10 @@ public class EjecucionUSQL {
                     
                 /*   SENTENCIAS DML*/
                 case "INSERT":
+                    response = insert(usqlSent);
                     break;
                 case "SELECT":
+                    select(usqlSent);
                     break;
                 case "UPDATE":
                     break;
@@ -242,6 +246,33 @@ public class EjecucionUSQL {
                     
                 default:
             }
+        
+        return response;
+    }
+    
+    
+    
+    private static String insert(Nodo nodo){
+        Nodo id = nodo.getHijo(0);
+        Nodo lcol = nodo.getHijo(1);
+        Nodo lexp = nodo.getHijo(2);
+        
+        String response = null;
+        
+        //Insertar normal
+        if(lcol.hijos.isEmpty()){
+            response = Archivos.bbdd.insertarEnTabla(Server.actualDB, id.valor, lexp);
+        }else{
+            response = Archivos.bbdd.insertarEnTabla(Server.actualDB, id.valor, lcol, lexp);
+        }
+
+        return response;
+            
+    }
+    
+    
+    private static void select(Nodo nodo){
+        
     }
     
 }

@@ -586,7 +586,7 @@ Nodo DML_SELECT() :
 }
 {
 	<seleccionar>	(
-						 select = L_ID()
+						 select = LACC_COL_TABLA()//select = L_ID()
 						|"*" 				{select = new Nodo("*");}
 					)
 	<de> from = L_ID()
@@ -1117,10 +1117,17 @@ Nodo AR_B() :
 																		}
 		 											]
 	|LOOKAHEAD(3) nodo = CALL()
-	|t = <id>	{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}
+	|t = <id>	{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}[
+														"." t = <id>	{
+																			aux = new Nodo("->");
+																			aux.agregarHijo(nodo);
+																			aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
+																			nodo = aux;
+																		}
+		 											]
+
 	|nodo = SSL_FECHA()
 	|nodo = SSL_FECHA_HORA()
-	|nodo = SSL_SELECCIONA()
 	|nodo = SSL_CONTAR()
 	)
 	{return nodo;}
@@ -1213,7 +1220,29 @@ Nodo L_ID() :
 	( "," t = <id>	{nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));})*
 	{return nodo;}
 }
+///////////////////////////////////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Nodo LACC_COL_TABLA():
+{
+	Nodo nodo = new Nodo("LACC_COL");
+	Nodo hijo;
+}
+{
+	hijo = ACC_COL_TABLA()		{nodo.agregarHijo(hijo);}
+	("," hijo = ACC_COL_TABLA()	{nodo.agregarHijo(hijo);} )*
+	{return nodo;}
+}
 
+Nodo ACC_COL_TABLA() :
+{
+	Nodo nodo = new Nodo("->");
+	Token t;
+	Nodo hijo;
+}
+{
+	t = <id>	{nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));} "."
+	t = <id>	{nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn)); return nodo;}
+}
+///////////////////////////////////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 Nodo VAL() :
 {
 	Nodo nodo;
@@ -1224,7 +1253,7 @@ Nodo VAL() :
 	 t = <entero>		{nodo = new Nodo("ENT", t.image, t.beginLine, t.beginColumn);}
 	|t = <doble>		{nodo = new Nodo("DOB", t.image, t.beginLine, t.beginColumn);}
 	|t = <booleano>		{nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);}
-	|t = <val_null>			{nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);}
+	|t = <val_null>		{nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);}
 	|t = <cadena>		{nodo = new Nodo("CAD", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha>		{nodo = new Nodo("FECHA", t.image, t.beginLine, t.beginColumn);}
 	|t = <fecha_hora>	{nodo = new Nodo("FECHAHORA", t.image, t.beginLine, t.beginColumn);}

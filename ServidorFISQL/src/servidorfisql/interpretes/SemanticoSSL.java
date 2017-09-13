@@ -40,6 +40,8 @@ public class SemanticoSSL {
         for(Nodo sent : lsent.hijos){
             analisisSemantico(sent);
         }
+        
+        idMetodo = null;
     }
     
     private static void llenarTS(Nodo lpar, Nodo lsent){
@@ -197,12 +199,17 @@ public class SemanticoSSL {
                 
                 
                 
-            case "CREATE_DB":
             case "CREATE_TABLE":
             case "CREATE_OBJECT":
-            case "CREATE_USER":
             case "PROC":
             case "FUNC":
+                response = SemanticoUSQL.analizar(sent, codigo, cadUsql);
+                if(response != null)
+                    erroresSSL.add(response);
+                else
+                    EjecucionUSQL.ejecutar(sent);
+                break;
+                
             case "INSERT":
             case "SELECT":
             case "UPDATE":
@@ -211,7 +218,11 @@ public class SemanticoSSL {
                 response = SemanticoUSQL.analizar(sent, codigo, cadUsql);
                 if(response != null)
                     erroresSSL.add(response);
+                
                 break;
+                
+            case "CREATE_USER":
+            case "CREATE_DB":
             case "USE":
             case "ALTER_TABLE_ADD":
             case "ALTER_TABLE_QUIT":
@@ -335,6 +346,73 @@ public class SemanticoSSL {
                 
                 break;
             case "CALL":
+                Nodo idFunc = sent.getHijo(0);
+                Nodo larg = sent.hijos.size() == 2 ? sent.getHijo(1) : null;
+                
+                //Existe el metodo
+                if(Archivos.bbdd.existeMetodo(Server.actualDB, idFunc.valor)){
+                    //Es una funcion
+                    int cantPar = Archivos.bbdd.getCantParametros(Server.actualDB, idFunc.valor);
+                     
+                    //Se envian parametros
+                    if(larg != null){
+                        
+                        //Se envia y recibe la misma cantidad de parametros
+                        if(cantPar == larg.hijos.size()){
+
+                            for(int i = 0; i < cantPar; i++){
+                                String tipoParam = Archivos.bbdd.getTIpoParam(Server.actualDB, idFunc.valor, i);
+                                String tipoArg = evaluarExpresion(larg.getHijo(i));
+                                
+                                if(!tipoParam.equals(tipoArg)){
+                                    response = Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    cadUsql, 
+                                    "Semantico", 
+                                    larg.row, 
+                                    larg.col, 
+                                    "Tipos incompatibles en parametros");
+                                erroresSSL.add(response);
+                                }
+                            }
+
+                        }else{
+                            response = Error.lenguaje(
+                                codigo, 
+                                "USQL", 
+                                cadUsql, 
+                                "Semantico", 
+                                larg.row, 
+                                larg.col, 
+                                "No coincidela cantidad de parametros.");
+                            erroresSSL.add(response);
+                        }
+                    }else{  //No se envian parametros
+                        if(cantPar > 0){//Se deben recibir parametros
+                            response = Error.lenguaje(
+                                codigo, 
+                                "USQL", 
+                                cadUsql, 
+                                "Semantico", 
+                                larg.row, 
+                                larg.col, 
+                                "No coincidela cantidad de parametros.");
+                            erroresSSL.add(response);
+                        }
+                    }
+                }else{
+                    response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            idFunc.row, 
+                            idFunc.col, 
+                            "No existe la funcion [" + idFunc.valor + "] en la Base de Datos [" + Server.actualDB + "]");
+                    erroresSSL.add(response);
+                    tipoResult = "NULO";
+                }
                 break;
             case "RETURN":
                 String tipoMet = Archivos.bbdd.getTipoMetodo(Server.actualDB, idMetodo);
@@ -500,6 +578,7 @@ public class SemanticoSSL {
     private static String evaluarExpresion(Nodo exp){
         String tipoResult;
         String izq, der;
+        String response;
         
         switch(exp.token){
             case "||":
@@ -534,13 +613,241 @@ public class SemanticoSSL {
                 der = evaluarExpresion(exp.getHijo(1));
                 tipoResult = compararTiposExp(izq, der, "AR", exp);
                 break;
+                
+            case "_":
+                izq = evaluarExpresion(exp.getHijo(0));
+                tipoResult = compararTiposExp(izq, null, "AR", exp);
+                break;
+                
+            case "BOOL":
+                tipoResult = "BOOL";
+                break;
+            case "ENT":
+                tipoResult = "INTEGER";
+                break;
+            case "DOB":
+                tipoResult = "DOUBLE";
+                break;
+            case "CAD":
+                tipoResult = "TEXT";
+                break;
+            case "FECHA":
+                tipoResult = "DATE";
+                break;
+            case "FECHAHORA":
+                tipoResult = "DATETIME";
+                break;
+                
+            case "VAR":
+                String idVar = exp.valor;
+                if(TS.containsKey(idVar))
+                    tipoResult = TS.get(idVar).tipo;
+                else{
+                    response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            exp.row, 
+                            exp.col, 
+                            "No se ha declarado la variable [" + exp.valor + "] en el ambito [" + idMetodo + "]");
+                    erroresSSL.add(response);
+                    tipoResult = "NULO";
+                }
+                break;
+                
+            case ".":
+                Nodo var = exp.getHijo(0);
+                Nodo atr = exp.getHijo(1);
+                
+                //Existe la instancia
+                if(TS.containsKey(var.valor)){
+                    
+                    String tipoObj = TS.get(var.valor).tipo;
+                    
+                    //Existe el atributo en el objeto
+                    if(Archivos.bbdd.existeAtributo(Server.actualDB, tipoObj, atr.valor)){
+                        tipoResult = Archivos.bbdd.getTipoAtributo(Server.actualDB, tipoObj, atr.valor);
+                    }else{
+                        response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            atr.row, 
+                            atr.col, 
+                            "No existe el atributo [" + atr.valor + "] en el objeto [" + tipoObj + "]");
+                        erroresSSL.add(response);
+                        tipoResult = "NULO";
+                    }
+                }else{
+                    response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            var.row, 
+                            var.col, 
+                            "No se ha declarado la variable [" + var.valor + "] en el ambito [" + idMetodo + "]");
+                    erroresSSL.add(response);
+                    tipoResult = "NULO";
+                }
+                break;
+                
+            case "->":
+                Nodo tabla = exp.getHijo(0);
+                Nodo columna = exp.getHijo(1);
+                
+                //Existe la tabla
+                if(Archivos.bbdd.existeTabla(Server.actualDB, tabla.valor)){
+                    
+                    //Existe la columna en la tabla
+                    if(Archivos.bbdd.existeColumna(Server.actualDB, tabla.valor, columna.valor)){
+                        tipoResult = Archivos.bbdd.getTipoColumna(Server.actualDB, tabla.valor, columna.valor);
+                    }else{
+                        response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            columna.row, 
+                            columna.col, 
+                            "No existe la columna [" + columna.valor + "] en la tabla [" + tabla.valor + "]");
+                        erroresSSL.add(response);
+                        tipoResult = "NULO";
+                    }
+                }else{
+                    response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            tabla.row, 
+                            tabla.col, 
+                            "No existe la tabla [" + tabla.valor + "] en la Base de Datos [" + Server.actualDB + "]");
+                    erroresSSL.add(response);
+                    tipoResult = "NULO";
+                }
+                break;
+                
+            case "GET_DATE":
+                tipoResult = "DATE";
+                break;
+                
+            case "GET_DATE_TIME":
+                tipoResult = "DATETIME";
+                break;
+                
+            case "CONTAR":
+                tipoResult = "INTEGER";
+                break;
+                
+            case "CALL":
+                Nodo idFunc = exp.getHijo(0);
+                Nodo larg = exp.hijos.size() == 2 ? exp.getHijo(1) : null;
+                
+                //Existe la funcion
+                if(Archivos.bbdd.existeMetodo(Server.actualDB, idFunc.valor)){
+                    //Es una funcion
+                    if(!Archivos.bbdd.getTipoMetodo(Server.actualDB, idFunc.valor).equals("VOID")){
+                        
+                        int cantPar = Archivos.bbdd.getCantParametros(Server.actualDB, idFunc.valor);
+                        
+                        if(larg != null){
+                            if(cantPar == larg.hijos.size()){
+                                
+                                boolean compatibles = true;
+                                
+                                for(int i = 0; i < cantPar; i++){
+                                    String tipoParam = Archivos.bbdd.getTIpoParam(Server.actualDB, idFunc.valor, i);
+                                    String tipoArg = evaluarExpresion(larg.getHijo(i));
+                                    if(!tipoParam.equals(tipoArg)){
+                                        compatibles = false;
+                                        break;
+                                    }
+                                }
+                                
+                                if(compatibles)
+                                    tipoResult = Archivos.bbdd.getTipoMetodo(Server.actualDB, idFunc.valor);
+                                else{
+                                    response = Error.lenguaje(
+                                        codigo, 
+                                        "USQL", 
+                                        cadUsql, 
+                                        "Semantico", 
+                                        larg.row, 
+                                        larg.col, 
+                                        "Tipos incompatibles en parametros");
+                                    erroresSSL.add(response);
+                                    tipoResult = "NULO";
+                                }
+                                
+                            }else{
+                                response = Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    cadUsql, 
+                                    "Semantico", 
+                                    larg.row, 
+                                    larg.col, 
+                                    "No coincidela cantidad de parametros.");
+                                erroresSSL.add(response);
+                                tipoResult = "NULO";
+                            }
+                        }else{
+                            if(cantPar > 0){
+                                response = Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    cadUsql, 
+                                    "Semantico", 
+                                    larg.row, 
+                                    larg.col, 
+                                    "No coincidela cantidad de parametros.");
+                                erroresSSL.add(response);
+                                tipoResult = "NULO";
+                            }else{
+                                tipoResult = Archivos.bbdd.getTipoMetodo(Server.actualDB, idFunc.valor);
+                            }
+                        }
+                        
+                    }else{
+                        response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            idFunc.row, 
+                            idFunc.col, 
+                            "[" + idFunc.valor + "] es un procedimiento.");
+                        erroresSSL.add(response);
+                        tipoResult = "NULO";
+                    }
+                }else{
+                    response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            idFunc.row, 
+                            idFunc.col, 
+                            "No existe la funcion [" + idFunc.valor + "] en la Base de Datos [" + Server.actualDB + "]");
+                    erroresSSL.add(response);
+                    tipoResult = "NULO";
+                }
+                
+                break;
+                
+            default:
+                tipoResult = null;
+                break;
         }
         
         return tipoResult;
     }
     
     private static String compararTiposExp(String izq, String der, String clase, Nodo op){
-        String tipo = "";
+        String tipo = "NULO";
         String response;
         
         switch(clase){
@@ -720,7 +1027,7 @@ public class SemanticoSSL {
         
         
         
-        return null;
+        return tipo;
     }
     
     

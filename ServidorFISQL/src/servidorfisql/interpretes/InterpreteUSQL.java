@@ -30,13 +30,24 @@ public class InterpreteUSQL implements Constantes{
             if(result == null){
                 
                 //EJECUTAR
-                EjecucionUSQL.ejecutar(sent);
+                result = EjecucionUSQL.ejecutar(sent);
                 
-                response += "[\n" +
+                if(result == null)
+                    response += "[\n" +
                             "	\"paquete\": \"exito\",\n" +
                             "	\"validar\": " + codigo + ",\n" +
                             "	\"sentencia\": \"" + sent.token + "\"\n" +
                             "]\n";
+                else{
+                    response += Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Ejecucion", 
+                            sent.row, 
+                            sent.col, 
+                            result);
+                }
             }else
                 response += result;
         }

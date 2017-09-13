@@ -127,6 +127,14 @@ public class Metodos {
         return this.metodos.get(idMet).tipoMetodo;
     }
 
+    int getCantParams(String idMet) {
+        return this.metodos.get(idMet).parametros.hijos.size();
+    }
+
+    String getTipoParam(String idMet, int index) {
+        return this.metodos.get(idMet).parametros.getHijo(index).getHijo(0).valor;
+    }
+
     
     
 }

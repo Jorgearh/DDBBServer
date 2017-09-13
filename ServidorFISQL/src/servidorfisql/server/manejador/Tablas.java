@@ -1,8 +1,11 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
+import java.util.Stack;
 import servidorfisql.gui.Consola;
+import servidorfisql.interpretes.EjecucionSSL;
 import servidorfisql.interpretes.Nodo;
+import servidorfisql.interpretes.Simbolo;
 import servidorfisql.server.Server;
 
 /**
@@ -164,6 +167,21 @@ public class Tablas {
     int cantColsInsertables(String idTable) {
         return this.tablas.get(idTable).columns.cantColsInsertables();
     }
+    
+    //Normal
+    String insertar(String idTable, Nodo lexp){
+        return this.tablas.get(idTable).insertar(lexp);
+    }
+    
+    String insertar(String idTable, Nodo lcol, Nodo lexp) {
+        return this.tablas.get(idTable).insertar(lcol, lexp);
+    }
+
+    boolean tablaContieneValor(String idTabla, String idCol, String val) {
+        return this.tablas.get(idTabla).existeElValor(val, idCol);
+    }
+
+    
 
     
 }
@@ -262,7 +280,7 @@ class Tabla{
             for(Nodo field : row.hijos){
                 xml += "        <" + field.token + ">\n";
                 
-                xml += field.hijos.size() > 0 ? field.getHijo(0).valor : "";
+                xml += field.hijos.size() > 0 ? "\""+field.getHijo(0).valor + "\"" : "";
                 
                 xml += "        </" + field.token + ">\n";
             }
@@ -278,6 +296,202 @@ class Tabla{
     String obtenerPk() {
         return this.columns.obtenerPk();
     }
+    
+    String insertar(Nodo lexp){
+        String tipoCol, tipoExp;
+        Nodo exp;
+        Stack<Nodo> pila = new Stack<>();
+        
+        for(int i = lexp.hijos.size() - 1; i >= 0 ; i--){
+           pila.push(lexp.getHijo(i));
+        }
+        
+        
+        Nodo row = new Nodo("row");
+        Simbolo simb;
+        String val;
+        
+        for(Columna col : columns.getColumnas()){
+            
+            Nodo reg = new Nodo(col.idColumna);
+            
+            if(!col.autoinc){
+                exp = pila.pop();
+                
+                simb = EjecucionSSL.ejecutarExpresion(exp);
+                val = simb.valor;
+                tipoCol = col.tipoColumna;
+                tipoExp = simb.tipo;
+                
+                if(tipoCol.equals(tipoExp)){
+                    if(col.pk){
+                        if(existeElValor(val, col.idColumna) || val.equals("NULO"))
+                            return "Asignacion invalida en clave primaria.";
+                    }
+                    
+                    if(col.fk){
+                        String refTabla = col.tablaRef;
+                        String refCol = col.columnaRef;
+                        
+                        if(!Archivos.bbdd.tablaContieneValor(Server.actualDB, refTabla, refCol, val))
+                            return "No existe el valor en la tabla referenciada";
+                        
+                        if(val.equals("NULO"))
+                            return "La columna no acepta valores nulos.";
+                    }
+                    
+                    if(col.unique){
+                        if(existeElValor(val, col.idColumna))
+                            return "El valor no puede repetirse.";
+                    }
+                    
+                    if(!col.nulo){
+                        if(val.equals("NULO"))
+                            return "La columna no acepta valores nulos.";
+                    }
+                    
+                    reg.agregarHijo(new Nodo("CAD", val));
+                    row.agregarHijo(reg);
+                    
+                }else{
+                    return "Tipos incompatibles";
+                }
+            }else{
+                String newVal = getLastValue(col.idColumna) + 1 + "";
+                reg.agregarHijo(new Nodo("CAD", newVal));
+                row.agregarHijo(reg);
+            }
+        }
+        
+        //Insercion
+        this.records.agregarHijo(row);
+        
+        
+        return null;
+    }
+    
+    String insertar(Nodo lcol, Nodo lexp) {
+        
+        Stack<Nodo> pilaCol = new Stack<>();
+        Stack<Nodo> pilaExp = new Stack<>();
+        
+        for(int i = lcol.hijos.size() - 1; i >= 0 ; i--){
+           pilaCol.push(lcol.getHijo(i));
+        }
+        
+        for(int i = lexp.hijos.size() - 1; i >= 0 ; i--){
+           pilaExp.push(lexp.getHijo(i));
+        }
+        
+        
+        Nodo row = new Nodo("row");
+        Nodo exp;
+        Simbolo simb;
+        String val;
+        String tipoCol, tipoExp;
+        
+        for(Columna col : this.columns.getColumnas()){
+            Nodo nodoCol = pilaCol.peek();
+            Nodo reg = new Nodo(col.idColumna);
+            
+            if(col.idColumna.equals(nodoCol.valor)){
+                nodoCol = pilaCol.pop();
+                //proceso de validaci[on e insercion del valor
+                
+                if(!col.autoinc){
+                    exp = pilaExp.pop();
+
+                    simb = EjecucionSSL.ejecutarExpresion(exp);
+                    val = simb.valor;
+                    tipoCol = col.tipoColumna;
+                    tipoExp = simb.tipo;
+                
+                    if(tipoCol.equals(tipoExp)){
+                        if(col.pk){
+                            if(existeElValor(val, col.idColumna) || val.equals("NULO"))
+                                return "Asignacion invalida en clave primaria.";
+                        }
+                    
+                        if(col.fk){
+                            String refTabla = col.tablaRef;
+                            String refCol = col.columnaRef;
+
+                            if(!Archivos.bbdd.tablaContieneValor(Server.actualDB, refTabla, refCol, val))
+                                return "No existe el valor en la tabla referenciada";
+
+                            if(val.equals("NULO"))
+                                return "La columna no acepta valores nulos.";
+                        }
+
+                        if(col.unique){
+                            if(existeElValor(val, col.idColumna))
+                                return "El valor no puede repetirse.";
+                        }
+
+                        if(!col.nulo){
+                            if(val.equals("NULO"))
+                                return "La columna no acepta valores nulos.";
+                        }
+
+                        reg.agregarHijo(new Nodo("CAD", val));
+                        row.agregarHijo(reg);
+
+                    }else{
+                        return "Tipos incompatibles";
+                    }
+                }else{
+                    return "La columna es autoincremental.";
+                }
+                
+                
+            }else{
+                if(col.nulo){
+                    val = "NULO";
+                    reg.agregarHijo(new Nodo("CAD", val));
+                    row.agregarHijo(reg);
+                }else if(col.autoinc){
+                    String newVal = getLastValue(col.idColumna) + 1 + "";
+                    reg.agregarHijo(new Nodo("CAD", newVal));
+                    row.agregarHijo(reg);
+                }else{
+                    return "La columna no acepta valores nulos.";
+                }
+                
+                
+            }
+        }
+        
+        return null;
+    }
+    
+    protected boolean existeElValor(String val, String idCol){
+        for(Nodo row : this.records.hijos){
+            for(Nodo reg : row.hijos){
+                if(reg.token.equals(idCol)){
+                    if(reg.getHijo(0).valor.equals(val))
+                        return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    
+    
+    private int getLastValue(String idCol){
+        Nodo lastRow = this.records.hijos.get(this.records.hijos.size() - 1);
+        for(Nodo reg : lastRow.hijos)
+            if(reg.token.equals(idCol))
+                try{
+                    return Integer.parseInt(reg.getHijo(0).valor);
+                }catch(Exception ex){
+                    Consola.writeln("El valor no es un entero." + ex.getLocalizedMessage());
+                    return this.records.hijos.size();
+                }
+        return this.records.hijos.size();
+    }
+
     
     
 }

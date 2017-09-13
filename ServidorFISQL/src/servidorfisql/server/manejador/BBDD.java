@@ -109,6 +109,9 @@ public class BBDD {
         return this.bbdd.get(idDB).objetos.getTipoAtributo(idObj, idAtr);
     }
     
+    public String getTIpoParam(String idDB, String idMet, int index){
+        return this.bbdd.get(idDB).metodos.getTipoParam(idMet, index);
+    }
     
     
     public boolean tienePermisos(String idDB, String user){
@@ -294,6 +297,24 @@ public class BBDD {
     
     public int cantColsInsertables(String idDB, String idTable) {
         return this.bbdd.get(idDB).tablas.cantColsInsertables(idTable);
+    }
+
+    public int getCantParametros(String idDB, String idMet) {
+        return this.bbdd.get(idDB).metodos.getCantParams(idMet);
+    }
+
+    
+    
+    boolean tablaContieneValor(String idDB, String idTabla, String idCol, String val) {
+        return this.bbdd.get(idDB).tablas.tablaContieneValor(idTabla, idCol, val);
+    }
+
+    public String insertarEnTabla(String idDB, String idTable, Nodo lexp) {
+        return this.bbdd.get(idDB).tablas.insertar(idTable, lexp);
+    }
+
+    public String insertarEnTabla(String idDB, String idTable, Nodo lcol, Nodo lexp) {
+        return this.bbdd.get(idDB).tablas.insertar(idTable, lcol, lexp);
     }
 
     
