@@ -581,7 +581,7 @@ Nodo DML_SELECT() :
 {
 	Nodo nodo = new Nodo("SELECT");
 	Nodo select, from;
-	Nodo where = null, cond, order = null;
+	Nodo where = null, cond, col = null, order = null;
 
 }
 {
@@ -592,15 +592,20 @@ Nodo DML_SELECT() :
 	<de> from = L_ID()
 	[
 		<donde> cond = COND()	[
-									<ordenar> <por>	(
-														 <asc>	{order = new Nodo("ASC");}
-														|<desc>	{order = new Nodo("DESC");}
-													)
+									<ordenar> <por>	col = ACC_COL_TABLA()
+									(
+										 <asc>	{order = new Nodo("ASC");}
+										|<desc>	{order = new Nodo("DESC");}
+									)
 								]
 								{
 									where = new Nodo("WHERE");
 									where.agregarHijo(cond);
-									if(order != null) where.agregarHijo(order);
+									if(col != null) {
+										Nodo aux = new Nodo("ORDENAR");
+										aux.agregarHijos(col, order);
+										where.agregarHijo(aux);
+									}
 								}
 	]
 	{

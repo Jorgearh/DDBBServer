@@ -1,5 +1,6 @@
 package servidorfisql.server.manejador;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Nodo;
@@ -62,6 +63,7 @@ public class BBDD {
             bd.metodos.guardarMethodsFile(bd.proceduresPath);
             bd.objetos.guardarObjectsFile(bd.objectsPath);
             bd.tablas.guardarTableFiles();
+            bd.guardarBackupUsqlDump();
         }
     }
     
@@ -109,7 +111,7 @@ public class BBDD {
         return this.bbdd.get(idDB).objetos.getTipoAtributo(idObj, idAtr);
     }
     
-    public String getTIpoParam(String idDB, String idMet, int index){
+    public String getTipoParam(String idDB, String idMet, int index){
         return this.bbdd.get(idDB).metodos.getTipoParam(idMet, index);
     }
     
@@ -318,6 +320,19 @@ public class BBDD {
     }
 
     
+    
+    
+    public void registrarBackup(String idDB, String sentUsql){
+        this.bbdd.get(idDB).usqldump.add(sentUsql);
+    }
+
+    public HashMap<String, Objeto> getObjetos(String idDB, String user) {
+        return this.bbdd.get(idDB).objetos.getObjetosConPermisos(user);
+    }
+
+    public HashMap<String, Metodo> getMetodos(String idDB, String user) {
+        return this.bbdd.get(idDB).metodos.getMetodosConPermisos(user);
+    }
 
 
 
@@ -339,7 +354,15 @@ class BD{
     Metodos metodos;
     Objetos objetos;
     
+    ArrayList<String> usqldump;
     
+    
+    /**
+     * Constructor para crear una BD a partir de un ast usql
+     * @param idDB
+     * @param dirBD
+     * @param pathTables 
+     */
     public BD(String idDB, String dirBD, String pathTables){
         this.permissonsDB = new Permisos(Server.user);
         
@@ -355,6 +378,8 @@ class BD{
         this.metodos = new Metodos();
         this.objetos = new Objetos();
         
+        this.usqldump = new ArrayList<>();
+        this.usqldump.add("CREAR BASE_DATOS " + this.idDB + ";");
         
     }
     
@@ -368,11 +393,14 @@ class BD{
      */
     public BD(String idDB, String path){
         Nodo nodoDBFile, permisos, tables;
+        Nodo backup;
         
         this.permissonsDB = new Permisos();
         this.tablas = new Tablas();
         this.metodos = new Metodos();
         this.objetos = new Objetos();
+        
+        this.usqldump = new ArrayList<>();
         
         this.idDB = idDB;
         this.pathXmlDB = path;
@@ -389,6 +417,8 @@ class BD{
         this.tablas.cargarTablas(tables);
         this.metodos.cargarMetodos(this.proceduresPath);
         this.objetos.cargarObjetos(this.objectsPath);
+        
+        cargarBackupUsqlDump();
         
     }
     
@@ -422,6 +452,29 @@ class BD{
         xml += "</DataBaseFile>\n";
         
         Archivos.escribirArchivo(this.pathXmlDB, xml);
+    }
+    
+    public void guardarBackupUsqlDump(){
+        String xml = "";
+        
+        xml += "<usqldump>\n";
+        
+        for(String instr : this.usqldump){
+            xml += "<instr>\"" + instr + "\"</instr>\n"; 
+        }
+        
+        xml += "</usqldump>\n";
+        
+        Archivos.escribirArchivo(Archivos.bbddDir + this.idDB + "/backup.xml", xml);
+    }
+    
+    private void cargarBackupUsqlDump(){
+        Nodo backup = Archivos.levantarXML(Archivos.bbddDir + this.idDB + "/backup.xml");
+        
+        for(Nodo instr : backup.hijos){
+            String instruccion = instr.getHijo(0).valor;
+            this.usqldump.add(instruccion);
+        }
     }
     
 }

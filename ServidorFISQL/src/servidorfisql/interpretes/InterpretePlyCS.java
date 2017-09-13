@@ -162,9 +162,7 @@ public class InterpretePlyCS {
         if(astUSQL.token.equals("ERROR"))
             return astUSQL.valor;
         else{
-            //return interpreteUSQL.interpretar(codigo, astUSQL, cadUsql);
-            //return interpreteUSQL.interpretarSentenciaUsql(codigo, astUSQL, cadUsql);
-            return InterpreteUSQL.interpretarSentenciaUsql(codigo, astUSQL, cadUsql);
+            return InterpreteUSQL.interpretarSentenciasUsql(codigo, astUSQL, cadUsql);
         }
     }
     

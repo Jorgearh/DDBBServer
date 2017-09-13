@@ -40,8 +40,26 @@ public class SemanticoSSL {
         for(Nodo sent : lsent.hijos){
             analisisSemantico(sent);
         }
+
+        idMetodo = null;
+    }
+    
+    public static String analizarSentenciaSSL(Nodo sent, int cod, String cad){
+        codigo = cod;
+        cadUsql = cad;
+        erroresSSL.clear();
+        display = new Stack<>();
+        
+        idMetodo = "GLOBAL";
+        
+        analisisSemantico(sent);
         
         idMetodo = null;
+        
+        if(!erroresSSL.isEmpty())
+            return cadenaErrores();
+        else
+            return null;
     }
     
     private static void llenarTS(Nodo lpar, Nodo lsent){
@@ -49,7 +67,7 @@ public class SemanticoSSL {
         
         //Parametros
         for(Nodo atr : lpar.hijos){
-            
+            evaluarSentencias(atr);
         }
         
         for(Nodo sent : lsent.hijos){
@@ -361,7 +379,7 @@ public class SemanticoSSL {
                         if(cantPar == larg.hijos.size()){
 
                             for(int i = 0; i < cantPar; i++){
-                                String tipoParam = Archivos.bbdd.getTIpoParam(Server.actualDB, idFunc.valor, i);
+                                String tipoParam = Archivos.bbdd.getTipoParam(Server.actualDB, idFunc.valor, i);
                                 String tipoArg = evaluarExpresion(larg.getHijo(i));
                                 
                                 if(!tipoParam.equals(tipoArg)){
@@ -640,6 +658,21 @@ public class SemanticoSSL {
                 
             case "VAR":
                 String idVar = exp.valor;
+                if(idMetodo.equals("GLOBAL")){
+                    response = Error.lenguaje(
+                            codigo, 
+                            "USQL", 
+                            cadUsql, 
+                            "Semantico", 
+                            exp.row, 
+                            exp.col, 
+                            "Variable [" + idVar + "] en ambito no permitido");
+                    erroresSSL.add(response);
+                    tipoResult = "NULO";
+                    break;
+                }
+                    
+                
                 if(TS.containsKey(idVar))
                     tipoResult = TS.get(idVar).tipo;
                 else{
@@ -759,7 +792,7 @@ public class SemanticoSSL {
                                 boolean compatibles = true;
                                 
                                 for(int i = 0; i < cantPar; i++){
-                                    String tipoParam = Archivos.bbdd.getTIpoParam(Server.actualDB, idFunc.valor, i);
+                                    String tipoParam = Archivos.bbdd.getTipoParam(Server.actualDB, idFunc.valor, i);
                                     String tipoArg = evaluarExpresion(larg.getHijo(i));
                                     if(!tipoParam.equals(tipoArg)){
                                         compatibles = false;

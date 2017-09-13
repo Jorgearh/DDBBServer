@@ -1,8 +1,11 @@
 package servidorfisql.interpretes;
 
+import java.util.HashMap;
 import servidorfisql.gui.Consola;
 import servidorfisql.server.Server;
 import servidorfisql.server.manejador.Archivos;
+import servidorfisql.server.manejador.Metodo;
+import servidorfisql.server.manejador.Objeto;
 
 /**
  *
@@ -72,10 +75,7 @@ public class EjecucionUSQL {
                     
                 case "USE":
                     
-                    idDB = usqlSent.getHijo(0).valor;
-                    
-                    Server.actualDB = idDB;
-                    Consola.writeln("Usando Base de Datos [" + idDB + "]\n");
+                    response = usar(usqlSent);
                     break;
                     
                 case "ALTER_TABLE_ADD":
@@ -244,12 +244,45 @@ public class EjecucionUSQL {
                     
                     break;
                     
+                 case "CALL":
+                    
+                    break;
+                    
+                case "PRINT":
+                    
+                    break;
+                    
+                case "BACKUP_USQLDUMP":
+                    
+                    break;
+                    
+                case "BACKUP_COMPLETO":
+                    break;
+                    
                 default:
             }
         
         return response;
     }
     
+    
+    private static String usar(Nodo nodo){
+        String response = null;
+        String idDB;
+        
+        idDB = nodo.getHijo(0).valor;
+
+        Server.actualDB = idDB;
+        Consola.writeln("Usando Base de Datos [" + idDB + "]\n");
+        
+        //Construir tabla de simbolos
+        HashMap<String, Objeto> objetos = Archivos.bbdd.getObjetos(idDB, Server.user);
+        HashMap<String, Metodo> metodos = Archivos.bbdd.getMetodos(idDB, Server.user);
+        
+        
+        
+        return response;
+    }
     
     
     private static String insert(Nodo nodo){

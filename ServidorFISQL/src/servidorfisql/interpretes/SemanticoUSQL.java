@@ -59,10 +59,13 @@ public class SemanticoUSQL {
                     response = insert(usqlSent);
                     break;
                 case "SELECT":
+                    response = select(usqlSent);
                     break;
                 case "UPDATE":
+                    response = update(usqlSent);
                     break;
                 case "DELETE_FROM_TABLE":
+                    response = deleteFromTable(usqlSent);
                     break;
                     
                     
@@ -75,22 +78,15 @@ public class SemanticoUSQL {
                     break;
                     
                 case "CALL":
-                    
+                    response = SemanticoSSL.analizarSentenciaSSL(usqlSent, cod, cad);
                     break;
                     
                 case "PRINT":
                     break;
                     
                 case "BACKUP_USQLDUMP":
-                    break;
-                    
                 case "BACKUP_COMPLETO":
-                    break;
-                    
-                case "RESTORE_USQLDUMP":
-                    break;
-                    
-                case "RESTORE_COMPLETO":
+                    response = backup(usqlSent);
                     break;
                     
                 default:
@@ -831,7 +827,120 @@ public class SemanticoUSQL {
         return response;
     }
 
+    private static String select(Nodo select){
+        String response = null;
+        
+        if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
+            
+            Nodo lcol = select.getHijo(0);
+            Nodo from = select.getHijo(1);
+            Nodo cond = select.hijos.size() == 3 ? select.getHijo(2) : null;
+            
+            //Evaluar las tablas
+            for(Nodo table : from.hijos){
+                //Existe la tabla
+                if(Archivos.bbdd.existeTabla(Server.actualDB, table.valor)){
+                    
+                    //El usuario actual tiene permisos en la tablas
+                    if(!Archivos.bbdd.tienePermisosTabla(Server.actualDB, table.valor, Server.user)){
+                        response = Error.logico(codigo,
+                                "SELECT",
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos para en la tabla [" + table.valor + "]");
+                        return response;
+                    }
+                }else{
+                    response = Error.lenguaje(
+                                            codigo, 
+                                            "USQL", 
+                                            cadUsql, 
+                                            "Semantico", 
+                                            table.row, 
+                                            table.col,
+                                            "No existe la Tabla [" + table.valor + "]");
+                    return response;
+                }
+            }
+            
+            //Evaluar las columnas
+            if(!lcol.token.equals("*")){
+                for(Nodo col : lcol.hijos){
+                    Nodo table = col.getHijo(0);
+                    Nodo column = col.getHijo(1);
+                    
+                    //Existe la tabla
+                    if(Archivos.bbdd.existeTabla(Server.actualDB, table.valor)){
+                        
+                        //Existe la columna
+                        if(!Archivos.bbdd.existeColumna(Server.actualDB, table.valor, column.valor)){
+                            response = Error.lenguaje(
+                                            codigo, 
+                                            "USQL", 
+                                            cadUsql, 
+                                            "Semantico", 
+                                            table.row, 
+                                            table.col,
+                                            "No existe la Columna [" + column.valor + "]");
+                            return response;
+                        }
+                    }else{
+                        response = Error.lenguaje(
+                                            codigo, 
+                                            "USQL", 
+                                            cadUsql, 
+                                            "Semantico", 
+                                            table.row, 
+                                            table.col,
+                                            "No existe la Tabla [" + table.valor + "]");
+                        return response;
+                    }
+                }
+            }
+        }else{
+            response = Error.logico(
+                            codigo, 
+                            select.token, 
+                            "No se ha seleccionado una base de datos para usar.");
+        }
+        
+        return response;
+    }
     
+    private static String update(Nodo update){
+        String response = null;
+        
+        return response;
+    }
+    
+    private static String deleteFromTable(Nodo delete){
+        String response = null;
+        
+        if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
+            
+            Nodo idTable = delete.getHijo(0);
+            
+            //Existe la tabla
+            if(!Archivos.bbdd.existeTabla(Server.actualDB, idTable.valor)){
+                response = Error.lenguaje(
+                        codigo,
+                        "USQL",
+                        cadUsql,
+                        "Semantico",
+                        idTable.row,
+                        idTable.col,
+                        "No existe la Tabla [" + idTable.valor + "]");
+            }
+            
+        }else{
+            response = Error.logico(
+                            codigo, 
+                            delete.token, 
+                            "No se ha seleccionado una base de datos para usar.");
+        }
+        
+        return response;
+    }
+
 
 
     /*    SENTENCIAS DCL    */
@@ -960,6 +1069,34 @@ public class SemanticoUSQL {
         return response;
     }
         
+    
+    
+    /*    BACKUP    */
+    private static String backup(Nodo backup){
+        String response = null;
+        Nodo db = backup.getHijo(0);
+        
+        if(!Archivos.bbdd.existeBD(db.valor)){
+            response = Error.lenguaje(
+                                    codigo,
+                                    "USQL",
+                                    cadUsql,
+                                    "Semantico",
+                                    db.row,
+                                    db.col,
+                                    "No existe la Base de Datos [" + db.valor + "]");
+        }else{
+            if(!Archivos.bbdd.tienePermisos(db.valor, Server.user)){
+                response = Error.logico(codigo,
+                        "PERMISOS BACKUP",
+                        "El usuario [" + Server.user + "] "
+                                + "no tiene permisos"
+                                + "en la base de datos [" + Server.actualDB + "]");
+            }
+        }
+        
+        return response;
+    }
     
     private static String analisisDeclaracionColumnas(Nodo nodo){
         String response = null;

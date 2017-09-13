@@ -629,7 +629,7 @@
   final public Nodo DML_SELECT() throws ParseException {
         Nodo nodo = new Nodo("SELECT");
         Nodo select, from;
-        Nodo where = null, cond, order = null;
+        Nodo where = null, cond, col = null, order = null;
     jj_consume_token(seleccionar);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case id:
@@ -654,14 +654,15 @@
       case ordenar:
         jj_consume_token(ordenar);
         jj_consume_token(por);
+        col = ACC_COL_TABLA();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case asc:
           jj_consume_token(asc);
-                                                                                                                         order = new Nodo("ASC");
+                                                                                         order = new Nodo("ASC");
           break;
         case desc:
           jj_consume_token(desc);
-                                                                                                                         order = new Nodo("DESC");
+                                                                                         order = new Nodo("DESC");
           break;
         default:
           jj_la1[16] = jj_gen;
@@ -675,7 +676,11 @@
       }
                                                                         where = new Nodo("WHERE");
                                                                         where.agregarHijo(cond);
-                                                                        if(order != null) where.agregarHijo(order);
+                                                                        if(col != null) {
+                                                                                Nodo aux = new Nodo("ORDENAR");
+                                                                                aux.agregarHijos(col, order);
+                                                                                where.agregarHijo(aux);
+                                                                        }
       break;
     default:
       jj_la1[18] = jj_gen;
@@ -1479,9 +1484,6 @@
             case get_fecha_hora:
               nodo = SSL_FECHA_HORA();
               break;
-            case selecciona:
-              nodo = SSL_SELECCIONA();
-              break;
             case contar:
               nodo = SSL_CONTAR();
               break;
@@ -1505,7 +1507,6 @@
     t = jj_consume_token(id);
     jj_consume_token(98);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case selecciona:
     case contar:
     case get_fecha:
     case get_fecha_hora:
@@ -2007,11 +2008,6 @@
     finally { jj_save(2, xla); }
   }
 
-  private boolean jj_3R_36() {
-    if (jj_3R_37()) return true;
-    return false;
-  }
-
   private boolean jj_3R_18() {
     if (jj_scan_token(id)) return true;
     return false;
@@ -2050,7 +2046,7 @@
     return false;
   }
 
-  private boolean jj_3R_52() {
+  private boolean jj_3R_50() {
     if (jj_scan_token(contar)) return true;
     return false;
   }
@@ -2079,10 +2075,7 @@
     jj_scanpos = xsp;
     if (jj_3R_46()) {
     jj_scanpos = xsp;
-    if (jj_3R_47()) {
-    jj_scanpos = xsp;
-    if (jj_3R_48()) return true;
-    }
+    if (jj_3R_47()) return true;
     }
     }
     }
@@ -2099,7 +2092,7 @@
     return false;
   }
 
-  private boolean jj_3R_50() {
+  private boolean jj_3R_49() {
     if (jj_scan_token(get_fecha_hora)) return true;
     return false;
   }
@@ -2109,7 +2102,7 @@
     return false;
   }
 
-  private boolean jj_3R_49() {
+  private boolean jj_3R_48() {
     if (jj_scan_token(get_fecha)) return true;
     return false;
   }
@@ -2139,6 +2132,11 @@
     return false;
   }
 
+  private boolean jj_3R_31() {
+    if (jj_3R_32()) return true;
+    return false;
+  }
+
   private boolean jj_3R_26() {
     if (jj_scan_token(fecha)) return true;
     return false;
@@ -2149,8 +2147,8 @@
     return false;
   }
 
-  private boolean jj_3R_31() {
-    if (jj_3R_32()) return true;
+  private boolean jj_3R_38() {
+    if (jj_3R_39()) return true;
     return false;
   }
 
@@ -2161,11 +2159,6 @@
 
   private boolean jj_3R_23() {
     if (jj_scan_token(booleano)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_38() {
-    if (jj_3R_39()) return true;
     return false;
   }
 
@@ -2212,11 +2205,6 @@
     return false;
   }
 
-  private boolean jj_3R_51() {
-    if (jj_scan_token(selecciona)) return true;
-    return false;
-  }
-
   private boolean jj_3R_20() {
     if (jj_scan_token(id)) return true;
     if (jj_scan_token(98)) return true;
@@ -2232,29 +2220,29 @@
     return false;
   }
 
+  private boolean jj_3R_47() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
   private boolean jj_3_1() {
     if (jj_scan_token(98)) return true;
     if (jj_3R_18()) return true;
     return false;
   }
 
-  private boolean jj_3R_48() {
-    if (jj_3R_52()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_47() {
-    if (jj_3R_51()) return true;
-    return false;
-  }
-
   private boolean jj_3R_46() {
-    if (jj_3R_50()) return true;
+    if (jj_3R_49()) return true;
     return false;
   }
 
   private boolean jj_3R_45() {
-    if (jj_3R_49()) return true;
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_36() {
+    if (jj_3R_37()) return true;
     return false;
   }
 
@@ -2284,7 +2272,7 @@
       jj_la1_0 = new int[] {0x780000,0x780000,0x780000,0x1f800000,0x0,0xe0000000,0x0,0x7e000,0x7e000,0x13000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7e000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x780000,0x780000,0x0,0x0,0x0,0x0,0x0,0x0,0x1f800000,0x7e000,0x7e000,0xe0000000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x1b00f00,0x1b00f00,0x0,0x0,0x0,0x7,0x0,0x0,0x0,0x0,0x60,0x60,0xf00,0x4000,0x4000,0x0,0xc0000,0x10000,0x4000,0x300000,0x0,0x0,0xd8000000,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x6000000,0x6000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0xd8000f00,0xd8000f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x0,};
+      jj_la1_1 = new int[] {0x1b00f00,0x1b00f00,0x0,0x0,0x0,0x7,0x0,0x0,0x0,0x0,0x60,0x60,0xf00,0x4000,0x4000,0x0,0xc0000,0x10000,0x4000,0x300000,0x0,0x0,0xd8000000,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x6000000,0x6000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xd8000f00,0xd8000f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x0,};
    }
    private static void jj_la1_init_2() {
       jj_la1_2 = new int[] {0x40000040,0x40000040,0x0,0x0,0x0,0x0,0x0,0x40000000,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x40000800,0x0,0x0,0x0,0x0,0x40000800,0x40000800,0xc000005c,0x0,0x40000000,0x0,0x0,0x2,0x1,0x21800000,0x0,0x0,0x0,0x20000000,0x100000,0x200000,0x400000,0xfc000,0x600,0x600,0x1800,0x1800,0x2000,0x0,0x0,0x400,0x80000000,0x400001a0,0xffc005a0,0xc000005c,0xc000005c,0x0,0x0,0x0,0xbf800000,0x0,0x0,0x0,0x0,0x40000000,0x0,0xfc000,};
