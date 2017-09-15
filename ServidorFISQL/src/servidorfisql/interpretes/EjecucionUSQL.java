@@ -1,5 +1,6 @@
 package servidorfisql.interpretes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import servidorfisql.gui.Consola;
 import servidorfisql.server.Server;
@@ -198,9 +199,10 @@ public class EjecucionUSQL {
                     response = insert(usqlSent);
                     break;
                 case "SELECT":
-                    select(usqlSent);
+                    response = construirPaquetePlycsSelect(select(usqlSent), false);
                     break;
                 case "UPDATE":
+                    update(usqlSent);
                     break;
                 case "DELETE_FROM_TABLE":
                     break;
@@ -265,6 +267,10 @@ public class EjecucionUSQL {
         return response;
     }
     
+    public static String ejecutarReporte(Nodo select){
+        return construirPaquetePlycsSelect(select(select), true);
+    }
+    
     
     private static String usar(Nodo nodo){
         String response = null;
@@ -304,8 +310,142 @@ public class EjecucionUSQL {
     }
     
     
-    private static void select(Nodo nodo){
+    private static ArrayList<HashMap<String, String>> select(Nodo select){
         
+        Nodo lcol = select.getHijo(0);
+        Nodo from = select.getHijo(1);
+        Nodo where = select.hijos.size() == 3 ? select.getHijo(2) : null;
+        
+        ArrayList<HashMap<String, Simbolo>> tablaTemporal = construirTablaTemp(from);
+        ArrayList<HashMap<String, String>> tablaResultado = new ArrayList<>();
+        ArrayList<String> columnasSeleccionables = null;
+        
+        if(!lcol.token.equals("*")){
+            columnasSeleccionables = new ArrayList<>();
+            
+            for(Nodo col : lcol.hijos){
+                String table = col.getHijo(0).valor;
+                String column = col.getHijo(1).valor;
+                
+                columnasSeleccionables.add(table + "." + column);
+            }
+        }
+                
+        //Filtarar valores en tabla resultado
+        if(where != null){
+            
+            Nodo cond = where.getHijo(0);
+            
+            HashMap<String, String> filaResultado;
+            
+            for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
+                
+                if(EjecucionSSL.ejecutarExpresion(cond).valor.equals("true")){
+                   
+                    filaResultado = new HashMap<>();
+                    
+                    if(lcol.token.equals("*")){
+                
+                        for(String colName: filaTemporal.keySet()){
+                            filaResultado.put(colName, filaTemporal.get(colName).valor);
+                        }
+                        tablaResultado.add(filaResultado);
+                        
+                    }else{
+                        for(String colName: filaTemporal.keySet()){
+                            if(columnasSeleccionables.contains(colName))
+                                filaResultado.put(colName, filaTemporal.get(colName).valor);
+                        }
+                        tablaResultado.add(filaResultado);
+                    }   
+                }
+            }
+            
+            if(where.hijos.size() == 2){
+                String col
+            }
+            
+        }else{
+            
+            HashMap<String, String> filaResultado;
+            for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
+                filaResultado = new HashMap<>();
+                
+                for(String colName: filaTemporal.keySet()){
+                    filaResultado.put(colName, filaTemporal.get(colName).valor);
+                }
+                tablaResultado.add(filaResultado);
+            }
+        }
+        
+        
+        //Construir cadenas de respuesta con base en la tablaResultado
+        
+        return tablaResultado;
     }
     
+    private static String construirPaquetePlycsSelect(ArrayList<HashMap<String, String>> select, boolean reporte){
+        String response = "";
+        
+        if(reporte){
+            
+            
+            //Encabezado
+            response += "    <tr>\n";
+            
+            HashMap<String, String> encabezados = select.get(0);
+            for(String colName : encabezados.keySet()){
+                response += "        <th>" + colName + "</th>\n";
+            }
+            
+            response += "    </tr>\n";
+            
+            //Contenido
+            for(HashMap<String, String> fila : select){
+                response += "    <tr>\n";
+                
+                for(String colName : fila.keySet()){
+                    response += "        <td>" + fila.get(colName) + "</td>\n";
+                }
+                
+                response += "    </tr>\n";
+            }
+        }else{
+            for(HashMap<String, String> fila : select){
+                response += "        [\n";
+                
+                for(String colName : fila.keySet()){
+                    response += "            \"" + colName + "\" => \"" + fila.get(colName) + "\",\n";
+                }
+                
+                response += "        ],\n";
+            }
+        }
+        
+        
+        return response;
+    }
+    
+    
+    
+    private static String update(Nodo nodo){
+        String response = null;
+        
+        
+        
+        return response;
+    }
+    
+    private static String delete(Nodo nodo){
+        String response = null;
+        
+        return response;
+    }
+    
+    private static ArrayList<HashMap<String, Simbolo>> construirTablaTemp(Nodo lid){
+        
+        
+        
+        return null;
+    }
 }

@@ -762,48 +762,55 @@ public class SemanticoUSQL {
             //Existe la tabla en la que se desea insertar
             if(Archivos.bbdd.existeTabla(Server.actualDB, idTable.valor)){
                 
-                //Insertar normal
-                if(lidCols.hijos.isEmpty()){
-                    int cantExps = lexp.hijos.size();
-                    int cantCols = Archivos.bbdd.cantColsInsertables(Server.actualDB, idTable.valor);
-                    
-                    //Coincide la cantidad de columnas insertables con la cantidad de expresiones
-                    if (cantExps > cantCols){
-                        response = Error.lenguaje(
-                                codigo, 
-                                "USQL", 
-                                cadUsql, 
-                                "Semantico", 
-                                idTable.row, 
-                                idTable.col, 
-                                "Error insertando valores en columnas autoincrementables "
-                                    + "de tabla [" + idTable.valor + "]");
-                    }else{
-                        response = Error.lenguaje(
-                                codigo, 
-                                "USQL", 
-                                cadUsql, 
-                                "Semantico", 
-                                idTable.row, 
-                                idTable.col, 
-                                "Error insertando valores tabla [" + idTable.valor + "]. "
-                                        + "Se esperan [" + cantCols + "] valores.");
-                    }
-                    
-                }else{//Insertar especial
-                    for(Nodo idCol : lidCols.hijos){
-                        if(!Archivos.bbdd.existeColumna(Server.actualDB, idTable.valor, idCol.valor)){
+                if(Archivos.bbdd.tienePermisosTabla(Server.actualDB, idTable.valor, Server.user)){
+                    //Insertar normal
+                    if(lidCols.hijos.isEmpty()){
+                        int cantExps = lexp.hijos.size();
+                        int cantCols = Archivos.bbdd.cantColsInsertables(Server.actualDB, idTable.valor);
+
+                        //Coincide la cantidad de columnas insertables con la cantidad de expresiones
+                        if (cantExps > cantCols){
                             response = Error.lenguaje(
-                                codigo, 
-                                "USQL", 
-                                cadUsql, 
-                                "Semantico", 
-                                idTable.row, 
-                                idTable.col, 
-                                "Error insertando valores tabla [" + idTable.valor + "]. "
-                                        + "No existe la columna [" + idCol.valor + "]");
+                                    codigo, 
+                                    "USQL", 
+                                    cadUsql, 
+                                    "Semantico", 
+                                    idTable.row, 
+                                    idTable.col, 
+                                    "Error insertando valores en columnas autoincrementables "
+                                        + "de tabla [" + idTable.valor + "]");
+                        }else{
+                            response = Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    cadUsql, 
+                                    "Semantico", 
+                                    idTable.row, 
+                                    idTable.col, 
+                                    "Error insertando valores tabla [" + idTable.valor + "]. "
+                                            + "Se esperan [" + cantCols + "] valores.");
+                        }
+
+                    }else{//Insertar especial
+                        for(Nodo idCol : lidCols.hijos){
+                            if(!Archivos.bbdd.existeColumna(Server.actualDB, idTable.valor, idCol.valor)){
+                                response = Error.lenguaje(
+                                    codigo, 
+                                    "USQL", 
+                                    cadUsql, 
+                                    "Semantico", 
+                                    idTable.row, 
+                                    idTable.col, 
+                                    "Error insertando valores tabla [" + idTable.valor + "]. "
+                                            + "No existe la columna [" + idCol.valor + "]");
+                            }
                         }
                     }
+                }else{
+                    response = Error.logico(codigo,
+                                "SELECT",
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos en la tabla [" + idTable.valor + "]");
                 }
                 
             }else{
@@ -846,7 +853,7 @@ public class SemanticoUSQL {
                         response = Error.logico(codigo,
                                 "SELECT",
                                 "El usuario [" + Server.user + "] "
-                                        + "no tiene permisos para en la tabla [" + table.valor + "]");
+                                        + "no tiene permisos en la tabla [" + table.valor + "]");
                         return response;
                     }
                 }else{
@@ -909,6 +916,86 @@ public class SemanticoUSQL {
     private static String update(Nodo update){
         String response = null;
         
+        if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
+            Nodo idTabla = update.getHijo(0);
+            Nodo lid = update.getHijo(1);
+            Nodo lexp = update.getHijo(2);
+
+            //Existe la tabla
+            if(Archivos.bbdd.existeTabla(Server.actualDB, idTabla.valor)){
+                
+                if(Archivos.bbdd.tienePermisosTabla(Server.actualDB, idTabla.valor, Server.user)){
+                    if(lid.hijos.size() == lexp.hijos.size()){
+                    
+                        for(int x = 0; x < lid.hijos.size(); x++){
+                            Nodo idCol = lid.getHijo(x);
+                            Nodo exp = lexp.getHijo(x);
+
+                            //Existe la columna
+                            if(!Archivos.bbdd.existeColumna(Server.actualDB, idTabla.valor, idCol.valor)){
+
+                                String tipoCol = Archivos.bbdd.getTipoColumna(Server.actualDB, idTabla.valor, idCol.valor);
+                                String tipoExp = SemanticoSSL.evaluarExpresion(exp);
+
+                                if(!tipoCol.equals(tipoExp)){
+                                    response = Error.lenguaje(
+                                            codigo, 
+                                            "USQL", 
+                                            cadUsql, 
+                                            "Semantico", 
+                                            exp.row, 
+                                            exp.col, 
+                                            "Tipos incompatibles en columna y expresion a asignar.");
+                                    break;
+                                }
+
+                            }else{
+                                response = Error.lenguaje(
+                                                codigo, 
+                                                "USQL", 
+                                                cadUsql, 
+                                                "Semantico", 
+                                                idCol.row, 
+                                                idCol.col,
+                                                "No existe la Columna [" + idCol.valor + "]");
+                                break;
+                            }
+                        }
+                    }else{
+                        response = Error.lenguaje(
+                                codigo, 
+                                "USQL", 
+                                cadUsql, 
+                                "Semantico", 
+                                idTabla.row, 
+                                idTabla.col, 
+                                "No coinciden los valores ingresados con las columnas por asignar.");
+                    }
+                }else{
+                    response = Error.logico(codigo,
+                                "SELECT",
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos en la tabla [" + idTabla.valor + "]");
+                }
+                
+            }else{
+                response = Error.lenguaje(
+                                            codigo, 
+                                            "USQL", 
+                                            cadUsql, 
+                                            "Semantico", 
+                                            idTabla.row, 
+                                            idTabla.col,
+                                            "No existe la Tabla [" + idTabla.valor + "]");
+            }
+            
+        }else{
+            response = Error.logico(
+                            codigo, 
+                            update.token, 
+                            "No se ha seleccionado una base de datos para usar.");
+        }
+        
         return response;
     }
     
@@ -919,16 +1006,23 @@ public class SemanticoUSQL {
             
             Nodo idTable = delete.getHijo(0);
             
-            //Existe la tabla
-            if(!Archivos.bbdd.existeTabla(Server.actualDB, idTable.valor)){
-                response = Error.lenguaje(
-                        codigo,
-                        "USQL",
-                        cadUsql,
-                        "Semantico",
-                        idTable.row,
-                        idTable.col,
-                        "No existe la Tabla [" + idTable.valor + "]");
+            if(Archivos.bbdd.tienePermisosTabla(Server.actualDB, idTable.valor, Server.user)){
+                //Existe la tabla
+                if(!Archivos.bbdd.existeTabla(Server.actualDB, idTable.valor)){
+                    response = Error.lenguaje(
+                            codigo,
+                            "USQL",
+                            cadUsql,
+                            "Semantico",
+                            idTable.row,
+                            idTable.col,
+                            "No existe la Tabla [" + idTable.valor + "]");
+                }
+            }else{
+                response = Error.logico(codigo,
+                                "SELECT",
+                                "El usuario [" + Server.user + "] "
+                                        + "no tiene permisos en la tabla [" + idTable.valor + "]");
             }
             
         }else{

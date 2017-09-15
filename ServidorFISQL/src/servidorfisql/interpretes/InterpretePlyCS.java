@@ -87,7 +87,7 @@ public class InterpretePlyCS {
             case "reporte":
                 codigo = Integer.parseInt(ast.getHijo(1).valor);
                 usql = ast.getHijo(2).valor;
-                response = reporte(usql);
+                response = reporte(codigo, usql);
                 break;
                 
             default:
@@ -156,7 +156,6 @@ public class InterpretePlyCS {
     
     
     private String usql(int codigo, String cadUsql) throws IOException{
-        //return interpreteUSQL.analizar(usql);
         Nodo astUSQL = Archivos.parsearUSQL(codigo, cadUsql);
         
         if(astUSQL.token.equals("ERROR"))
@@ -168,7 +167,13 @@ public class InterpretePlyCS {
     
     
     
-    private String reporte(String usql){
-        return null;
+    private String reporte(int codigo, String cadUsql) throws IOException{
+        Nodo astUSQL = Archivos.parsearUSQL(codigo, cadUsql);
+        
+        if(astUSQL.token.equals("ERROR"))
+            return astUSQL.valor;
+        else{
+            return InterpreteUSQL.interpretarSentenciasUsql(codigo, astUSQL, cadUsql);
+        }
     }
 }

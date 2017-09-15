@@ -122,3 +122,22 @@
 	"validar": 1500,
 	"sentencia": ""
 ]
+
+
+//EXITO SELECT
+[
+	"paquete": "usql",
+	"validar": 1500,
+	"datos": [
+		[
+			"usuario"=>1
+			"nombre"=>"paco"
+			"telefono"=>12345678
+		],
+		[
+			"usuario"=>2
+			"nombre"=>"pedro"
+			"telefono"=>12345678
+		]
+	]
+]

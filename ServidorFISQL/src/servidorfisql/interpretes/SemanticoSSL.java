@@ -593,7 +593,7 @@ public class SemanticoSSL {
     }
     
     
-    private static String evaluarExpresion(Nodo exp){
+    public static String evaluarExpresion(Nodo exp){
         String tipoResult;
         String izq, der;
         String response;
