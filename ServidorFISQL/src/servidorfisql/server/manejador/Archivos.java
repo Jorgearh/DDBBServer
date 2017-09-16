@@ -227,7 +227,7 @@ public class Archivos implements Constantes{
         return texto;
     }
     
-    static void escribirArchivo(String path, String content){
+    public static void escribirArchivo(String path, String content){
         FileWriter fw;
         BufferedWriter bw;
 

@@ -323,7 +323,7 @@ public class BBDD {
     
     
     public void registrarBackup(String idDB, String sentUsql){
-        this.bbdd.get(idDB).usqldump.add(sentUsql);
+        this.bbdd.get(idDB).registrarInstruccion(sentUsql);
     }
 
     public HashMap<String, Objeto> getObjetos(String idDB, String user) {
@@ -332,6 +332,18 @@ public class BBDD {
 
     public HashMap<String, Metodo> getMetodos(String idDB, String user) {
         return this.bbdd.get(idDB).metodos.getMetodosConPermisos(user);
+    }
+
+    public Nodo getAstRows(String idDB, String idTable) {
+        return this.bbdd.get(idDB).tablas.getAstRows(idTable);
+    }
+
+    public void setAstRows(String idDB, String idTable, Nodo rows) {
+        this.bbdd.get(idDB).tablas.setAstRows(idTable, rows);
+    }
+
+    public String getBackUpUsqlDump(String idDB) {
+        return this.bbdd.get(idDB).getBackUpUsqlDump();
     }
 
 
@@ -379,7 +391,7 @@ class BD{
         this.objetos = new Objetos();
         
         this.usqldump = new ArrayList<>();
-        this.usqldump.add("CREAR BASE_DATOS " + this.idDB + ";");
+        //this.usqldump.add("CREAR BASE_DATOS " + this.idDB + ";");
         
     }
     
@@ -475,6 +487,21 @@ class BD{
             String instruccion = instr.getHijo(0).valor;
             this.usqldump.add(instruccion);
         }
+    }
+
+    String getBackUpUsqlDump() {
+        String instrucciones = "";
+        
+        for(String instr : this.usqldump){
+            instrucciones += instr + "\n";
+        }
+        
+        return instrucciones;
+    }
+
+    void registrarInstruccion(String sentUsql) {
+        if(!this.usqldump.contains(sentUsql))
+            usqldump.add(sentUsql);
     }
     
 }

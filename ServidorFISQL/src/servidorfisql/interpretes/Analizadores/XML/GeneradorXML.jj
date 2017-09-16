@@ -71,7 +71,7 @@ TOKEN :
 	|<booleano: "true" | "false" >
 	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
 	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
-	|<cadena: ("\"") (~["\"", "\n", "\r"])* ("\"") >
+	|<cadena: ("\"") (~[])* ("\"") >
 	|<codigo: ("\'") (~["\'"])* ("\'") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>

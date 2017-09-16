@@ -183,6 +183,14 @@ public class Tablas {
         return this.tablas.get(idTabla).existeElValor(val, idCol);
     }
 
+    Nodo getAstRows(String idTable) {
+        return this.tablas.get(idTable).records;
+    }
+
+    void setAstRows(String idTable, Nodo rows) {
+        this.tablas.get(idTable).records = rows;
+    }
+
     
 
     

@@ -59,6 +59,13 @@
 	"instruccion": "SELECIONARR * DE usuarios;"
 ]
 
+//RESTAURAR
+
+[
+	"paquete": "restaurar",
+	"validar": 1500,
+	"archivo": "backup.udmp"
+]
 
 
 /*

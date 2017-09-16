@@ -205,6 +205,7 @@ public class EjecucionUSQL {
                     update(usqlSent);
                     break;
                 case "DELETE_FROM_TABLE":
+                    delete(usqlSent);
                     break;
                     
                     
@@ -255,7 +256,7 @@ public class EjecucionUSQL {
                     break;
                     
                 case "BACKUP_USQLDUMP":
-                    
+                    response = backup_usqldump(usqlSent);
                     break;
                     
                 case "BACKUP_COMPLETO":
@@ -316,7 +317,13 @@ public class EjecucionUSQL {
         Nodo from = select.getHijo(1);
         Nodo where = select.hijos.size() == 3 ? select.getHijo(2) : null;
         
-        ArrayList<HashMap<String, Simbolo>> tablaTemporal = construirTablaTemp(from);
+        ArrayList<Nodo> tablas = new ArrayList<>();
+        
+        for(Nodo tabla : from.hijos){
+            tablas.add(Archivos.bbdd.getAstRows(Server.actualDB, tabla.valor));
+        }
+        
+        ArrayList<HashMap<String, Simbolo>> tablaTemporal = construirTablaTemp(tablas);
         ArrayList<HashMap<String, String>> tablaResultado = new ArrayList<>();
         ArrayList<String> columnasSeleccionables = null;
         
@@ -362,7 +369,11 @@ public class EjecucionUSQL {
             }
             
             if(where.hijos.size() == 2){
-                String col
+                Nodo order = where.getHijo(1);
+                String orderCol = order.getHijo(0).valor + "." + order.getHijo(1).valor;
+                String orderMode = order.getHijo(1).token;
+                
+                //ordenar filas
             }
             
         }else{
@@ -428,24 +439,133 @@ public class EjecucionUSQL {
     
     
     
-    private static String update(Nodo nodo){
+    private static String update(Nodo update){
         String response = null;
         
+        Nodo idTable = update.getHijo(0);
+        Nodo lcol = update.getHijo(1);
+        Nodo lexp = update.getHijo(2);
+        Nodo cond = update.hijos.size() == 4 ? update.getHijo(3) : null;
+        Nodo rows = new Nodo("RowsFile");
+        Nodo row;
         
+        ArrayList<Nodo> tablas = new ArrayList<>();
+        tablas.add(Archivos.bbdd.getAstRows(Server.actualDB, idTable.valor));
+        ArrayList<HashMap<String, Simbolo>> tablaTemporal = construirTablaTemp(tablas);
+        
+        HashMap<String, String> columnas = new HashMap<>();
+        for(int i = 0; i < lcol.hijos.size(); i++){
+            Nodo col = lcol.getHijo(i);
+            String val = EjecucionSSL.ejecutarExpresion(lexp.getHijo(i)).valor;
+            columnas.put(idTable.valor + "." + col.valor, val);
+        }
+        
+        if(cond != null){
+            
+            for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
+                
+                if(EjecucionSSL.ejecutarExpresion(cond).valor.equals("true")){
+                    for(String colName: filaTemporal.keySet()){
+                        if(columnas.containsKey(colName)){
+                            filaTemporal.get(colName).valor = columnas.get(colName);
+                        }
+                    }
+                }
+            }
+            
+        }else{
+            for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
+                
+                for(String colName: filaTemporal.keySet()){
+                    if(columnas.containsKey(colName)){
+                        filaTemporal.get(colName).valor = columnas.get(colName);
+                    }
+                }
+
+            }
+        }
+        
+
+        for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
+            row = new Nodo("row");
+            for(String colName : filaTemporal.keySet()){
+                Nodo cn = new Nodo(colName);
+                cn.agregarHijo(new Nodo("CAD", filaTemporal.get(colName).valor));
+                row.agregarHijo(cn);
+            }
+            rows.agregarHijo(row);
+        }
+        
+        Archivos.bbdd.setAstRows(Server.actualDB, idTable.valor, rows);
         
         return response;
     }
     
-    private static String delete(Nodo nodo){
+    private static String delete(Nodo delete){
         String response = null;
+        
+        Nodo idTable = delete.getHijo(0);
+        Nodo cond = delete.hijos.size() == 2 ? delete.getHijo(1) : null;
+        Nodo rows = new Nodo("RowsFile");
+        Nodo row;
+        
+        ArrayList<Nodo> tablas = new ArrayList<>();
+        tablas.add(Archivos.bbdd.getAstRows(Server.actualDB, idTable.valor));
+        ArrayList<HashMap<String, Simbolo>> tablaTemporal = construirTablaTemp(tablas);
+        
+        if(cond != null){
+            
+            ArrayList<Integer> indices = new ArrayList<>();
+            
+            for(int i = 0; i < tablaTemporal.size(); i++){
+                
+                HashMap<String, Simbolo> filaTemporal = tablaTemporal.get(i);              
+                if(EjecucionSSL.ejecutarExpresion(cond).valor.equals("true")){
+                    indices.add(i);
+                }
+            }
+            
+            for(int i : indices)
+                tablaTemporal.remove(i);
+        }else{
+            tablaTemporal.clear();
+        }
+        
+        for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
+            row = new Nodo("row");
+            for(String colName : filaTemporal.keySet()){
+                Nodo cn = new Nodo(colName);
+                cn.agregarHijo(new Nodo("CAD", filaTemporal.get(colName).valor));
+                row.agregarHijo(cn);
+            }
+            rows.agregarHijo(row);
+        }
+        
+        Archivos.bbdd.setAstRows(Server.actualDB, idTable.valor, rows);
         
         return response;
     }
     
-    private static ArrayList<HashMap<String, Simbolo>> construirTablaTemp(Nodo lid){
+    private static ArrayList<HashMap<String, Simbolo>> construirTablaTemp(ArrayList<Nodo> tablas){
         
         
         
         return null;
     }
+
+    private static String backup_usqldump(Nodo nodo) {
+
+        Nodo idDB = nodo.getHijo(0);
+        Nodo idFile = nodo.getHijo(1);
+        String fileName = Archivos.bbddDir + idDB.valor + "/" + idFile.valor + ".udmp";
+        String backup = Archivos.bbdd.getBackUpUsqlDump(idDB.valor);
+        
+        Archivos.escribirArchivo(fileName, backup);
+        
+        
+        
+        return backup;
+    }
+    
+    
 }
