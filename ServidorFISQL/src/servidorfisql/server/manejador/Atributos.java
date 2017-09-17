@@ -1,7 +1,6 @@
 package servidorfisql.server.manejador;
 
 import java.util.HashMap;
-import servidorfisql.gui.Consola;
 import servidorfisql.interpretes.Nodo;
 
 /**
@@ -9,7 +8,7 @@ import servidorfisql.interpretes.Nodo;
  * @author jorge
  */
 public class Atributos {
-    private final HashMap<String, Atributo> atributos;
+    public final HashMap<String, Atributo> atributos;
     
     public Atributos(){
         this.atributos = new HashMap<>();
@@ -52,7 +51,6 @@ public class Atributos {
         Atributo atr = new Atributo(tipoAtr, idAtr);
         
         this.atributos.put(idAtr, atr);
-        Consola.writeln("Creado el atributo [ " + tipoAtr + " " + idAtr + " ]");
     }
 
     void eliminarAtributo(String idAtr) {
@@ -66,23 +64,23 @@ public class Atributos {
 }
 
 
-class Atributo{
-    String tipoAtributo;
-    String idAtributo;
-    
-    public Atributo(String tipo, String id){
-        this.tipoAtributo = tipo;
-        this.idAtributo = id;
-    }
-    
-    public String getXml(){
-        String xml;
-        
-        xml = "            <atribute>\n"
-            + "                <type>" + this.tipoAtributo + "</type>\n"
-            + "                <name>" + this.idAtributo + "</name>\n"    
-            + "            </atribute>\n";
-        
-        return xml;
-    }
-}
+//class Atributo{
+//    String tipoAtributo;
+//    String idAtributo;
+//    
+//    public Atributo(String tipo, String id){
+//        this.tipoAtributo = tipo;
+//        this.idAtributo = id;
+//    }
+//    
+//    public String getXml(){
+//        String xml;
+//        
+//        xml = "            <atribute>\n"
+//            + "                <type>" + this.tipoAtributo + "</type>\n"
+//            + "                <name>" + this.idAtributo + "</name>\n"    
+//            + "            </atribute>\n";
+//        
+//        return xml;
+//    }
+//}

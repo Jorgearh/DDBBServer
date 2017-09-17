@@ -17,18 +17,20 @@ public class SemanticoSSL {
     private static int codigo;
     private static String cadUsql;
     private static String idMetodo;
+    private static String tipoMetodo;
     
     public static final ArrayList<String> erroresSSL = new ArrayList<>();
     
     private static Stack<Boolean> display;
     
-    public static void analizarMetodo(Nodo metodo, int cod, String cad){
+    public static void analizarMetodo(Nodo metodo, int cod, String cad, String tipoMet){
         codigo = cod;
         cadUsql = cad;
         erroresSSL.clear();
         display = new Stack<>();
         
         idMetodo = metodo.getHijo(0).valor;
+        tipoMetodo = tipoMet;
         Nodo lpar = metodo.getHijo(1);
         Nodo lsent = metodo.getHijo(2);
         
@@ -63,7 +65,6 @@ public class SemanticoSSL {
     }
     
     private static void llenarTS(Nodo lpar, Nodo lsent){
-        String response;
         
         //Parametros
         for(Nodo atr : lpar.hijos){
@@ -81,7 +82,7 @@ public class SemanticoSSL {
         Nodo lsent;
 
         switch (sent.token) {
-            case "PAR":
+            case "ARG":
                 {
                     String tipo = sent.getHijo(0).valor;
                     Nodo id = sent.getHijo(1);
@@ -107,7 +108,7 @@ public class SemanticoSSL {
                     Nodo tipo = sent.getHijo(1);
                     for(Nodo id : lvar.hijos){
                         
-                        Variable var = new Variable(tipo.valor, id.valor);
+                        Variable var = new Variable(EjecucionSSL.ejecutar.getTipo(tipo.valor), id.valor);
                         if(TS.containsKey(id.valor)){
                             response = Error.lenguaje(
                                     codigo,
@@ -189,7 +190,7 @@ public class SemanticoSSL {
                 Nodo dec = sent.getHijo(0);
                 lsent = sent.getHijo(3);
                 
-                if(dec.getHijo(1).valor.equals("INTEGER")){
+                if(dec.getHijo(1).valor.equals("integer")){
                     evaluarSentencias(dec);
                     for(Nodo s : lsent.hijos)
                         evaluarSentencias(s);
@@ -276,10 +277,10 @@ public class SemanticoSSL {
         switch(sent.token){
             case "DEC":
                 if(sent.hijos.size() == 3){
-                    tipo = sent.getHijo(1).valor;
+                    tipo = EjecucionSSL.ejecutar.getTipo(sent.getHijo(1).valor);
                     tipoResult = evaluarExpresion(sent.getHijo(2));
                     
-                    if(!tipo.equals(tipoResult)){
+                    if(!casteoAsignacion(tipo, tipoResult)){
                         response = Error.lenguaje(
                                             codigo, 
                                             "USQL", 
@@ -350,7 +351,7 @@ public class SemanticoSSL {
                     }
                 }
                 
-                if(!tipo.equals(tipoResult)){
+                if(!casteoAsignacion(tipo, tipoResult)){
                     response = Error.lenguaje(
                                         codigo, 
                                         "USQL", 
@@ -433,22 +434,22 @@ public class SemanticoSSL {
                 }
                 break;
             case "RETURN":
-                String tipoMet = Archivos.bbdd.getTipoMetodo(Server.actualDB, idMetodo);
-                if(!tipoMet.equals("VOID")){
+                //String tipoMet = Archivos.bbdd.getTipoMetodo(Server.actualDB, idMetodo);
+                if(!tipoMetodo.equals("VOID")){
                     
                     tipoResult = evaluarExpresion(sent.getHijo(0));
-                    if(tipoMet.equals(tipoResult)){
-                        
-                    }else{
+                    if(!tipoMetodo.equals(tipoResult)){
                         response = Error.lenguaje(
-                            codigo, 
-                            "USQL", 
-                            cadUsql, 
-                            "Semantico", 
-                            sent.row, 
-                            sent.col, 
-                            "Tipos de funcion y de retorno incompatibles");
+                                codigo,
+                                "USQL",
+                                cadUsql,
+                                "Semantico",
+                                sent.row,
+                                sent.col,
+                                "Tipos de funcion [" + tipoMetodo +"] y de retorno [" + tipoResult + "] incompatibles");
                         erroresSSL.add(response);
+                    }else{
+                        
                     }                
                 }else{
                     response = Error.lenguaje(
@@ -468,7 +469,7 @@ public class SemanticoSSL {
                 cond = sent.getHijo(0);
                 lsent = sent.getHijo(1);
                 
-                if(evaluarExpresion(cond).equals("BOOL")){
+                if(evaluarExpresion(cond).equals("bool")){
                     for(Nodo s : lsent.hijos){
                         analisisSemantico(s);
                     }
@@ -535,7 +536,7 @@ public class SemanticoSSL {
                 cond = sent.getHijo(1);
                 lsent = sent.getHijo(3);
                 
-                if(evaluarExpresion(cond).equals("BOOL")){
+                if(evaluarExpresion(cond).equals("bool")){
                     for(Nodo s : lsent.hijos){
                         analisisSemantico(s);
                     }                    
@@ -556,7 +557,7 @@ public class SemanticoSSL {
                 cond = sent.getHijo(0);
                 lsent = sent.getHijo(1);
                 
-                if(evaluarExpresion(cond).equals("BOOL")){
+                if(evaluarExpresion(cond).equals("bool")){
                     for(Nodo s : lsent.hijos){
                         analisisSemantico(s);
                     }                    
@@ -637,23 +638,23 @@ public class SemanticoSSL {
                 tipoResult = compararTiposExp(izq, null, "AR", exp);
                 break;
                 
-            case "BOOL":
-                tipoResult = "BOOL";
+            case "bool":
+                tipoResult = "bool";
                 break;
             case "ENT":
-                tipoResult = "INTEGER";
+                tipoResult = "integer";
                 break;
             case "DOB":
-                tipoResult = "DOUBLE";
+                tipoResult = "double";
                 break;
             case "CAD":
-                tipoResult = "TEXT";
+                tipoResult = "text";
                 break;
             case "FECHA":
-                tipoResult = "DATE";
+                tipoResult = "date";
                 break;
             case "FECHAHORA":
-                tipoResult = "DATETIME";
+                tipoResult = "datetime";
                 break;
                 
             case "VAR":
@@ -764,15 +765,15 @@ public class SemanticoSSL {
                 break;
                 
             case "GET_DATE":
-                tipoResult = "DATE";
+                tipoResult = "date";
                 break;
                 
             case "GET_DATE_TIME":
-                tipoResult = "DATETIME";
+                tipoResult = "datetime";
                 break;
                 
             case "CONTAR":
-                tipoResult = "INTEGER";
+                tipoResult = "integer";
                 break;
                 
             case "CALL":
@@ -886,8 +887,8 @@ public class SemanticoSSL {
         switch(clase){
             case "COND":
                 if(op.token.equals("!")){
-                    if(izq.equals("BOOL"))
-                        tipo = "BOOL";
+                    if(izq.equals("bool"))
+                        tipo = "bool";
                     else{
                         response = Error.lenguaje(
                                 codigo, 
@@ -901,8 +902,8 @@ public class SemanticoSSL {
                         erroresSSL.add(response);
                     }
                 }else{
-                    if(izq.equals("BOOL") && der.equals("BOOL"))
-                        tipo = "BOOL";
+                    if(izq.equals("bool") && der.equals("bool"))
+                        tipo = "bool";
                     else{
                         response = Error.lenguaje(
                                 codigo, 
@@ -919,23 +920,54 @@ public class SemanticoSSL {
                 break;
                 
             case "REL":
-                if(izq.equals(der)){
-                    if(izq.equals("BOOL")){
-                        response = Error.lenguaje(
-                                codigo, 
-                                "USQL", 
-                                cadUsql, 
-                                "Semantico", 
-                                op.row, 
-                                op.col, 
-                                "Tipos incompatibles en operacion relacional " + op.token + ". "
-                                + "Los tipos de datos no pueden ser BOOL");
-                        erroresSSL.add(response);
-                    }else{
-                        tipo = "BOOL";
-                    }
-                }else{
-                    response = Error.lenguaje(
+//                if(izq.equals(der)){
+//                    if(izq.equals("bool")){
+//                        response = Error.lenguaje(
+//                                codigo, 
+//                                "USQL", 
+//                                cadUsql, 
+//                                "Semantico", 
+//                                op.row, 
+//                                op.col, 
+//                                "Tipos incompatibles en operacion relacional " + op.token + ". "
+//                                + "Los tipos de datos no pueden ser BOOL");
+//                        erroresSSL.add(response);
+//                    }else{
+//                        tipo = "bool";
+//                    }
+//                }else{
+//                    response = Error.lenguaje(
+//                                codigo, 
+//                                "USQL", 
+//                                cadUsql, 
+//                                "Semantico", 
+//                                op.row, 
+//                                op.col, 
+//                                "Tipos incompatibles en operacion relacional " + op.token + ". "
+//                                + "Los tipos deben ser iguales.");
+//                        erroresSSL.add(response);
+//                }
+                switch(op.token){
+                    case "==":
+                        if(izq.equals(der))
+                            tipo = "bool";
+                        break;
+                        
+                    case "!=":
+                        if(izq.equals(der))
+                            tipo = "bool";
+                        break;
+                        
+                    case "<":
+                    case ">":
+                    case "<=":
+                    case ">=":
+                        if((izq.equals("integer") || izq.equals("double") || izq.equals("bool")) && (der.equals("integer") || der.equals("double") || der.equals("bool"))){
+                            tipo = "bool";
+                        }if((izq.equals("date")|| izq.equals("datetime")|| izq.equals("text")) && (der.equals("date")||der.equals("datetime")|| der.equals("text"))){
+                            tipo = "bool";
+                        }else {
+                            response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
                                 cadUsql, 
@@ -944,23 +976,111 @@ public class SemanticoSSL {
                                 op.col, 
                                 "Tipos incompatibles en operacion relacional " + op.token + ". "
                                 + "Los tipos deben ser iguales.");
-                        erroresSSL.add(response);
+                                erroresSSL.add(response);
+                        }
+                        break;
+
                 }
                 break;
                 
             case "AR":
                 switch(op.token){
                     case "+":
-                        if(izq.equals("TEXT") || der.equals("TEXT"))
-                            tipo = "TEXT";
-                        else if(izq.equals("BOOL"))
-                            tipo = der;
-                        else if(izq.equals("INTEGER")){
-                            if(der.equals("BOOL") || der.equals("INTEGER"))
-                                tipo = "INTEGER";
-                            else
-                                tipo = der;
-                        }else{
+//                        if(izq.equals("text") || der.equals("text"))
+//                            tipo = "text";
+//                        else if(izq.equals("bool"))
+//                            tipo = der;
+//                        else if(izq.equals("integer")){
+//                            if(der.equals("bool") || der.equals("integer"))
+//                                tipo = "integer";
+//                            else
+//                                tipo = der;
+//                        }else if(izq.equals("double")){
+//                            
+//                        }else{
+//                            response = Error.lenguaje(
+//                                codigo, 
+//                                "USQL", 
+//                                cadUsql, 
+//                                "Semantico", 
+//                                op.row, 
+//                                op.col, 
+//                                "Tipos incompatibles en operacion " + op.token + ". "
+//                                + "Los tipos no pueden ser DATE/DATETIME");
+//                            erroresSSL.add(response);
+//                        }
+                        
+                        if ((izq.equals("integer")) && der.equals("double")) {
+                            tipo = "double";
+                        } else if (izq.equals("integer") && der.equals("integer")) {
+                            tipo = "integer";
+                        }else if (izq.equals("integer") && der.equals("bool")) {
+                            tipo = "integer";
+                        }else if (izq.equals("integer") && der.equals("text")) {
+                            tipo = "text";
+                        }else if (izq.equals("double") && der.equals("integer")) {
+                            tipo = "double";
+                        }  else if (izq.equals("double") && der.equals("bool")) {
+                            tipo = "double";
+                        } else if (izq.equals("double") && der.equals("double")) {
+                            tipo = "double";
+                        } else if (izq.equals("double") && der.equals("text")) {
+                            tipo = "text";
+                        }else if (izq.equals("bool") && der.equals("double")) {
+                            tipo = "double";
+                        }else if (izq.equals("bool") && der.equals("integer")) {
+                            tipo = "integer";
+                        }  else if (izq.equals("bool") && der.equals("bool")) {
+                            tipo = "bool";
+                        } else if (izq.equals("bool") && der.equals("text")) {
+                            tipo = "text";
+
+                        }else if ((izq.equals("datetime") || izq.equals("date"))  && der.equals("text")) {
+                            tipo = "text";
+
+                        }  else if (izq.equals("text") && ( der.equals("text") ||der.equals("integer") ||der.equals("double") ||der.equals("bool") )) {
+                            tipo = "text";
+
+                        } else {
+                            response = Error.lenguaje(
+                                codigo, 
+                                "USQL", 
+                                cadUsql, 
+                                "Semantico", 
+                                op.row, 
+                                op.col, 
+                                "Tipos incompatibles en operacion " + op.token);
+                            erroresSSL.add(response);
+                        }
+                        
+                        break;
+                        
+                    case "-":
+                        if ((izq.equals("integer")) && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("integer") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        }else if (izq.equals("integer") && der.equals("bool")) {
+                            tipo = "integer";
+
+                        }else if (izq.equals("double") && der.equals("integer")) {
+                            tipo = "double";
+
+                        }  else if (izq.equals("double") && der.equals("bool")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("double") && der.equals("double")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("bool") && der.equals("double")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("bool") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        } else {
                             response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
@@ -972,16 +1092,51 @@ public class SemanticoSSL {
                                 + "Los tipos no pueden ser DATE/DATETIME");
                             erroresSSL.add(response);
                         }
+
                         break;
-                        
-                    case "-":
                     case "^":
-                        if((izq.equals("INTEGER") || der.equals("DOUBLE") && (der.equals("INTEGER") || der.equals("DOUBLE")))){
-                            if(izq.equals("DOUBLE") || der.equals("DOUBLE"))
-                                tipo = "DOUBLE";
-                            else
-                                tipo = "INTEGER";
-                        }else{
+//                        if((izq.equals("integer") || der.equals("double") && (der.equals("integer") || der.equals("double")))){
+//                            if(izq.equals("double") || der.equals("double"))
+//                                tipo = "double";
+//                            else
+//                                tipo = "integer";
+//                        }else{
+//                            response = Error.lenguaje(
+//                                codigo, 
+//                                "USQL", 
+//                                cadUsql, 
+//                                "Semantico", 
+//                                op.row, 
+//                                op.col, 
+//                                "Tipos incompatibles en operacion " + op.token + ". "
+//                                + "Los tipos solo pueden ser INTEGER/DOUBLE");
+//                            erroresSSL.add(response);
+//                        }
+                        if ((izq.equals("integer")) && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("integer") && der.equals("integer")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("integer") && der.equals("bool")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("double") && der.equals("integer")) {
+                            tipo = "double";
+
+                        }  else if (izq.equals("double") && der.equals("bool")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("double") && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("bool") && der.equals("double")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("bool") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        } else {
                             response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
@@ -989,25 +1144,63 @@ public class SemanticoSSL {
                                 "Semantico", 
                                 op.row, 
                                 op.col, 
-                                "Tipos incompatibles en operacion " + op.token + ". "
-                                + "Los tipos solo pueden ser INTEGER/DOUBLE");
+                                "Tipos incompatibles en operacion " + op.token);
                             erroresSSL.add(response);
                         }
+
                         break;
                         
                     case "*":
-                        if(!izq.equals("DATE") && !izq.equals("DATETIME") && !izq.equals("TEXT") &&
-                                !der.equals("DATE") && der.equals("DATETIME") && !der.equals("TEXT")){
-                            
-                            if(izq.equals("BOOL"))
-                                tipo = der;
-                            else{
-                                if(izq.equals("DOUBLE") || der.equals("DOUBLE"))
-                                    tipo = "DOUBLE";
-                                else
-                                    tipo = "INTEGER";
-                            }
-                        }else{
+//                        if(!izq.equals("date") && !izq.equals("datetime") && !izq.equals("text") &&
+//                                !der.equals("date") && der.equals("datetime") && !der.equals("text")){
+//                            
+//                            if(izq.equals("bool"))
+//                                tipo = der;
+//                            else{
+//                                if(izq.equals("double") || der.equals("double"))
+//                                    tipo = "double";
+//                                else
+//                                    tipo = "integer";
+//                            }
+//                        }else{
+//                            response = Error.lenguaje(
+//                                codigo, 
+//                                "USQL", 
+//                                cadUsql, 
+//                                "Semantico", 
+//                                op.row, 
+//                                op.col, 
+//                                "Tipos incompatibles en operacion " + op.token + ". "
+//                                + "Los tipos solo pueden ser INTEGER/DOUBLE/BOOL");
+//                            erroresSSL.add(response);
+//                        }
+                        if ((izq.equals("integer")) && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("integer") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        }else if (izq.equals("integer") && der.equals("bool")) {
+                            tipo = "integer";
+
+                        }else if (izq.equals("double") && der.equals("integer")) {
+                            tipo = "double";
+
+                        }  else if (izq.equals("double") && der.equals("bool")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("double") && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("bool") && der.equals("double")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("bool") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        }  else if (izq.equals("bool") && der.equals("bool")) {
+                            tipo = "bool";
+                        } else {
                             response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
@@ -1015,16 +1208,51 @@ public class SemanticoSSL {
                                 "Semantico", 
                                 op.row, 
                                 op.col, 
-                                "Tipos incompatibles en operacion " + op.token + ". "
-                                + "Los tipos solo pueden ser INTEGER/DOUBLE/BOOL");
+                                "Tipos incompatibles en operacion " + op.token);
                             erroresSSL.add(response);
                         }
                         break;
                         
                     case "/":
-                        if((izq.equals("INTEGER") || der.equals("DOUBLE") && (der.equals("INTEGER") || der.equals("DOUBLE")))){
-                            tipo = "DOUBLE";
-                        }else{
+//                        if((izq.equals("integer") || der.equals("double") && (der.equals("integer") || der.equals("double")))){
+//                            tipo = "double";
+//                        }else{
+//                            response = Error.lenguaje(
+//                                codigo, 
+//                                "USQL", 
+//                                cadUsql, 
+//                                "Semantico", 
+//                                op.row, 
+//                                op.col, 
+//                                "Tipos incompatibles en operacion " + op.token + ". "
+//                                + "Los tipos solo pueden ser INTEGER/DOUBLE");
+//                            erroresSSL.add(response);
+//                        }
+                        if ((izq.equals("integer")) && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("integer") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        }else if (izq.equals("integer") && der.equals("bool")) {
+                            tipo = "integer";
+
+                        }else if (izq.equals("double") && der.equals("integer")) {
+                            tipo = "double";
+
+                        }  else if (izq.equals("double") && der.equals("bool")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("double") && der.equals("double")) {
+                            tipo = "double";
+
+                        } else if (izq.equals("bool") && der.equals("double")) {
+                            tipo = "double";
+
+                        }else if (izq.equals("bool") && der.equals("integer")) {
+                            tipo = "integer";
+
+                        } else {
                             response = Error.lenguaje(
                                 codigo, 
                                 "USQL", 
@@ -1032,14 +1260,13 @@ public class SemanticoSSL {
                                 "Semantico", 
                                 op.row, 
                                 op.col, 
-                                "Tipos incompatibles en operacion " + op.token + ". "
-                                + "Los tipos solo pueden ser INTEGER/DOUBLE");
+                                "Tipos incompatibles en operacion " + op.token);
                             erroresSSL.add(response);
                         }
                         break;
                         
                     case "_":
-                        if(izq.equals("INTEGER") || izq.equals("DOUBLE"))
+                        if(izq.equals("integer") || izq.equals("double"))
                             tipo = izq;
                         else{
                             response = Error.lenguaje(
@@ -1061,6 +1288,33 @@ public class SemanticoSSL {
         
         
         return tipo;
+    }
+    
+    private static boolean casteoAsignacion(String izq, String der) {
+
+        if (izq.equals("integer") && der.equals("integer")) {
+            return true;
+        } else if (izq.equals("integer") && der.equals("bool")) {
+            return true;
+        } else if (izq.equals("integer") && der.equals("double")) {
+            return true;
+        } else if (izq.equals("bool") && der.equals("bool")) {
+            return true;
+        } else if (izq.equals("bool") && (der.equals("integer") || der.equals("text"))) {
+            return true;
+        } else if (izq.equals("double") && der.equals("integer")) {
+            return true;
+        } else if (izq.equals("double") && der.equals("double")) {
+            return true;
+        } else if (izq.equals("datetime") && der.equals("datetime")) {
+            return true;
+        } else if (izq.equals("date") && der.equals("date")) {
+            return true;
+        }else if(izq.equals("text")){
+            return true;
+        } else {
+            return false;
+        }
     }
     
     

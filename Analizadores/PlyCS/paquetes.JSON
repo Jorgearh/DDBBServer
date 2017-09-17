@@ -20,22 +20,6 @@
 	"paquete": "logout"
 ]
 
-//ERROR
-//
-
-[
-	"paquete": "error",
-	"validar": 1500,
-	"tipo": "lenguaje",
-	"datos": [
-		"lenguaje": "usql",
-		"instruccion": "SELECCIONAR * DE tabla;",
-		"tipo": "semantico",
-		"columna": 15,
-		"fila": 5
-	]
-
-]
 
 //USQL
 
@@ -127,7 +111,7 @@
 [
 	"paquete": "exito",
 	"validar": 1500,
-	"sentencia": ""
+	"sentencia": "crear tabla tabla1;"
 ]
 
 
@@ -148,3 +132,39 @@
 		]
 	]
 ]
+
+//EXITO SELECT REPORTE
+[
+	"paquete": "usql",
+	"validar": 1500,
+	"datos": [
+		<tabla>
+			<tr>
+				<th>usuario</th>
+				<th>nombre</th>
+				<th>telefono</th>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>Paco</td>
+				<td>12345678</td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td>Pedro</td>
+				<td>12345678</td>
+			</tr>
+		</tabla>
+	]
+]
+
+[
+	"paquete": "backup",
+	"validar": 1500,
+	"archivo": "backup.udmp"
+]
+
+/*
+	Se debe enviar y recibir una lista de paquetes es decir, uno o mas objetos json:
+	[paquete] [paquete] [paquete] [paquete]
+*/

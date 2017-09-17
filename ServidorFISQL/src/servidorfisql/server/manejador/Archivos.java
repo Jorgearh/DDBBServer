@@ -146,7 +146,10 @@ public class Archivos implements Constantes{
         } catch (ParseException ex) {
             Consola.writeln("ERROR EN EL PARSEO DE ARCHIVO XML {" + new File(path).getName() + "}");
             Consola.writeln(ex.getLocalizedMessage());
-        } catch (IOException ex) {
+        } catch(servidorfisql.interpretes.Analizadores.XML.analizador.TokenMgrError ex){
+            Consola.writeln("ERROR LEXICO EN EL PARSEO DE ARCHIVO XML {" + new File(path).getName() + "}");
+            Consola.writeln(ex.getLocalizedMessage());
+        }catch (IOException ex) {
             Consola.writeln(ex.getLocalizedMessage());
         }
         

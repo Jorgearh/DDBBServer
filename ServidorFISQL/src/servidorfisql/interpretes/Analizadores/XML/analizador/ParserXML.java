@@ -202,11 +202,11 @@
       break;
     case fecha:
       t = jj_consume_token(fecha);
-                                 nodo = new Nodo("DATE", t.image, t.beginLine, t.beginColumn);
+                                 nodo = new Nodo("DATE", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);
       break;
     case fecha_hora:
       t = jj_consume_token(fecha_hora);
-                                 nodo = new Nodo("DATETIME", t.image, t.beginLine, t.beginColumn);
+                                 nodo = new Nodo("DATETIME", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);
       break;
     case simbolo:
       t = jj_consume_token(simbolo);

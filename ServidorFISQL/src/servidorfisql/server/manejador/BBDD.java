@@ -346,6 +346,10 @@ public class BBDD {
         return this.bbdd.get(idDB).getBackUpUsqlDump();
     }
 
+    public Objeto getObjeto(String actualDB, String idObj) {
+        return this.bbdd.get(actualDB).objetos.getObjeto(idObj);
+    }
+
 
 
 }

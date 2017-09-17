@@ -180,6 +180,10 @@ public class Objetos {
         
         return objs;
     }
+
+    Objeto getObjeto(String idObj) {
+       return this.objetos.get(idObj);
+    }
     
     
 }

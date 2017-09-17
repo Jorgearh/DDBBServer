@@ -61,7 +61,10 @@ TOKEN :
 
 TOKEN:
 {
-	<simbolo: "->" | "." | "=" | "+" | "-" | "*" | "/" | "^" | "_" | "==" | "!=" | ">" | ">=" | "<" | "<=" | "||" | "&&" | "!" | "++" | "--" >
+	<simbolo: 	 "->" | "." | "="
+				| "+" | "-" | "*" | "/" | "^" | "_"
+				| "==" | "!=" | ">" | ">=" | "<" | "<="
+				| "||" | "&&" | "!" | "++" | "--" >
 }
 
 TOKEN :
@@ -69,9 +72,9 @@ TOKEN :
 	 <entero: (("-")? <digito>)+ >
 	|<doble: (("-")? <digito>)+ "." (<digito>)+>
 	|<booleano: "true" | "false" >
-	|<fecha: <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>>
-	|<fecha_hora: <fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>>
-	|<cadena: ("\"") (~[])* ("\"") >
+	|<fecha: "\'" <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito> "\'">
+	|<fecha_hora: "\'" <digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito> " " <digito><digito> ":" <digito><digito> ":" <digito><digito> "\'">
+	|<cadena: ("\"") (~["\""])* ("\"") >
 	|<codigo: ("\'") (~["\'"])* ("\'") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<path: (<letra> ":")? "/" (<id> "/")* <id> ("." <id>)?>
@@ -165,8 +168,8 @@ Nodo VALUE() :
 	|t = <entero>		{nodo = new Nodo("ENT", t.image, t.beginLine, t.beginColumn);}
 	|t = <doble>		{nodo = new Nodo("DOB", t.image, t.beginLine, t.beginColumn);}
 	|t = <booleano>		{nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);}
-	|t = <fecha>		{nodo = new Nodo("DATE", t.image, t.beginLine, t.beginColumn);}
-	|t = <fecha_hora>	{nodo = new Nodo("DATETIME", t.image, t.beginLine, t.beginColumn);}
+	|t = <fecha>		{nodo = new Nodo("DATE", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
+	|t = <fecha_hora>	{nodo = new Nodo("DATETIME", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
 	|t = <simbolo>		{nodo = new Nodo("SMB", t.image, t.beginLine, t.beginColumn);}
 	)
 	{return nodo;}

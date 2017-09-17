@@ -55,10 +55,13 @@ public class ClientHandler extends Thread{
                 if(response != null){
                     
                     response = response.replace("\n", "!@#").replace("\r", "$%^").replace("\t", "&*(");
-                    System.out.println("Respondiendo...: \n" + response);
+                    System.out.println("Respondiendo...: \n" + response.replace("!@#", "\n"));
                     
-                    if(!response.equals("LOGOUT"))
+                    if(!response.equals("LOGOUT")){
                         responderCliente(pwClient, response);
+                    }else{
+                        Server.actualDB = "";
+                    }
                 }else{
                     Consola.writeln("interpretePlyCS retorno null a request " + request);
                 }
@@ -83,7 +86,7 @@ public class ClientHandler extends Thread{
             try{
                 
                 cliente.println(respuesta);
-                //Consola.writeln("Respondiendo a [" + user + "]" + respuesta + "\n");
+                Consola.writeln("Respondiendo a [" + user + "] =>> " + respuesta + "\n");
                 cliente.flush();
                 
             }catch(Exception ex){

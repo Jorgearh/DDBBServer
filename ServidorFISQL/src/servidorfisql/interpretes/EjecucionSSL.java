@@ -6,9 +6,9 @@ package servidorfisql.interpretes;
  */
 public class EjecucionSSL {
     
-    public static Simbolo ejecutarExpresion(Nodo exp){
-        return new Simbolo();
-    }
+    public static Execute ejecutar = new Execute();
+    
+
     
     
 }

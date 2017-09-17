@@ -228,12 +228,13 @@ public class SemanticoUSQL {
                 if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
                     
                     Nodo idProc = create.getHijo(0);
+                    String tipoMet = create.hijos.size() == 4 ? EjecucionSSL.ejecutar.getTipo(create.getHijo(3).valor) : "VOID";
 
                     //No existe un metodo con el mismo nombre en la base de datos
                     if(!Archivos.bbdd.existeMetodo(Server.actualDB, idProc.valor)){
 
                         //Analisis semantico SSL(parametros, variables locales, comprobacion de tipos)
-                        SemanticoSSL.analizarMetodo(create, codigo, cadUsql);
+                        SemanticoSSL.analizarMetodo(create, codigo, cadUsql, tipoMet);
                         
                         if(!SemanticoSSL.erroresSSL.isEmpty()){
                             return SemanticoSSL.cadenaErrores();
@@ -779,7 +780,8 @@ public class SemanticoUSQL {
                                     idTable.col, 
                                     "Error insertando valores en columnas autoincrementables "
                                         + "de tabla [" + idTable.valor + "]");
-                        }else{
+                        }else if(cantExps != cantCols){
+                            
                             response = Error.lenguaje(
                                     codigo, 
                                     "USQL", 
@@ -932,7 +934,7 @@ public class SemanticoUSQL {
                             Nodo exp = lexp.getHijo(x);
 
                             //Existe la columna
-                            if(!Archivos.bbdd.existeColumna(Server.actualDB, idTabla.valor, idCol.valor)){
+                            if(Archivos.bbdd.existeColumna(Server.actualDB, idTabla.valor, idCol.valor)){
 
                                 String tipoCol = Archivos.bbdd.getTipoColumna(Server.actualDB, idTabla.valor, idCol.valor);
                                 String tipoExp = SemanticoSSL.evaluarExpresion(exp);
@@ -1344,7 +1346,7 @@ public class SemanticoUSQL {
 
                     case "AUTOINC":
 
-                        if(!tipoCol.valor.equals("INTEGER")){
+                        if(!tipoCol.valor.equals("integer")){
                             response = 
                                     Error.lenguaje(
                                             codigo, 

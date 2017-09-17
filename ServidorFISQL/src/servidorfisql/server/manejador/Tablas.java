@@ -184,7 +184,9 @@ public class Tablas {
     }
 
     Nodo getAstRows(String idTable) {
-        return this.tablas.get(idTable).records;
+        Nodo rowFile = this.tablas.get(idTable).records;
+        rowFile.setValor(idTable);
+        return rowFile;
     }
 
     void setAstRows(String idTable, Nodo rows) {
@@ -225,7 +227,7 @@ class Tabla{
         
         this.columns = new Columnas();
         for(Nodo col : lcampo.hijos){
-            String tipo = col.getHijo(0).valor;
+            String tipo = EjecucionSSL.ejecutar.getTipo(col.getHijo(0).valor);
             String idCol = col.getHijo(1).valor;
             Nodo lcomp = col.getHijo(2);
             
@@ -328,12 +330,12 @@ class Tabla{
             if(!col.autoinc){
                 exp = pila.pop();
                 
-                simb = EjecucionSSL.ejecutarExpresion(exp);
-                val = simb.valor;
+                simb = EjecucionSSL.ejecutar.Expre(exp);
+                val = simb.value;
                 tipoCol = col.tipoColumna;
-                tipoExp = simb.tipo;
+                tipoExp = simb.tipe;
                 
-                if(tipoCol.equals(tipoExp)){
+                if(tipoCol.equals(tipoExp) || (tipoExp.equals("text") && val.equals("NULO") && col.nulo)){
                     if(col.pk){
                         if(existeElValor(val, col.idColumna) || val.equals("NULO"))
                             return "Asignacion invalida en clave primaria.";
@@ -364,7 +366,7 @@ class Tabla{
                     row.agregarHijo(reg);
                     
                 }else{
-                    return "Tipos incompatibles";
+                    return "Tipos incompatibles columna [" + tipoCol + "] y expresion [" + tipoExp + "]";
                 }
             }else{
                 String newVal = getLastValue(col.idColumna) + 1 + "";
@@ -411,12 +413,12 @@ class Tabla{
                 if(!col.autoinc){
                     exp = pilaExp.pop();
 
-                    simb = EjecucionSSL.ejecutarExpresion(exp);
-                    val = simb.valor;
+                    simb = EjecucionSSL.ejecutar.Expre(exp);
+                    val = simb.value;
                     tipoCol = col.tipoColumna;
-                    tipoExp = simb.tipo;
+                    tipoExp = simb.tipe;
                 
-                    if(tipoCol.equals(tipoExp)){
+                    if(tipoCol.equals(tipoExp) || (tipoExp.equals("text") && val.equals("NULO") && col.nulo)){
                         if(col.pk){
                             if(existeElValor(val, col.idColumna) || val.equals("NULO"))
                                 return "Asignacion invalida en clave primaria.";
@@ -447,7 +449,7 @@ class Tabla{
                         row.agregarHijo(reg);
 
                     }else{
-                        return "Tipos incompatibles";
+                        return "Tipos incompatibles columna [" + tipoCol + "] y expresion [" + tipoExp + "]";
                     }
                 }else{
                     return "La columna es autoincremental.";

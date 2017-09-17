@@ -168,9 +168,9 @@ TOKEN :
 	 <entero: (("-")? <digito>)+ >
 	|<doble: (("-")? <digito>)+ "." (<digito>)+>
 	|<booleano: "true" | "false" >
-	|<val_null: "NULL">
+	//|<val_null: "NULO">
 	|<fecha: "\'"<digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito>"\'">
-	|<fecha_hora: "\'"<fecha> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>"\'">
+	|<fecha_hora: "\'"<digito><digito>"-"<digito><digito>"-"<digito><digito><digito><digito> " " <digito><digito> ":" <digito><digito> ":" <digito><digito>"\'">
 	|<cadena: ("\"") (~["\""])* ("\"") >
 	|<id: <letra> (<letra> | <digito> | "_")* >
 	|<var: "@"<id>>
@@ -825,19 +825,22 @@ Nodo SSL_PARA() :
 	Nodo dec, cond, exp, lsent;
 }
 {
-	<para> "(" 	dec = SSL_DEC_VAR_OBJ() ";"
+	<para> 	"("	dec = SSL_DEC_VAR_OBJ() ";"
 				cond = COND() ";"
 				(
 					 "++"	{exp =new Nodo("++");}
 					|"--" 	{exp =new Nodo("--");}
 				)
 				{exp.agregarHijo(new Nodo("VAR", dec.getHijo(0).getHijo(0).valor));}
-			")" lsent = CUERPO()
-								{
-									nodo.agregarHijos(dec, cond);
-									nodo.agregarHijo(exp);
-									return nodo;
-								}
+			")"
+	lsent = CUERPO()
+	{
+		nodo.agregarHijo(dec);
+		nodo.agregarHijo(cond);
+		nodo.agregarHijo(exp);
+		nodo.agregarHijo(lsent);
+		return nodo;
+	}
 }
 
 /**************************************************************************************************************
@@ -1112,24 +1115,24 @@ Nodo AR_B() :
 									 nodo = aux;
 								 }
 	| "(" nodo = EXPRESION() ")"
-	|LOOKAHEAD(2) nodo = VAL()
-	|t = <var> {nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);} 	[
-														"." t = <id>	{
+	|/*LOOKAHEAD(2) */nodo = VAL()
+	/*|LOOKAHEAD(2) t = <var> {nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);}
+														/*"." t = <id>	{
 																			aux = new Nodo(".");
 																			aux.agregarHijo(nodo);
 																			aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 																			nodo = aux;
 																		}
-		 											]
+																		*/
 	|LOOKAHEAD(3) nodo = CALL()
-	|t = <id>	{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}[
+	|t = <id>	{nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);}
 														"." t = <id>	{
 																			aux = new Nodo("->");
 																			aux.agregarHijo(nodo);
 																			aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
 																			nodo = aux;
 																		}
-		 											]
+
 
 	|nodo = SSL_FECHA()
 	|nodo = SSL_FECHA_HORA()
@@ -1258,11 +1261,19 @@ Nodo VAL() :
 	 t = <entero>		{nodo = new Nodo("ENT", t.image, t.beginLine, t.beginColumn);}
 	|t = <doble>		{nodo = new Nodo("DOB", t.image, t.beginLine, t.beginColumn);}
 	|t = <booleano>		{nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);}
-	|t = <val_null>		{nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);}
-	|t = <cadena>		{nodo = new Nodo("CAD", t.image, t.beginLine, t.beginColumn);}
-	|t = <fecha>		{nodo = new Nodo("FECHA", t.image, t.beginLine, t.beginColumn);}
-	|t = <fecha_hora>	{nodo = new Nodo("FECHAHORA", t.image, t.beginLine, t.beginColumn);}
+	|t = <nulo>			{nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);}
+	|t = <cadena>		{nodo = new Nodo("CAD", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
+	|t = <fecha>		{nodo = new Nodo("FECHA", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
+	|t = <fecha_hora>	{nodo = new Nodo("FECHAHORA", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);}
 	|t = <var>			{nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);}
+	[
+	"." t = <id>	{
+						Nodo aux = new Nodo(".");
+						aux.agregarHijo(nodo);
+						aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
+						nodo = aux;
+					}
+	]
 	)
 	{return nodo;}
 }
@@ -1305,12 +1316,12 @@ Nodo USQL_OBJECT_NAME() : {Nodo nodo = new Nodo("USQL_OBJECT");}
 Nodo TIPO_DATO() : {Nodo nodo = new Nodo("TIPO");}
 {
 	(
-	 <_text> 		{nodo.setValor("TEXT");}
-	|<_integer>		{nodo.setValor("INTEGER");}
-	|<_double>		{nodo.setValor("DOUBLE");}
-	|<_bool>		{nodo.setValor("BOOL");}
-	|<_date>		{nodo.setValor("DATE");}
-	|<_datetime>	{nodo.setValor("DATETIME");}
+	 <_text> 		{nodo.setValor("text");}
+	|<_integer>		{nodo.setValor("integer");}
+	|<_double>		{nodo.setValor("double");}
+	|<_bool>		{nodo.setValor("bool");}
+	|<_date>		{nodo.setValor("date");}
+	|<_datetime>	{nodo.setValor("datetime");}
 	)
 	{return nodo;}
 }

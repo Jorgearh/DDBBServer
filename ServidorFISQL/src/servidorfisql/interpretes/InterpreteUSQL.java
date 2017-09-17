@@ -119,7 +119,7 @@ public class InterpreteUSQL implements Constantes{
                 break;
             default:
                 if(Server.actualDB != null && !Server.actualDB.equals("") && !Server.actualDB.isEmpty()){
-                    Archivos.bbdd.registrarBackup(Server.actualDB, cadUsql);
+                    Archivos.bbdd.registrarBackup(Server.actualDB, cadUsql.replace("\"", "~"));
                 }
                 break;
         }

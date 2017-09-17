@@ -49,7 +49,7 @@
         break label_1;
       }
       sent = SENTENCIA_USQL();
-      jj_consume_token(97);
+      jj_consume_token(96);
                                          nodo.agregarHijo(sent);
     }
                                                                          {if (true) return nodo;}
@@ -189,9 +189,9 @@
         Token t;
     jj_consume_token(tabla);
     t = jj_consume_token(id);
-    jj_consume_token(98);
+    jj_consume_token(97);
     lcampo = L_DEC_CAMPO();
-    jj_consume_token(99);
+    jj_consume_token(98);
                 nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), lcampo);
                 {if (true) return nodo;}
     throw new Error("Missing return statement in function");
@@ -205,14 +205,14 @@
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
         jj_la1[4] = jj_gen;
         break label_2;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       campo = DEC_CAMPO();
                                    nodo.agregarHijo(campo);
     }
@@ -262,9 +262,9 @@
         Token t;
     jj_consume_token(objeto);
     t = jj_consume_token(id);
-    jj_consume_token(98);
+    jj_consume_token(97);
     latr = L_DEC_ATR();
-    jj_consume_token(99);
+    jj_consume_token(98);
                 nodo.agregarHijos(new Nodo("ID", t.image, t.beginLine, t.beginColumn), latr);
                 {if (true) return nodo;}
     throw new Error("Missing return statement in function");
@@ -278,14 +278,14 @@
     label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
         jj_la1[6] = jj_gen;
         break label_4;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       atr = DEC_ATRIBUTO();
                                          nodo.agregarHijo(atr);
     }
@@ -314,7 +314,7 @@
         Token t;
     jj_consume_token(procedimiento);
     t = jj_consume_token(id);
-    jj_consume_token(98);
+    jj_consume_token(97);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case _text:
     case _integer:
@@ -329,7 +329,7 @@
       jj_la1[7] = jj_gen;
       ;
     }
-    jj_consume_token(99);
+    jj_consume_token(98);
     linstr = CUERPO();
                 nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
                 nodo.agregarHijos(larg, linstr);
@@ -347,7 +347,7 @@
         Token t;
     jj_consume_token(funcion);
     t = jj_consume_token(id);
-    jj_consume_token(98);
+    jj_consume_token(97);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case _text:
     case _integer:
@@ -362,7 +362,7 @@
       jj_la1[8] = jj_gen;
       ;
     }
-    jj_consume_token(99);
+    jj_consume_token(98);
     tipo = TIPO_DATO_EXT();
     linstr = CUERPO();
                 nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
@@ -382,7 +382,7 @@
     u = jj_consume_token(id);
     jj_consume_token(colocar);
     jj_consume_token(password);
-    jj_consume_token(101);
+    jj_consume_token(100);
     p = jj_consume_token(cadena);
                 nodo.agregarHijo(new Nodo("ID", u.image, u.beginLine, u.beginColumn));
                 nodo.agregarHijo(new Nodo("CAD", p.image.substring(1, p.image.length() - 1), p.beginLine, p.beginColumn));
@@ -445,9 +445,9 @@
   final public Nodo ADD() throws ParseException {
               Nodo nodo;
     jj_consume_token(agregar);
-    jj_consume_token(98);
+    jj_consume_token(97);
     nodo = L_DEC_CAMPO();
-    jj_consume_token(99);
+    jj_consume_token(98);
                                                 {if (true) return nodo;}
     throw new Error("Missing return statement in function");
   }
@@ -498,7 +498,7 @@
     u = jj_consume_token(id);
     jj_consume_token(cambiar);
     jj_consume_token(password);
-    jj_consume_token(101);
+    jj_consume_token(100);
     p = jj_consume_token(cadena);
                 nodo.agregarHijo(new Nodo("ID", u.image, u.beginLine, u.beginColumn));
                 nodo.agregarHijo(new Nodo("CAD", p.image.substring(1, p.image.length() - 1), p.beginLine, p.beginColumn));
@@ -548,16 +548,16 @@
     jj_consume_token(tabla);
     t = jj_consume_token(id);
     if (jj_2_1(2)) {
-      jj_consume_token(98);
+      jj_consume_token(97);
       lid = L_ID();
-      jj_consume_token(99);
+      jj_consume_token(98);
       jj_consume_token(valores);
     } else {
       ;
     }
-    jj_consume_token(98);
+    jj_consume_token(97);
     lexp = L_EXP();
-    jj_consume_token(99);
+    jj_consume_token(98);
                 nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
                 nodo.agregarHijos(lid, lexp);
                 {if (true) return nodo;}
@@ -574,13 +574,13 @@
     jj_consume_token(actualizar);
     jj_consume_token(tabla);
     t = jj_consume_token(id);
-    jj_consume_token(98);
+    jj_consume_token(97);
     lid = L_ID();
-    jj_consume_token(99);
-    jj_consume_token(valores);
     jj_consume_token(98);
+    jj_consume_token(valores);
+    jj_consume_token(97);
     lexp = L_EXP();
-    jj_consume_token(99);
+    jj_consume_token(98);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case donde:
       jj_consume_token(donde);
@@ -725,9 +725,9 @@
     jj_consume_token(otorgar);
     jj_consume_token(permisos);
     u = jj_consume_token(id);
-    jj_consume_token(100);
+    jj_consume_token(99);
     db = jj_consume_token(id);
-    jj_consume_token(102);
+    jj_consume_token(101);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case id:
       o = jj_consume_token(id);
@@ -759,9 +759,9 @@
     jj_consume_token(denegar);
     jj_consume_token(permisos);
     u = jj_consume_token(id);
-    jj_consume_token(100);
+    jj_consume_token(99);
     db = jj_consume_token(id);
-    jj_consume_token(102);
+    jj_consume_token(101);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case id:
       o = jj_consume_token(id);
@@ -793,11 +793,11 @@
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case declarar:
       nodo = SSL_DEC_VAR_OBJ();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case var:
       nodo = SSL_ASG_VAR_ATR();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case si:
       nodo = SSL_SI();
@@ -813,19 +813,19 @@
       break;
     case detener:
       nodo = SSL_DETENER();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case retorno:
       nodo = SSL_RETORNO();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case imprimir:
       nodo = SSL_IMPRIMIR();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case id:
       nodo = CALL();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     default:
       jj_la1[22] = jj_gen;
@@ -854,8 +854,8 @@
     case _datetime:
       tipo = TIPO_DATO();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 101:
-        jj_consume_token(101);
+      case 100:
+        jj_consume_token(100);
         exp = EXPRESION();
         break;
       default:
@@ -889,8 +889,8 @@
     v = jj_consume_token(var);
                          obj = new Nodo("VAR", v.image.substring(1, v.image.length()), v.beginLine, v.beginColumn);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 102:
-      jj_consume_token(102);
+    case 101:
+      jj_consume_token(101);
       ident = jj_consume_token(id);
                                                                                                                                                         obj = new Nodo(".");
                                                                                                                                                         obj.agregarHijo(new Nodo("VAR", v.image.substring(1, v.image.length()), v.beginLine, v.beginColumn));
@@ -900,7 +900,7 @@
       jj_la1[25] = jj_gen;
       ;
     }
-    jj_consume_token(101);
+    jj_consume_token(100);
     exp = EXPRESION();
                                                                 nodo.agregarHijos(obj, exp);
                                                                 {if (true) return nodo;}
@@ -938,22 +938,22 @@
         Nodo nodo = new Nodo("SWITCH");
         Nodo exp, lcase, def = null;
     jj_consume_token(selecciona);
-    jj_consume_token(98);
+    jj_consume_token(97);
     exp = EXPRESION();
-    jj_consume_token(99);
-    jj_consume_token(103);
+    jj_consume_token(98);
+    jj_consume_token(102);
     lcase = L_CASO();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case defecto:
       jj_consume_token(defecto);
-      jj_consume_token(104);
+      jj_consume_token(103);
       def = INSTRUCCIONES();
       break;
     default:
       jj_la1[27] = jj_gen;
       ;
     }
-    jj_consume_token(105);
+    jj_consume_token(104);
                 if(def != null) lcase.agregarHijo(def);
                 nodo.agregarHijos(exp, lcase);
                 {if (true) return nodo;}
@@ -987,7 +987,7 @@
         Nodo val, lsent;
     jj_consume_token(caso);
     val = VAL_CASO();
-    jj_consume_token(104);
+    jj_consume_token(103);
     lsent = INSTRUCCIONES();
                 nodo.agregarHijos(val, lsent);
                 {if (true) return nodo;}
@@ -1024,18 +1024,18 @@
         Nodo nodo = new Nodo("FOR");
         Nodo dec, cond, exp, lsent;
     jj_consume_token(para);
-    jj_consume_token(98);
+    jj_consume_token(97);
     dec = SSL_DEC_VAR_OBJ();
-    jj_consume_token(97);
+    jj_consume_token(96);
     cond = COND();
-    jj_consume_token(97);
+    jj_consume_token(96);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 106:
-      jj_consume_token(106);
+    case 105:
+      jj_consume_token(105);
                                                  exp =new Nodo("++");
       break;
-    case 107:
-      jj_consume_token(107);
+    case 106:
+      jj_consume_token(106);
                                                  exp =new Nodo("--");
       break;
     default:
@@ -1044,11 +1044,13 @@
       throw new ParseException();
     }
                                  exp.agregarHijo(new Nodo("VAR", dec.getHijo(0).getHijo(0).valor));
-    jj_consume_token(99);
+    jj_consume_token(98);
     lsent = CUERPO();
-                                                                        nodo.agregarHijos(dec, cond);
-                                                                        nodo.agregarHijo(exp);
-                                                                        {if (true) return nodo;}
+                nodo.agregarHijo(dec);
+                nodo.agregarHijo(cond);
+                nodo.agregarHijo(exp);
+                nodo.agregarHijo(lsent);
+                {if (true) return nodo;}
     throw new Error("Missing return statement in function");
   }
 
@@ -1095,9 +1097,9 @@
         Nodo nodo = new Nodo("PRINT");
         Nodo exp;
     jj_consume_token(imprimir);
-    jj_consume_token(98);
+    jj_consume_token(97);
     exp = EXPRESION();
-    jj_consume_token(99);
+    jj_consume_token(98);
                 nodo.agregarHijo(exp);
                 {if (true) return nodo;}
     throw new Error("Missing return statement in function");
@@ -1108,8 +1110,8 @@
 **************************************************************************************************************/
   final public Nodo SSL_FECHA() throws ParseException {
     jj_consume_token(get_fecha);
+    jj_consume_token(97);
     jj_consume_token(98);
-    jj_consume_token(99);
                              {if (true) return new Nodo("GET_DATE");}
     throw new Error("Missing return statement in function");
   }
@@ -1119,8 +1121,8 @@
 **************************************************************************************************************/
   final public Nodo SSL_FECHA_HORA() throws ParseException {
     jj_consume_token(get_fecha_hora);
+    jj_consume_token(97);
     jj_consume_token(98);
-    jj_consume_token(99);
                                   {if (true) return new Nodo("GET_DATE_TIME");}
     throw new Error("Missing return statement in function");
   }
@@ -1132,11 +1134,11 @@
         Nodo nodo = new Nodo("CONTAR");
         Nodo select;
     jj_consume_token(contar);
-    jj_consume_token(98);
-    jj_consume_token(108);
+    jj_consume_token(97);
+    jj_consume_token(107);
     select = DML_SELECT();
-    jj_consume_token(109);
-    jj_consume_token(99);
+    jj_consume_token(108);
+    jj_consume_token(98);
                 nodo.agregarHijo(select);
                 {if (true) return nodo;}
     throw new Error("Missing return statement in function");
@@ -1427,72 +1429,50 @@
                                                                          aux.agregarHijo(nodo);
                                                                          nodo = aux;
       break;
-    case 98:
-      jj_consume_token(98);
+    case 97:
+      jj_consume_token(97);
       nodo = EXPRESION();
-      jj_consume_token(99);
+      jj_consume_token(98);
+      break;
+    case nulo:
+    case entero:
+    case doble:
+    case booleano:
+    case fecha:
+    case fecha_hora:
+    case cadena:
+    case var:
+      /*LOOKAHEAD(2) */nodo = VAL();
       break;
     default:
-      jj_la1[45] = jj_gen;
-      if (jj_2_2(2)) {
-        nodo = VAL();
+      jj_la1[43] = jj_gen;
+      if (jj_2_2(3)) {
+        nodo = CALL();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case var:
-          t = jj_consume_token(var);
-                    nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case 102:
-            jj_consume_token(102);
-            t = jj_consume_token(id);
-                                                                                                                                                        aux = new Nodo(".");
-                                                                                                                                                        aux.agregarHijo(nodo);
-                                                                                                                                                        aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
-                                                                                                                                                        nodo = aux;
-            break;
-          default:
-            jj_la1[43] = jj_gen;
-            ;
-          }
-          break;
-        default:
-          jj_la1[46] = jj_gen;
-          if (jj_2_3(3)) {
-            nodo = CALL();
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case id:
-              t = jj_consume_token(id);
+        case id:
+          t = jj_consume_token(id);
                          nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);
-              switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-              case 102:
-                jj_consume_token(102);
-                t = jj_consume_token(id);
+          jj_consume_token(101);
+          t = jj_consume_token(id);
                                                                                                                                                         aux = new Nodo("->");
                                                                                                                                                         aux.agregarHijo(nodo);
                                                                                                                                                         aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
                                                                                                                                                         nodo = aux;
-                break;
-              default:
-                jj_la1[44] = jj_gen;
-                ;
-              }
-              break;
-            case get_fecha:
-              nodo = SSL_FECHA();
-              break;
-            case get_fecha_hora:
-              nodo = SSL_FECHA_HORA();
-              break;
-            case contar:
-              nodo = SSL_CONTAR();
-              break;
-            default:
-              jj_la1[47] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
-            }
-          }
+          break;
+        case get_fecha:
+          nodo = SSL_FECHA();
+          break;
+        case get_fecha_hora:
+          nodo = SSL_FECHA_HORA();
+          break;
+        case contar:
+          nodo = SSL_CONTAR();
+          break;
+        default:
+          jj_la1[44] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
         }
       }
     }
@@ -1505,8 +1485,9 @@
         Nodo lexp = null;
         Token t;
     t = jj_consume_token(id);
-    jj_consume_token(98);
+    jj_consume_token(97);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case nulo:
     case contar:
     case get_fecha:
     case get_fecha_hora:
@@ -1515,20 +1496,19 @@
     case entero:
     case doble:
     case booleano:
-    case val_null:
     case fecha:
     case fecha_hora:
     case cadena:
     case id:
     case var:
-    case 98:
+    case 97:
       lexp = L_EXP();
       break;
     default:
-      jj_la1[48] = jj_gen;
+      jj_la1[45] = jj_gen;
       ;
     }
-    jj_consume_token(99);
+    jj_consume_token(98);
                 nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
                 if(lexp != null) nodo.agregarHijo(lexp);
                 {if (true) return nodo;}
@@ -1540,18 +1520,18 @@
 **************************************************************************************************************/
   final public Nodo CONDICION() throws ParseException {
                     Nodo nodo;
-    jj_consume_token(98);
+    jj_consume_token(97);
     nodo = COND();
-    jj_consume_token(99);
+    jj_consume_token(98);
                                {if (true) return nodo;}
     throw new Error("Missing return statement in function");
   }
 
   final public Nodo CUERPO() throws ParseException {
                  Nodo nodo;
-    jj_consume_token(103);
+    jj_consume_token(102);
     nodo = INSTRUCCIONES();
-    jj_consume_token(105);
+    jj_consume_token(104);
                                         {if (true) return nodo;}
     throw new Error("Missing return statement in function");
   }
@@ -1583,7 +1563,7 @@
         ;
         break;
       default:
-        jj_la1[49] = jj_gen;
+        jj_la1[46] = jj_gen;
         break label_12;
       }
       instr = INSTRUCCION();
@@ -1601,14 +1581,14 @@
     case actualizar:
     case borrar:
       nodo = DML();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case crear:
     case usar:
     case alterar:
     case eliminar:
       nodo = DDL();
-      jj_consume_token(97);
+      jj_consume_token(96);
       break;
     case declarar:
     case si:
@@ -1623,7 +1603,7 @@
       nodo = SSL();
       break;
     default:
-      jj_la1[50] = jj_gen;
+      jj_la1[47] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1639,14 +1619,14 @@
     label_13:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
-        jj_la1[51] = jj_gen;
+        jj_la1[48] = jj_gen;
         break label_13;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       arg = ARG();
                                  nodo.agregarHijo(arg);
     }
@@ -1674,14 +1654,14 @@
     label_14:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
-        jj_la1[52] = jj_gen;
+        jj_la1[49] = jj_gen;
         break label_14;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       t = jj_consume_token(id);
                          nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
     }
@@ -1698,14 +1678,14 @@
     label_15:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
-        jj_la1[53] = jj_gen;
+        jj_la1[50] = jj_gen;
         break label_15;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       hijo = ACC_COL_TABLA();
                                          nodo.agregarHijo(hijo);
     }
@@ -1719,7 +1699,7 @@
         Nodo hijo;
     t = jj_consume_token(id);
                          nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
-    jj_consume_token(102);
+    jj_consume_token(101);
     t = jj_consume_token(id);
                          nodo.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn)); {if (true) return nodo;}
     throw new Error("Missing return statement in function");
@@ -1742,28 +1722,41 @@
       t = jj_consume_token(booleano);
                                  nodo = new Nodo("BOOL", t.image, t.beginLine, t.beginColumn);
       break;
-    case val_null:
-      t = jj_consume_token(val_null);
-                                 nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);
+    case nulo:
+      t = jj_consume_token(nulo);
+                                         nodo = new Nodo("NULO", t.image, t.beginLine, t.beginColumn);
       break;
     case cadena:
       t = jj_consume_token(cadena);
-                                 nodo = new Nodo("CAD", t.image, t.beginLine, t.beginColumn);
+                                 nodo = new Nodo("CAD", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);
       break;
     case fecha:
       t = jj_consume_token(fecha);
-                                 nodo = new Nodo("FECHA", t.image, t.beginLine, t.beginColumn);
+                                 nodo = new Nodo("FECHA", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);
       break;
     case fecha_hora:
       t = jj_consume_token(fecha_hora);
-                                 nodo = new Nodo("FECHAHORA", t.image, t.beginLine, t.beginColumn);
+                                 nodo = new Nodo("FECHAHORA", t.image.substring(1, t.image.length() - 1), t.beginLine, t.beginColumn);
       break;
     case var:
       t = jj_consume_token(var);
                                          nodo = new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 101:
+        jj_consume_token(101);
+        t = jj_consume_token(id);
+                                                Nodo aux = new Nodo(".");
+                                                aux.agregarHijo(nodo);
+                                                aux.agregarHijo(new Nodo("ID", t.image, t.beginLine, t.beginColumn));
+                                                nodo = aux;
+        break;
+      default:
+        jj_la1[51] = jj_gen;
+        ;
+      }
       break;
     default:
-      jj_la1[54] = jj_gen;
+      jj_la1[52] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1779,14 +1772,14 @@
     label_16:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
-        jj_la1[55] = jj_gen;
+        jj_la1[53] = jj_gen;
         break label_16;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       t = jj_consume_token(var);
                          nodo.agregarHijo(new Nodo("VAR", t.image.substring(1, t.image.length()), t.beginLine, t.beginColumn));
     }
@@ -1802,14 +1795,14 @@
     label_17:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 100:
+      case 99:
         ;
         break;
       default:
-        jj_la1[56] = jj_gen;
+        jj_la1[54] = jj_gen;
         break label_17;
       }
-      jj_consume_token(100);
+      jj_consume_token(99);
       e = EXPRESION();
                                  nodo.agregarHijo(e);
     }
@@ -1846,7 +1839,7 @@
                                  nodo.setValor("FUNC");
       break;
     default:
-      jj_la1[57] = jj_gen;
+      jj_la1[55] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1859,30 +1852,30 @@
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case _text:
       jj_consume_token(_text);
-                                 nodo.setValor("TEXT");
+                                 nodo.setValor("text");
       break;
     case _integer:
       jj_consume_token(_integer);
-                                 nodo.setValor("INTEGER");
+                                 nodo.setValor("integer");
       break;
     case _double:
       jj_consume_token(_double);
-                                 nodo.setValor("DOUBLE");
+                                 nodo.setValor("double");
       break;
     case _bool:
       jj_consume_token(_bool);
-                                 nodo.setValor("BOOL");
+                                 nodo.setValor("bool");
       break;
     case _date:
       jj_consume_token(_date);
-                                 nodo.setValor("DATE");
+                                 nodo.setValor("date");
       break;
     case _datetime:
       jj_consume_token(_datetime);
-                         nodo.setValor("DATETIME");
+                         nodo.setValor("datetime");
       break;
     default:
-      jj_la1[58] = jj_gen;
+      jj_la1[56] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1907,7 +1900,7 @@
                          nodo = new Nodo("ID", t.image, t.beginLine, t.beginColumn);
       break;
     default:
-      jj_la1[59] = jj_gen;
+      jj_la1[57] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1948,7 +1941,7 @@
                                                                          nodo = new Nodo("UNIQUE");
       break;
     default:
-      jj_la1[60] = jj_gen;
+      jj_la1[58] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1979,7 +1972,7 @@
       t = jj_consume_token(mayorigual);
       break;
     default:
-      jj_la1[61] = jj_gen;
+      jj_la1[59] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2001,82 +1994,34 @@
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_2_3(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_3(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(2, xla); }
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_scan_token(id)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_44() {
-    if (jj_scan_token(id)) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_35() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(86)) jj_scanpos = xsp;
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_43() {
-    if (jj_scan_token(var)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_19()) return true;
-    return false;
-  }
-
   private boolean jj_3R_42() {
-    if (jj_scan_token(98)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_50() {
     if (jj_scan_token(contar)) return true;
     return false;
   }
 
-  private boolean jj_3R_41() {
+  private boolean jj_3R_32() {
     if (jj_scan_token(menos)) return true;
     return false;
   }
 
-  private boolean jj_3R_40() {
+  private boolean jj_3R_31() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_41()) {
+    if (jj_3R_32()) {
     jj_scanpos = xsp;
-    if (jj_3R_42()) {
+    if (jj_3R_33()) {
+    jj_scanpos = xsp;
+    if (jj_3R_34()) {
     jj_scanpos = xsp;
     if (jj_3_2()) {
     jj_scanpos = xsp;
-    if (jj_3R_43()) {
+    if (jj_3R_35()) {
     jj_scanpos = xsp;
-    if (jj_3_3()) {
+    if (jj_3R_36()) {
     jj_scanpos = xsp;
-    if (jj_3R_44()) {
+    if (jj_3R_37()) {
     jj_scanpos = xsp;
-    if (jj_3R_45()) {
-    jj_scanpos = xsp;
-    if (jj_3R_46()) {
-    jj_scanpos = xsp;
-    if (jj_3R_47()) return true;
-    }
+    if (jj_3R_38()) return true;
     }
     }
     }
@@ -2087,13 +2032,38 @@
     return false;
   }
 
-  private boolean jj_3R_34() {
-    if (jj_3R_35()) return true;
+  private boolean jj_3R_21() {
+    if (jj_3R_22()) return true;
     return false;
   }
 
-  private boolean jj_3R_49() {
+  private boolean jj_3R_25() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_41() {
     if (jj_scan_token(get_fecha_hora)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    if (jj_scan_token(id)) return true;
+    if (jj_scan_token(97)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_20()) jj_scanpos = xsp;
+    if (jj_scan_token(98)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_28() {
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_40() {
+    if (jj_scan_token(get_fecha)) return true;
     return false;
   }
 
@@ -2102,73 +2072,107 @@
     return false;
   }
 
-  private boolean jj_3R_48() {
-    if (jj_scan_token(get_fecha)) return true;
+  private boolean jj_3R_38() {
+    if (jj_3R_42()) return true;
     return false;
   }
 
-  private boolean jj_3R_39() {
+  private boolean jj_3R_37() {
+    if (jj_3R_41()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_36() {
     if (jj_3R_40()) return true;
     return false;
   }
 
-  private boolean jj_3R_33() {
-    if (jj_3R_34()) return true;
+  private boolean jj_3R_24() {
+    if (jj_3R_25()) return true;
     return false;
   }
 
-  private boolean jj_3R_32() {
-    if (jj_3R_33()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_28() {
-    if (jj_scan_token(var)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_27() {
-    if (jj_scan_token(fecha_hora)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_31() {
-    if (jj_3R_32()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_26() {
-    if (jj_scan_token(fecha)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_25() {
-    if (jj_scan_token(cadena)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_38() {
+  private boolean jj_3R_34() {
     if (jj_3R_39()) return true;
     return false;
   }
 
-  private boolean jj_3R_24() {
-    if (jj_scan_token(val_null)) return true;
+  private boolean jj_3R_27() {
+    if (jj_3R_28()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_scan_token(id)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_scan_token(97)) return true;
+    if (jj_3R_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_35() {
+    if (jj_scan_token(id)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_50() {
+    if (jj_scan_token(var)) return true;
     return false;
   }
 
   private boolean jj_3R_23() {
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_19()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_49() {
+    if (jj_scan_token(fecha_hora)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_48() {
+    if (jj_scan_token(fecha)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_47() {
+    if (jj_scan_token(cadena)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_46() {
+    if (jj_scan_token(nulo)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_45() {
     if (jj_scan_token(booleano)) return true;
     return false;
   }
 
   private boolean jj_3R_22() {
+    if (jj_3R_23()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_44() {
     if (jj_scan_token(doble)) return true;
     return false;
   }
 
-  private boolean jj_3R_21() {
-    if (jj_scan_token(entero)) return true;
+  private boolean jj_3R_26() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(86)) jj_scanpos = xsp;
+    if (jj_3R_27()) return true;
     return false;
   }
 
@@ -2177,24 +2181,29 @@
     return false;
   }
 
-  private boolean jj_3R_19() {
+  private boolean jj_3R_43() {
+    if (jj_scan_token(entero)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_39() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_21()) {
+    if (jj_3R_43()) {
     jj_scanpos = xsp;
-    if (jj_3R_22()) {
+    if (jj_3R_44()) {
     jj_scanpos = xsp;
-    if (jj_3R_23()) {
+    if (jj_3R_45()) {
     jj_scanpos = xsp;
-    if (jj_3R_24()) {
+    if (jj_3R_46()) {
     jj_scanpos = xsp;
-    if (jj_3R_25()) {
+    if (jj_3R_47()) {
     jj_scanpos = xsp;
-    if (jj_3R_26()) {
+    if (jj_3R_48()) {
     jj_scanpos = xsp;
-    if (jj_3R_27()) {
+    if (jj_3R_49()) {
     jj_scanpos = xsp;
-    if (jj_3R_28()) return true;
+    if (jj_3R_50()) return true;
     }
     }
     }
@@ -2202,47 +2211,16 @@
     }
     }
     }
+    return false;
+  }
+
+  private boolean jj_3R_33() {
+    if (jj_scan_token(97)) return true;
     return false;
   }
 
   private boolean jj_3R_20() {
-    if (jj_scan_token(id)) return true;
-    if (jj_scan_token(98)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_29()) jj_scanpos = xsp;
-    if (jj_scan_token(99)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_37() {
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_47() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_scan_token(98)) return true;
-    if (jj_3R_18()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_46() {
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_45() {
-    if (jj_3R_48()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_36() {
-    if (jj_3R_37()) return true;
+    if (jj_3R_21()) return true;
     return false;
   }
 
@@ -2257,7 +2235,7 @@
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[62];
+  final private int[] jj_la1 = new int[60];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -2269,18 +2247,18 @@
       jj_la1_init_3();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x780000,0x780000,0x780000,0x1f800000,0x0,0xe0000000,0x0,0x7e000,0x7e000,0x13000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7e000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x780000,0x780000,0x0,0x0,0x0,0x0,0x0,0x0,0x1f800000,0x7e000,0x7e000,0xe0000000,0x0,};
+      jj_la1_0 = new int[] {0x780000,0x780000,0x780000,0x1f800000,0x0,0xe0000000,0x0,0x7e000,0x7e000,0x13000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7e000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x0,0x20000000,0x780000,0x780000,0x0,0x0,0x0,0x0,0x20000000,0x0,0x0,0x1f800000,0x7e000,0x7e000,0xe0000000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x1b00f00,0x1b00f00,0x0,0x0,0x0,0x7,0x0,0x0,0x0,0x0,0x60,0x60,0xf00,0x4000,0x4000,0x0,0xc0000,0x10000,0x4000,0x300000,0x0,0x0,0xd8000000,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x6000000,0x6000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xd8000f00,0xd8000f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x0,};
+      jj_la1_1 = new int[] {0x1b00f00,0x1b00f00,0x0,0x0,0x0,0x7,0x0,0x0,0x0,0x0,0x60,0x60,0xf00,0x4000,0x4000,0x0,0xc0000,0x10000,0x4000,0x300000,0x0,0x0,0xd8000000,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x6000000,0x6000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xd8000f00,0xd8000f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x0,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x40000040,0x40000040,0x0,0x0,0x0,0x0,0x0,0x40000000,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x40000800,0x0,0x0,0x0,0x0,0x40000800,0x40000800,0xc000005c,0x0,0x40000000,0x0,0x0,0x2,0x1,0x21800000,0x0,0x0,0x0,0x20000000,0x100000,0x200000,0x400000,0xfc000,0x600,0x600,0x1800,0x1800,0x2000,0x0,0x0,0x400,0x80000000,0x400001a0,0xffc005a0,0xc000005c,0xc000005c,0x0,0x0,0x0,0xbf800000,0x0,0x0,0x0,0x0,0x40000000,0x0,0xfc000,};
+      jj_la1_2 = new int[] {0x20000040,0x20000040,0x0,0x0,0x0,0x0,0x0,0x20000000,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x20000800,0x0,0x0,0x0,0x0,0x20000800,0x20000800,0x6000005c,0x0,0x20000000,0x0,0x0,0x2,0x1,0x11800000,0x0,0x0,0x0,0x10000000,0x100000,0x200000,0x400000,0xfc000,0x600,0x600,0x1800,0x1800,0x2000,0x5f800400,0x200001a0,0x7fc005a0,0x6000005c,0x6000005c,0x0,0x0,0x0,0x0,0x5f800000,0x0,0x0,0x0,0x0,0x20000000,0x0,0xfc000,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x10,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20,0x0,0x40,0x0,0x0,0x0,0x0,0xc00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x40,0x4,0x0,0x0,0x4,0x0,0x0,0x10,0x10,0x10,0x0,0x10,0x10,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x8,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x20,0x0,0x0,0x0,0x0,0x600,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,0x0,0x0,0x8,0x8,0x8,0x20,0x0,0x8,0x8,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[3];
+  final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -2295,7 +2273,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 62; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 60; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2310,7 +2288,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 62; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 60; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2321,7 +2299,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 62; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 60; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2332,7 +2310,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 62; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 60; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2342,7 +2320,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 62; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 60; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2352,7 +2330,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 62; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 60; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2467,12 +2445,12 @@
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[110];
+    boolean[] la1tokens = new boolean[109];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 62; i++) {
+    for (int i = 0; i < 60; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -2490,7 +2468,7 @@
         }
       }
     }
-    for (int i = 0; i < 110; i++) {
+    for (int i = 0; i < 109; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -2517,7 +2495,7 @@
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -2526,7 +2504,6 @@
           switch (i) {
             case 0: jj_3_1(); break;
             case 1: jj_3_2(); break;
-            case 2: jj_3_3(); break;
           }
         }
         p = p.next;

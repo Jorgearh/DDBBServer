@@ -14,6 +14,9 @@ public class Nodo {
     
     public int col;
     public int row;
+    
+    public String tipocase;
+    public String valcase;
 
     public Nodo() {
         this.token = "";

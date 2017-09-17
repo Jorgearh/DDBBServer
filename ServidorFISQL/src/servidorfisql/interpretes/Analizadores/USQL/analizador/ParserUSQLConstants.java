@@ -173,19 +173,17 @@ public interface ParserUSQLConstants {
   /** RegularExpression Id. */
   int booleano = 89;
   /** RegularExpression Id. */
-  int val_null = 90;
+  int fecha = 90;
   /** RegularExpression Id. */
-  int fecha = 91;
+  int fecha_hora = 91;
   /** RegularExpression Id. */
-  int fecha_hora = 92;
+  int cadena = 92;
   /** RegularExpression Id. */
-  int cadena = 93;
+  int id = 93;
   /** RegularExpression Id. */
-  int id = 94;
+  int var = 94;
   /** RegularExpression Id. */
-  int var = 95;
-  /** RegularExpression Id. */
-  int path = 96;
+  int path = 95;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -286,7 +284,6 @@ public interface ParserUSQLConstants {
     "<entero>",
     "<doble>",
     "<booleano>",
-    "\"NULL\"",
     "<fecha>",
     "<fecha_hora>",
     "<cadena>",

@@ -17,6 +17,10 @@ public class Columnas {
     }
     
     
+    /***
+     * A partir de un nodo xml
+     * @param columnas 
+     */
     public void cargarColumnas(Nodo columnas){
 //        for(Nodo c : columnas.hijos){
 //            Columna col = new Columna(c);
@@ -154,9 +158,13 @@ class Columna{
         this.nulo = true;
         this.tablaRef = this.columnaRef =  "";
         
-        setComplements(lcomp);
+        setComplementsUsql(lcomp);
     }
 
+    /***
+     * A partir de un nodo xml
+     * @param column 
+     */
     public Columna(Nodo column){
         Nodo lcomp;
         
@@ -169,11 +177,11 @@ class Columna{
         lcomp = column.getHijo(2);
         
         
-        setComplements(lcomp);
+        setComplementsXml(lcomp);
         
     }
     
-    private void setComplements(Nodo lcomp){
+    private void setComplementsUsql(Nodo lcomp){
         for(Nodo comp : lcomp.hijos){
             
             switch(comp.token){
@@ -188,6 +196,43 @@ class Columna{
                     this.tablaRef = comp.getHijo(0).valor;
                     this.columnaRef = comp.getHijo(1).valor;
                 break;
+                case "NULO":
+                    this.nulo = true;
+                break;
+                case "NO_NULO":
+                    this.nulo = false;
+                break;
+                case "UNIQUE":
+                    this.unique = true;
+                break;
+                case "AUTOINC":
+                    this.autoinc = true;
+                    this.nulo = false;
+                break;
+            }
+        }
+    }
+    
+    private void setComplementsXml(Nodo lcomp){
+        for(Nodo comp : lcomp.hijos){
+            
+            Nodo valComp = comp.getHijo(0);
+            
+            
+            if(valComp.token.equals("FK")){
+                this.fk = true;
+                this.nulo = false;
+                this.tablaRef = comp.getHijo(0).getHijo(0).getHijo(0).valor;
+                this.columnaRef = comp.getHijo(0).getHijo(1).getHijo(0).valor;
+                break;
+            }
+            
+            switch(valComp.valor){
+                case "PK":
+                    this.pk = true;
+                    this.nulo = false;
+                    this.unique = true;
+                    break;
                 case "NULO":
                     this.nulo = true;
                 break;
@@ -235,8 +280,8 @@ class Columna{
                  + "                        </complemento>\n";
         }
         
-        if(this.nulo) xml += "                        <complemento>NULL</complemento>\n";
-        else xml += "                        <complemento>NOT NULL</complemento>\n";
+        if(this.nulo) xml += "                        <complemento>NULO</complemento>\n";
+        else xml += "                        <complemento>NO_NULO</complemento>\n";
         
         if(this.unique) xml += "                        <complemento>UNIQUE</complemento>\n";
         if(this.autoinc) xml += "                        <complemento>AUTOINC</complemento>\n";

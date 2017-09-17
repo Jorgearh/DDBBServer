@@ -1,5 +1,6 @@
 package servidorfisql.server.manejador;
 
+import servidorfisql.interpretes.EjecucionSSL;
 import servidorfisql.interpretes.Nodo;
 import servidorfisql.server.Server;
 
@@ -8,9 +9,9 @@ import servidorfisql.server.Server;
  * @author jorge
  */
 public class Objeto {
-    Permisos permissions;
-    String idObjeto;
-    Atributos atributes;
+    public Permisos permissions;
+    public String idObjeto;
+    public Atributos atributes;
     
     
     /***
@@ -45,7 +46,7 @@ public class Objeto {
         
         for(Nodo atr : latr.hijos){
             String idAtr = atr.getHijo(1).valor;
-            String tipoAtr = atr.getHijo(0).valor;
+            String tipoAtr = EjecucionSSL.ejecutar.getTipo(atr.getHijo(0).valor);
             
             this.atributes.crearAtributo(idAtr, tipoAtr);
         }

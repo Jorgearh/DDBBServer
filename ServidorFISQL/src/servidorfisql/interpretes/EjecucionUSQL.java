@@ -52,7 +52,11 @@ public class EjecucionUSQL {
                     String idObj = usqlSent.getHijo(0).valor;
                     
                     Archivos.bbdd.crearObjeto(Server.actualDB, usqlSent); 
+                    Objeto objeto = Archivos.bbdd.getObjeto(Server.actualDB, idObj);
                     Consola.writeln("Objeto [" + idObj + "] creado exitosamente.\n");
+                    
+                    EjecucionSSL.ejecutar.addObjetounico(objeto);
+                    
                     break;
 
                 case "CREATE_USER":
@@ -248,10 +252,14 @@ public class EjecucionUSQL {
                     break;
                     
                  case "CALL":
+                    String idMetodo = usqlSent.getHijo(0).valor;
+                    EjecucionSSL.ejecutar.initExecute(idMetodo);
                     
                     break;
                     
                 case "PRINT":
+                    Nodo exp = usqlSent.getHijo(0);
+                    EjecucionSSL.ejecutar.executeCode(exp);
                     
                     break;
                     
@@ -285,6 +293,14 @@ public class EjecucionUSQL {
         //Construir tabla de simbolos
         HashMap<String, Objeto> objetos = Archivos.bbdd.getObjetos(idDB, Server.user);
         HashMap<String, Metodo> metodos = Archivos.bbdd.getMetodos(idDB, Server.user);
+        
+        //Limpiar tablas
+        EjecucionSSL.ejecutar.tablaGlobal.clear();
+        EjecucionSSL.ejecutar.tablitaObjetos.clear();
+        EjecucionSSL.ejecutar.tablaLocal.clear();
+        
+        EjecucionSSL.ejecutar.addObjetos(objetos);
+        EjecucionSSL.ejecutar.addVariables_Funciones(metodos);
         
         
         
@@ -342,26 +358,27 @@ public class EjecucionUSQL {
         if(where != null){
             
             Nodo cond = where.getHijo(0);
-            
             HashMap<String, String> filaResultado;
             
             for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
                 
-                if(EjecucionSSL.ejecutarExpresion(cond).valor.equals("true")){
+                EjecucionSSL.ejecutar.hashtemp = filaTemporal;
+                
+                if(EjecucionSSL.ejecutar.Expre(cond).value.equals("1")){
                    
                     filaResultado = new HashMap<>();
                     
                     if(lcol.token.equals("*")){
                 
                         for(String colName: filaTemporal.keySet()){
-                            filaResultado.put(colName, filaTemporal.get(colName).valor);
+                            filaResultado.put(colName, filaTemporal.get(colName).value);
                         }
                         tablaResultado.add(filaResultado);
                         
                     }else{
                         for(String colName: filaTemporal.keySet()){
                             if(columnasSeleccionables.contains(colName))
-                                filaResultado.put(colName, filaTemporal.get(colName).valor);
+                                filaResultado.put(colName, filaTemporal.get(colName).value);
                         }
                         tablaResultado.add(filaResultado);
                     }   
@@ -383,7 +400,7 @@ public class EjecucionUSQL {
                 filaResultado = new HashMap<>();
                 
                 for(String colName: filaTemporal.keySet()){
-                    filaResultado.put(colName, filaTemporal.get(colName).valor);
+                    filaResultado.put(colName, filaTemporal.get(colName).value);
                 }
                 tablaResultado.add(filaResultado);
             }
@@ -456,7 +473,7 @@ public class EjecucionUSQL {
         HashMap<String, String> columnas = new HashMap<>();
         for(int i = 0; i < lcol.hijos.size(); i++){
             Nodo col = lcol.getHijo(i);
-            String val = EjecucionSSL.ejecutarExpresion(lexp.getHijo(i)).valor;
+            String val = EjecucionSSL.ejecutar.Expre(lexp.getHijo(i)).value;
             columnas.put(idTable.valor + "." + col.valor, val);
         }
         
@@ -464,10 +481,11 @@ public class EjecucionUSQL {
             
             for(HashMap<String, Simbolo> filaTemporal : tablaTemporal){
                 
-                if(EjecucionSSL.ejecutarExpresion(cond).valor.equals("true")){
+                EjecucionSSL.ejecutar.hashtemp = filaTemporal;
+                if(EjecucionSSL.ejecutar.Expre(cond).value.equals("1")){
                     for(String colName: filaTemporal.keySet()){
                         if(columnas.containsKey(colName)){
-                            filaTemporal.get(colName).valor = columnas.get(colName);
+                            filaTemporal.get(colName).value = columnas.get(colName);
                         }
                     }
                 }
@@ -478,7 +496,7 @@ public class EjecucionUSQL {
                 
                 for(String colName: filaTemporal.keySet()){
                     if(columnas.containsKey(colName)){
-                        filaTemporal.get(colName).valor = columnas.get(colName);
+                        filaTemporal.get(colName).value = columnas.get(colName);
                     }
                 }
 
@@ -490,7 +508,7 @@ public class EjecucionUSQL {
             row = new Nodo("row");
             for(String colName : filaTemporal.keySet()){
                 Nodo cn = new Nodo(colName);
-                cn.agregarHijo(new Nodo("CAD", filaTemporal.get(colName).valor));
+                cn.agregarHijo(new Nodo("CAD", filaTemporal.get(colName).value));
                 row.agregarHijo(cn);
             }
             rows.agregarHijo(row);
@@ -519,8 +537,10 @@ public class EjecucionUSQL {
             
             for(int i = 0; i < tablaTemporal.size(); i++){
                 
-                HashMap<String, Simbolo> filaTemporal = tablaTemporal.get(i);              
-                if(EjecucionSSL.ejecutarExpresion(cond).valor.equals("true")){
+                HashMap<String, Simbolo> filaTemporal = tablaTemporal.get(i);  
+                EjecucionSSL.ejecutar.hashtemp = filaTemporal;
+                
+                if(EjecucionSSL.ejecutar.Expre(cond).value.equals("1")){
                     indices.add(i);
                 }
             }
@@ -535,7 +555,7 @@ public class EjecucionUSQL {
             row = new Nodo("row");
             for(String colName : filaTemporal.keySet()){
                 Nodo cn = new Nodo(colName);
-                cn.agregarHijo(new Nodo("CAD", filaTemporal.get(colName).valor));
+                cn.agregarHijo(new Nodo("CAD", filaTemporal.get(colName).value));
                 row.agregarHijo(cn);
             }
             rows.agregarHijo(row);
@@ -546,11 +566,83 @@ public class EjecucionUSQL {
         return response;
     }
     
+    private static ArrayList<HashMap<String, Simbolo>> temp =  new ArrayList<>();
+    
     private static ArrayList<HashMap<String, Simbolo>> construirTablaTemp(ArrayList<Nodo> tablas){
+        temp.clear();
         
+        metodo(tablas, new HashMap<>());
         
+        return temp;
+    }
+    
+    private static void metodo(ArrayList<Nodo> tablas, HashMap<String, Simbolo> fila){
         
-        return null;
+        for(int i =0; i < tablas.size(); i++){
+            Nodo actual = tablas.get(i);
+            ArrayList<Nodo> copia = copiarArrayList(tablas);///<<<<<
+            copia.remove(i);
+            String nombre = actual.valor;//<<<
+            
+            for(Nodo row : actual.hijos){
+                
+                HashMap<String, Simbolo> copiaFila = copiarHash(fila);
+                
+                for(Nodo col : row.hijos){
+                    Simbolo s = new Simbolo();
+                    s.value = col.getHijo(0).valor;
+                    s.value = Archivos.bbdd.getTipoColumna(Server.actualDB, nombre, col.valor);
+                    copiaFila.put(nombre + "." + col.valor, s);
+                }
+                
+                if(copia.size() > 0){
+                    metodo(copia, copiaFila);
+                }else{
+                    temp.add(copiaFila);
+                }
+            }
+        }
+    }
+    
+    
+    private static HashMap<String, Simbolo> copiarHash(HashMap<String, Simbolo> hash){
+        HashMap<String, Simbolo> nueva = new HashMap<>();
+        
+        for(String clave : hash.keySet()){
+            Simbolo s = hash.get(clave);
+            Simbolo nuevo = new Simbolo();
+            
+            nuevo.value = s.value;
+            nuevo.tipe = s.tipe;
+            
+            nueva.put(clave, nuevo);
+        }
+        
+        return nueva;
+    }
+    
+    
+    private static ArrayList<Nodo> copiarArrayList(ArrayList<Nodo> nodos){
+        ArrayList<Nodo> nueva = new ArrayList<>();
+        
+        for(Nodo nodo : nodos){
+            nueva.add(clonar(nodo));
+        }
+        
+        return nueva;
+    }
+    
+    private static Nodo clonar(Nodo nodo){
+        Nodo nuevo = new Nodo();
+        
+        nuevo.token = nodo.token;
+        nuevo.valor = nodo.valor;
+        
+        for(Nodo hijo : nodo.hijos){
+            nuevo.agregarHijo(clonar(hijo));
+        }
+        
+        return nuevo;
     }
 
     private static String backup_usqldump(Nodo nodo) {

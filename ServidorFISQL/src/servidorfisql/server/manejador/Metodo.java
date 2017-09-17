@@ -3,6 +3,7 @@ package servidorfisql.server.manejador;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import servidorfisql.interpretes.EjecucionSSL;
 import servidorfisql.interpretes.Grafica;
 import servidorfisql.interpretes.Nodo;
 import servidorfisql.server.Server;
@@ -12,11 +13,11 @@ import servidorfisql.server.Server;
  * @author jorge
  */
 public class Metodo {
-    String tipoMetodo;
+    public String tipoMetodo;
     Permisos permissions;
-    String idMethod;
-    Nodo parametros;
-    Nodo lsent;
+    public String idMethod;
+    public Nodo parametros;
+    public Nodo lsent;
     
     /***
      * Constructor de un objeto Metodo
@@ -55,7 +56,7 @@ public class Metodo {
         this.idMethod = idMet;
         this.parametros = met.getHijo(1);
         this.lsent = met.getHijo(2);
-        this.tipoMetodo = met.hijos.size() == 4 ? met.getHijo(3).valor : "VOID";
+        this.tipoMetodo = met.hijos.size() == 4 ? EjecucionSSL.ejecutar.getTipo(met.getHijo(3).valor) : "VOID";
     }
     
     
@@ -142,12 +143,12 @@ public class Metodo {
         
         xml = "            <nodo>\n";
         
-        xml += "                        <token>" + nodo.token + "</token>\n";
-        xml += "                        <valor>" + nodo.valor + "</valor>\n";
-        xml += "                        <hijos>\n";
+        xml += "                <token>\"" + nodo.token + "\"</token>\n";
+        xml += "                <valor>\"" + nodo.valor + "\"</valor>\n";
+        xml += "                <hijos>\n";
         for(Nodo hijo : nodo.hijos)
             xml += lsentToXml(hijo);
-        xml += "                        </hijos>\n";
+        xml += "                </hijos>\n";
         xml += "            </nodo>\n";
         
         return xml;

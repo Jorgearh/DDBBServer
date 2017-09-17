@@ -1,13 +1,8 @@
 package servidorfisql.server.manejador;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import servidorfisql.gui.Consola;
-import servidorfisql.interpretes.Grafica;
 import servidorfisql.interpretes.Nodo;
-import servidorfisql.server.Server;
 
 /**
  *
@@ -145,6 +140,8 @@ public class Metodos {
         
         return methods;
     }
+
+
 
     
     
